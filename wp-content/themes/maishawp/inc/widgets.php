@@ -386,7 +386,7 @@ class maisha_two_banner extends WP_Widget {
 		echo $args['before_widget']; ?>
 		<?php if( ! empty( $title ) )
 			echo '<div class="widget-title-wrap"><h3 class="widget-title"><span>'. esc_html($title) .'</span></h3></div>'; ?>
-		<div class="clearfix">
+		<div class="clear">
 		<div class="one_half">
 		<a href="<?php echo $imglink; ?>"><img class="headerimage" src="<?php echo $imgurl; ?>" alt="<?php echo $imgalt; ?>" /></a>
 		</div>

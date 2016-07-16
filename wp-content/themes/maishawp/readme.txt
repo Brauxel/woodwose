@@ -8,6 +8,14 @@ Copyright: Automattic, automattic.com
 
 Maisha is distributed under the terms of the GNU GPL
 
+1.2.7 - July 12, 2016
+- fix for the menu on the @media screen and (max-width: 955px) inside the stlye.css
+- better Give plugin support - theme is styled for the Give donation plugin, new Give causes page - changes inside the style.css, added “give” folder and archive-give_forms.php file 
+1.2.6 - June 14,2016
+
+- fixed tags inside the style.css - new tags added 
+- clearing code inside the content.php, content-link.php and content-post-grid.php files -simplified code
+
 1.2.5 - March 29,2016
 
 - fix inside content-post-grid.php file for the full width and excerpt option for the grid blog layouts

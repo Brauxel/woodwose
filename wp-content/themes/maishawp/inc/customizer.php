@@ -604,6 +604,54 @@ function maisha_customize_register( $wp_customize ) {
 		'section'  => 'maisha_favicon_section',
 		'settings' => 'maisha_favicon',
 	) ) );
+	
+		/***** Register Custom Controls *****/
+
+	class Maisha_Upgrade extends WP_Customize_Control {
+		public function render_content() {  ?>
+			<p class="maisha-upgrade-thumb">
+				<img src="<?php echo get_template_directory_uri(); ?>/screenshot.png" />
+			</p>
+			<p class="textfield maisha-upgrade-text">
+				<a href="<?php echo esc_url('http://www.anarieldesign.com/documentation/maisha/'); ?>" target="_blank" class="button button-secondary">
+					<?php esc_html_e('Visit Documentation', 'maisha'); ?>
+				</a>
+			</p>
+			<p class="customize-control-title maisha-upgrade-title">
+				<a href="<?php echo esc_url('https://www.youtube.com/watch?v=ghkO-luikII'); ?>" class="button button-secondary" target="_blank">
+					<?php esc_html_e('Video Presentation', 'maisha'); ?>
+				</a>
+			</p>
+			<p class="maisha-upgrade-button">
+				<a href="http://www.anarieldesign.com/themes/" target="_blank" class="button button-secondary">
+					<?php esc_html_e('More Themes by Anariel Design', 'maisha'); ?>
+				</a>
+			</p><?php
+		}
+	}
+
+	/***** Add Sections *****/
+
+	$wp_customize->add_section('maisha_upgrade', array(
+		'title' => esc_html__('Theme Info', 'maisha'),
+		'priority' => 600
+	) );
+
+	/***** Add Settings *****/
+
+	$wp_customize->add_setting('maisha_options[premium_version_upgrade]', array(
+		'default' => '',
+		'type' => 'option',
+		'sanitize_callback' => 'esc_attr'
+	) );
+
+	/***** Add Controls *****/
+
+	$wp_customize->add_control(new Maisha_Upgrade($wp_customize, 'premium_version_upgrade', array(
+		'section' => 'maisha_upgrade',
+		'settings' => 'maisha_options[premium_version_upgrade]',
+		'priority' => 1
+	) ) );
 }
 add_action( 'customize_register', 'maisha_customize_register', 11 );
 
@@ -661,3 +709,19 @@ function maisha_customize_preview_js() {
 	wp_enqueue_script( 'maisha-customize-preview', get_template_directory_uri() . '/js/customize-preview.js', array( 'customize-preview' ), '20141216', true );
 }
 add_action( 'customize_preview_init', 'maisha_customize_preview_js' );
+
+/***** Enqueue Customizer JS *****/
+
+function maisha_customizer_js() {
+	wp_enqueue_script('maisha-customizer', get_template_directory_uri() . '/js/maisha-customizer.js', array(), '1.0.0', true);
+	wp_localize_script('maisha-customizer', 'maisha_links', array(
+		'title'	=> esc_html__('Theme Related Links:', 'maisha'),
+		'themeURL' => esc_url('http://www.anarieldesign.com/themes/non-profit-wordpress-theme/'),
+		'themeLabel' => esc_html__('Theme Info Page', 'maisha'),
+		'docsURL' => esc_url('http://www.anarieldesign.com/documentation/maishalite/'),
+		'docsLabel'	=> esc_html__('Theme Documentation', 'maisha'),
+		'rateURL' => esc_url('https://www.youtube.com/watch?v=ghkO-luikII'),
+		'rateLabel'	=> esc_html__('Video Presentation', 'maisha'),
+	));
+}
+add_action('customize_controls_enqueue_scripts', 'maisha_customizer_js');

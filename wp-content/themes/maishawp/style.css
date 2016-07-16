@@ -4,10 +4,10 @@ Theme URI: http://www.anarieldesign.com/themes/
 Author: Anariel Design
 Author URI: http://www.anarieldesign.com/
 Description: Maisha is a beautiful charity WordPress theme inspired by "Virunga" documentary. It is modern, responsive and mobile friendly theme. So, no worries there, Google will love it. Theme offers whole variety of cool features like different blog layouts, different header options, extensive color options and more. It is all very easily customizable directly from the WordPress Customizer. Maisha also comes with number of page templates and includes a couple specially styled to support hugely popular plugins like bbPress, BuddyPress, WooCommerce and The Events Calendar. Above all it is very easy to use, coded according to the latest standards and SEO friendly.
-Version: 1.2.5
+Version: 1.2.7
 License: GNU General Public License v2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
-Tags: black, orange, white, gray, dark, light, two-columns, left-sidebar, right-sidebar, responsive-layout, custom-background, accessibility-ready, custom-colors, custom-header, custom-menu, editor-style, featured-images, microformats, post-formats, rtl-language-support, sticky-post, threaded-comments
+Tags:two-columns, left-sidebar, right-sidebar, grid-layout, custom-background, accessibility-ready, custom-colors, custom-header, custom-menu, editor-style, featured-images, microformats, post-formats, rtl-language-support, sticky-post, threaded-comments, footer-widgets
 Text Domain: maisha
 
 This theme, like WordPress, is licensed under the GPL.
@@ -32,21 +32,21 @@ Use it to make something cool, have fun, and share what you've learned with othe
  * 10.0 - Header
  * 11.0 - Widgets
  * 12.0 - Content
- *    12.1 - Posts and pages
- *    12.2 - Post Formats
- *    12.3 - Comments
+ *	12.1 - Posts and pages
+ *	12.2 - Post Formats
+ *	12.3 - Comments
  * 13.0 - Footer
  * 14.0 - Media
- *    14.1 - Captions
- *    14.2 - Galleries
+ *	14.1 - Captions
+ *	14.2 - Galleries
  * 15.0 - Media Queries
- *    15.1 - Mobile Large
- *    15.2 - Tablet Small
- *    15.3 - Tablet Large
- *    15.4 - Desktop Small
- *    15.5 - Desktop Medium
- *    15.6 - Desktop Large
- *    15.7 - Desktop X-Large
+ *	15.1 - Mobile Large
+ *	15.2 - Tablet Small
+ *	15.3 - Tablet Large
+ *	15.4 - Desktop Small
+ *	15.5 - Desktop Medium
+ *	15.6 - Desktop Large
+ *	15.7 - Desktop X-Large
  */
 
 
@@ -253,8 +253,8 @@ i {
 
 blockquote {
 	padding: 11px 22px;
-    border-left: 5px solid #f7931d;
-    background: #f4f5f5;
+	border-left: 5px solid #f7931d;
+	background: #f4f5f5;
 	color: #828282;
 	font-size: 16px;
 	font-size: 1.6rem;
@@ -734,8 +734,8 @@ a:hover {
 	text-decoration: none;
 	white-space: nowrap;
 	letter-spacing: .17em;
-    -webkit-transition: .07s ease-in;
-    transition: .07s ease-in;
+	-webkit-transition: .07s ease-in;
+	transition: .07s ease-in;
 }
 
 .navigation-main a:hover {
@@ -776,7 +776,7 @@ a:hover {
 
 .navigation-main ul ul ul {
 	z-index: 13;
-    top: 0;
+	top: 0;
 }
 
 .navigation-main ul ul a,
@@ -901,9 +901,9 @@ a:hover {
 	padding: 0 5px;
 }
 }
-@media screen and (max-width: 954px) {
+@media screen and (max-width: 955px) {
 .menu-toggle {
-    display: inline-block;
+	display: inline-block;
 	position: relative;
 	margin-top: 10px;
 }
@@ -916,7 +916,7 @@ a:hover {
 	width: 1px;
 }
 .menu-toggle:before {
-    border: 1px solid #333;
+	border: 1px solid #333;
 	content: "\f419";
 	color: #333;
 	font-size: 25px;
@@ -928,10 +928,10 @@ a:hover {
 	padding: 10px;
 }
 .main-small-navigation ul.nav-menu.toggled-on {
-    display: block;
+	display: block;
 }
 .navigation-main ul {
-    display: none;
+	display: none;
 }
 .site-header {
 	position: relative;
@@ -941,12 +941,12 @@ a:hover {
 	padding: 15px 80px 40px 80px;
 }
 .site-logo {
-    display: inline-block;
+	display: inline-block;
 	max-width: 80%;
 	padding-top: 10px;
 }
 .headerblock.alternative .site-logo {
-    display: block;
+	display: block;
 	max-width: 100%;
 	padding-top: 0;
 }
@@ -2069,12 +2069,12 @@ img.aligncenter {
 }
 
 .blog .aboutpage .cd-fixed-bg-one {
-    padding: 40px 0;
+	padding: 40px 0;
 	margin-bottom: 2%;
 }
 
 .page-template-default .aboutpage .cd-fixed-bg-one {
-    padding: 40px 0;
+	padding: 40px 0;
 }
 
 .hentry {
@@ -2088,7 +2088,7 @@ img.aligncenter {
 }
 
 .second-block .entry-content {
-    padding-bottom: 0;
+	padding-bottom: 0;
 }
 
 .page .second-block a.more-link {
@@ -2919,7 +2919,7 @@ a.more-link {
 
 .list .wp-post-image {
 	float: left;
-    margin-right: 10px;
+	margin-right: 10px;
 }
 
 .list .entry-content {
@@ -3233,12 +3233,12 @@ a.more-link {
 }
 @media only screen and (min-width: 768px) {
   .cd-panel-container {
-    width: 70%;
+	width: 70%;
   }
 }
 @media only screen and (min-width: 1170px) {
   .cd-panel-container {
-    width: 50%;
+	width: 50%;
   }
 }
 
@@ -3293,6 +3293,12 @@ a.more-link {
 	text-align: center;
 }
 
+.second-block a.button {
+	display: inline-block;
+	font-size: 18px;
+	font-size: 1.8rem;
+}
+
 .overlay {
 	position: absolute;
 	top: 0;
@@ -3345,7 +3351,7 @@ a.more-link {
 
 .content-right-block {
 	display: table;
-    margin-left: 70px;
+	margin-left: 70px;
 }
 
 .content-right-block h2.entry-title {
@@ -3359,7 +3365,7 @@ a.more-link {
 	margin-top: 0;
 }
 .block-three {
-    padding: 3% 0 2% 0;
+	padding: 3% 0 2% 0;
 }
 }
 @media screen\0 {
@@ -3367,12 +3373,12 @@ a.more-link {
 	margin-top: 0;
 }
 .block-three {
-    padding: 4% 0;
+	padding: 4% 0;
 }
 }
 
 .block-three .two_third.lastcolumn {
-    margin-top: 20px;
+	margin-top: 20px;
 }
 
 .block-four .entry-content {
@@ -3388,8 +3394,8 @@ a.more-link {
 
 .block-four figure img {
 	filter: url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\' filterRes=\'800\'><feColorMatrix type=\'matrix\' values=\'0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0\'/></filter></svg>#grayscale"); /* Firefox 10+ */
-    filter: gray; /* IE6-9 */
-    -webkit-filter: grayscale(100%); /* Chrome 19+ & Safari 6+ */
+	filter: gray; /* IE6-9 */
+	-webkit-filter: grayscale(100%); /* Chrome 19+ & Safari 6+ */
 	-webkit-transition: all 0.35s ease-in-out;
 	transition: all 0.35s ease-in-out;
 	-webkit-backface-visibility: hidden; /* Fix for transition flickering */
@@ -3397,7 +3403,7 @@ a.more-link {
 
 .block-four figure img:hover {
 	filter: none;
-    -webkit-filter: grayscale(0%);
+	-webkit-filter: grayscale(0%);
 }
 
 .block-four figure {
@@ -3416,7 +3422,7 @@ a.more-link {
 
 .block-four .post .entry-title {
 	background: rgba(0,0,0,.6);
-    padding: 10px;
+	padding: 10px;
 	display: inline-block;
 	border-bottom: 3px solid #f7931d;
 	color: #fff;
@@ -3517,7 +3523,7 @@ video {
 
 .video-container .content-caption {
 	background: rgba(255,255,255,0.7);
-    color: #333;
+	color: #333;
 	top: 20%;
 	text-align: left;
 }
@@ -3612,7 +3618,7 @@ video {
 	top: 0;
 	left: 0;
 	z-index: 1;
-    opacity: .7;
+	opacity: .7;
 }
 
 .page-template-about-page .block-one {
@@ -3628,7 +3634,7 @@ video {
 .page-template-about-page .columns .entry-content {
 	background: #f5f4f4;
 	font-size: 16px;
-    font-size: 1.6rem;
+	font-size: 1.6rem;
 	padding: 5%;
 }
 
@@ -3748,12 +3754,12 @@ body.page-template-full-width-page,
 }
 
 .page.page-template-full-width-page .comments-area {
-    margin-top: 0;
+	margin-top: 0;
 	margin-bottom: 0;
 }
 
 .page.page-template-full-width-page .main {
-    padding: 0;
+	padding: 0;
 }
 
 .page.page-template-full-width-page div.give-form-wrap {
@@ -3797,7 +3803,7 @@ body.page-template-full-width-page,
 .page.page-template-staff-page .columns .entry-content {
 	background: #f5f4f4;
 	font-size: 16px;
-    font-size: 1.6rem;
+	font-size: 1.6rem;
 	padding: 5%;
 }
 
@@ -3824,8 +3830,8 @@ body.page-template-full-width-page,
 	background: none;
 	display: block;
 	font-weight: 500;
-    padding: 10px;
-    text-align: center;
+	padding: 10px;
+	text-align: center;
 }
 
 .page.page-template-about-page a.more-link,
@@ -3833,8 +3839,8 @@ body.page-template-full-width-page,
 	background: #fff;
 	display: block;
 	font-weight: 500;
-    padding: 10px;
-    text-align: center;
+	padding: 10px;
+	text-align: center;
 }
 
 .page a.more-link:after {
@@ -3952,16 +3958,16 @@ body.page-template-full-width-page,
 }
 
 .page-template-basic-page .main {
-    padding: 3.3333% 0 0 0;
+	padding: 3.3333% 0 0 0;
 }
 
 .page-template-basic-page .hentry {
-    padding: 0;
+	padding: 0;
 }
 
 /* Events Page */
 .page-template-events-page-php .hentry {
-    padding-top: 0;
+	padding-top: 0;
 }
 
 .tribe-events-loop .type-tribe_events.tribe-events-last {
@@ -4028,7 +4034,7 @@ body.page-template-full-width-page,
 }
 
 .tribe-events-schedule {
-    margin: 0 0 20px 0;
+	margin: 0 0 20px 0;
 }
 
 .tribe-events-back {
@@ -4055,6 +4061,7 @@ body.page-template-full-width-page,
 	color: #333;
 }
 
+/* Give */
 [id*=give-form] div.images {
 	margin-bottom: 0!important;
 }
@@ -4064,9 +4071,95 @@ body.page-template-full-width-page,
 }
 
 .give-form-wrap ol {
-    margin-left: 25px;
+	margin-left: 25px;
 }
-
+.archive.post-type-archive-give_forms article {
+	background: #f5f4f4;
+}
+.archive.post-type-archive-give_forms .inside {
+	padding: 20px;
+}
+.archive.post-type-archive-give_forms .columns .entry-title {
+	font-size: 22px;
+	font-size: 2.2rem;
+	font-weight: 600;
+	text-align: center;
+}
+.archive.post-type-archive-give_forms .columns hr {
+	background-color: #fff;
+	border: 0;
+	height: 2px;
+	margin-bottom: 1.6em;
+	max-width: 20%;
+}
+.archive.post-type-archive-give_forms .pagination .nav-links {
+	margin-bottom: 0;
+}
+.give-form-wrap {
+	background: #fff;
+	border: 2px solid #f5f4f4;
+	color: #000;
+	text-align: left;
+	padding: 3%;
+}
+.single .give_forms h1 {
+	background: #f5f4f4;
+	font-size: 40px;
+	font-size: 2.5rem;
+	margin-bottom: 0;
+	padding: 20px 10px;
+	text-align: center;
+}
+body.single .give_forms .entry-summary {
+	padding: 0!important;
+}
+.give-sidebar .widget {
+	background: #f5f4f4;
+	padding: 30px 5%;
+}
+.give-goal-progress .income {
+	font-weight: 900;
+}
+input#give-purchase-button,
+[id*=give-form].give-display-modal .give-btn, 
+[id*=give-form].give-display-reveal .give-btn {
+	font-size: 16px;
+	font-size: 1.6rem;
+}
+.give-btn {
+	background: #f7931d;
+	border: none;
+}
+.give-progress-bar>span, 
+.give-progress-bar {
+	border-radius: 0;
+}
+.second-block .give-goal-progress .income {
+	color: #f7931d;
+}
+.second-block .give-progress-bar {
+	height: 30px;
+	background: #fff;
+}
+.entry-content a.button {
+	color: #333;
+}
+.second-block .give-goal-progress {
+	margin-bottom: 40px;
+}
+.give-modal .mfp-ajax-holder .mfp-content, 
+.give-modal .mfp-inline-holder .mfp-content {
+	padding: 50px;
+}
+[id*=give-form] .give-custom-amount-text {
+	margin-bottom: 10px;
+}
+#sidebar.sidebar form[id*=give-form] {
+	padding: 0;
+}
+#sidebar .give-form-wrap {
+	padding: 5%;
+}
 
 /* BuddyPress & bbPress */
 .page-template-buddypress-php,
@@ -4330,11 +4423,11 @@ a.button.logout-link {
 }
 
 #sidebar .bbp-login-form label {
-    width: 100%;
+	width: 100%;
 }
 
 div.bbp-submit-wrapper {
-    float: left;
+	float: left;
 }
 
 #bbpress-forums ul.bbp-forums {
@@ -4342,7 +4435,7 @@ div.bbp-submit-wrapper {
 }
 
 .widget.buddypress #bp-login-widget-form #bp-login-widget-submit {
-    background: #f7931d;
+	background: #f7931d;
 }
 
 .bbpress .button {
@@ -4363,7 +4456,7 @@ div.bbp-submit-wrapper {
 .bbpress input,
 .bbpress select {
 	font-size: 14px;
-    font-size: 1.4rem;
+	font-size: 1.4rem;
 }
 
 #bbpress-forums p.bbp-topic-meta img.avatar {
@@ -4431,8 +4524,8 @@ div.bbp-submit-wrapper {
 .search-box-wrapper {
 	background: #333;
 	-webkit-box-sizing: border-box;
-	-moz-box-sizing:    border-box;
-	box-sizing:         border-box;
+	-moz-box-sizing:	border-box;
+	box-sizing:		 border-box;
 	position: absolute;
 	padding: 4px;
 	left: 38px;
@@ -4455,7 +4548,7 @@ div.bbp-submit-wrapper {
 }
 
 .search .page-content {
-    padding: 0;
+	padding: 0;
 }
 
 .fixed .search-toggle {
@@ -4485,7 +4578,7 @@ div.bbp-submit-wrapper {
 	display: block;
 	margin: 0 auto;
 	max-width: 50px;
-    height: 3px;
+	height: 3px;
 	background: #fff;
 	content: " ";
 	margin-top: 9px;
@@ -4518,7 +4611,7 @@ div.bbp-submit-wrapper {
 
 .woocommerce .widget_price_filter .ui-slider .ui-slider-handle,
 .woocommerce .widget_price_filter .ui-slider .ui-slider-range {
-    background-color: #f7931d;
+	background-color: #f7931d;
 }
 
 .woocommerce .widget_price_filter .price_slider_wrapper .ui-widget-content {
@@ -4678,7 +4771,7 @@ div.bbp-submit-wrapper {
 	float: right;
 	margin-right: 0;
 	background: #f5f4f4;
-    padding: 30px 0;
+	padding: 30px 0;
 }
 .archive.woocommerce-page #site .widget-area {
 	width: 30.66%;
@@ -4686,7 +4779,7 @@ div.bbp-submit-wrapper {
 	margin-right: 0;
 	margin-top: 3.1em;
 	background: #f5f4f4;
-    padding: 30px 0;
+	padding: 30px 0;
 }
 .archive.woocommerce-page.singular #site .widget-area {
 	margin-top: 7em;
@@ -4797,7 +4890,7 @@ form.wpcf7-form {
 .page-template-projects-page .columns .post-thumbnail img,
 .page-template-stories-page .columns .wp-post-image {
 	filter: url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\'><feColorMatrix type=\'matrix\' values=\'0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0\'/></filter></svg>#grayscale"); /* Firefox 10+, Firefox on Android */
-    filter: gray; /* IE6-9 */
+	filter: gray; /* IE6-9 */
 	-webkit-filter: grayscale(100%);
 	-webkit-transition: all 0.35s ease-in-out;
 	transition: all 0.35s ease-in-out;
@@ -4812,7 +4905,7 @@ form.wpcf7-form {
 .page-template-projects-page .columns .post-thumbnail img:hover,
 .page-template-stories-page .columns .wp-post-image:hover {
 	filter: url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\'><feColorMatrix type=\'matrix\' values=\'1 0 0 0 0, 0 1 0 0 0, 0 0 1 0 0, 0 0 0 1 0\'/></filter></svg>#grayscale");
-    -webkit-filter: grayscale(0%);
+	-webkit-filter: grayscale(0%);
 }
 
 .page-template-causes-page .main {
@@ -6892,7 +6985,7 @@ p > video {
 	}
 	
 	.widget {
-        padding: 0 5%;
+		padding: 0 5%;
 	}
 
 	.widget pre {
@@ -8463,7 +8556,7 @@ p > video {
 
 	}
 	.page-template-front-page-one .soliloquy-theme-karisma .soliloquy-caption,
-    .page-template-front-page-one .soliloquy-theme-metro .soliloquy-caption {
+	.page-template-front-page-one .soliloquy-theme-metro .soliloquy-caption {
 		width: 50%!important;
 	}
 	.video-container .content-caption {
@@ -8494,7 +8587,7 @@ p > video {
 
 	}
 	.page-template-front-page-one .soliloquy-theme-karisma .soliloquy-caption,
-    .page-template-front-page-one .soliloquy-theme-metro .soliloquy-caption {
+	.page-template-front-page-one .soliloquy-theme-metro .soliloquy-caption {
 		width: 100%!important;
 		bottom: 0!important;
 		top: auto!important;
