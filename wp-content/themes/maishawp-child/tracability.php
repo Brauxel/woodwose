@@ -5,7 +5,7 @@
 ?>
 
 <?php get_header(); ?>
-	<div class="heading" style="background-image:url(http://localhost/woodwose/wp-content/uploads/2015/04/maisha-about-top-image.jpg); margin-top:30px; padding-top:30px; padding-bottom:30px; font-size:6rem; color:#fff; text-align:center;">
+	<div class="heading">
 		<h1>Our Process</h1>
     </div>
 	<main class="main" id="tracability" role="main">
