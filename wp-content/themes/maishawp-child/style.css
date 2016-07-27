@@ -42,6 +42,7 @@
 		background-position:center;
 		margin-right:48px;
 		margin-left:48px;
+		outline:none;
 	}
 	#tracability img {
 		float:left;
@@ -81,3 +82,21 @@
 			float:none;
 			margin:0 auto;
 		}
+
+.inline {
+	display:none;
+	width:800px;
+}
+	.inline p {
+		margin-bottom:0px;
+	}
+	.inline ul {
+		margin-bottom:0px;
+		margin-left:18px;
+	}
+	.inline h4 {
+		text-decoration:underline;
+		text-transform:uppercase;
+		text-align:center;
+		margin-top:20px;
+	}

@@ -1,6 +1,6 @@
 // JavaScript Document
-$(document).ready(function() {
+jQuery(document).ready(function() {
     "use strict";
 	
-	$(".fancybox").fancybox();
+	jQuery(".fancybox").fancybox();
 });
