@@ -11,8 +11,12 @@
  Tags:         black, orange, white, gray, dark, light, two-columns, left-sidebar, right-sidebar, responsive-layout, accessibility-ready, custom-background, custom-colors, custom-header, custom-menu, editor-style, featured-images, microformats, post-formats, rtl-language-support, sticky-post, threaded-comments
 */
 
+.clear {
+	clear:both;
+}
+
 #tracability {
-	width:1100px;
+	width:838px;
 	margin:0 auto;
 	overflow:hidden;
 	padding-top:30px;
@@ -24,38 +28,43 @@
 		overflow:hidden;
 		background-repeat:no-repeat;
 		background-position:center;
-		margin-right:24px;
-		height:220px;
+		margin-right:48px;
+		margin-left:48px;
 	}
 	#tracability img {
 		float:left;
-		margin-right:24px;
 		margin-top:10px;
 	}
 		#tracability img.divider {
 			margin-top:40px;
+			float:none;
 		}
 		#tracability a.cotton-plant {
 			background-image:url(images/tracability/cotton-plant.png);
-			width:200px;
+			width:106px;
+			height:116px;
+			margin-left:0px;
 		}
 		#tracability a.cloth {
 			background-image:url(images/tracability/cloth.png);
-			width:190px;
+			width:117px;
+			height:135px;
 		}
 		#tracability a.dye {
 			background-image:url(images/tracability/dye.png);
-			width:230px;
+			width:142px;
+			height:136px;
 		}
 		#tracability a.stitch {
 			background-image:url(images/tracability/stitch.png);
-			width:258px;
+			width:129px;
+			height:110px;
 			margin-right:0px;
 		}
 		#tracability a.final-product {
 			background-image:url(images/tracability/final-product.png);
-			width:450px;
-			height:489px;
+			width:332px;
+			height:361px;
 			float:none;
 			margin:0 auto;
 		}
