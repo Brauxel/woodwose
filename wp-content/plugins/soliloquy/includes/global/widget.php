@@ -138,7 +138,7 @@ class Soliloquy_Widget extends WP_Widget {
     public function form( $instance ) {
 
         // Get all avilable sliders and widget properties.
-        $sliders   = Soliloquy::get_instance()->get_sliders( false, true );
+        $sliders   = Soliloquy::get_instance()->get_sliders( false );
         $title     = isset( $instance['title'] ) ? $instance['title'] : '';
         $slider_id = isset( $instance['soliloquy_id'] ) ? $instance['soliloquy_id'] : false;
 
@@ -153,18 +153,16 @@ class Soliloquy_Widget extends WP_Widget {
             <label for="<?php echo $this->get_field_id( 'soliloquy_id' ); ?>"><?php _e( 'Slider', 'soliloquy' ); ?></label>
             <select id="<?php echo esc_attr( $this->get_field_id( 'soliloquy_id' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'soliloquy_id' ) ); ?>" style="width: 100%;">
                 <?php
-                if ( is_array( $sliders ) ) {
-                    foreach ( $sliders as $slider ) {
-                        if ( ! empty( $slider['config']['title'] ) ) {
-                            $title = $slider['config']['title'];
-                        } else if ( ! empty( $slider['config']['slug'] ) ) {
-                            $title = $slider['config']['title'];
-                        } else {
-                            $title = sprintf( __( 'Slider ID #%s', 'soliloquy' ), $slider['id'] );
-                        }
-
-                        echo '<option value="' . $slider['id'] . '"' . selected( $slider['id'], $slider_id, false ) . '>' . $title . '</option>';
+                foreach ( $sliders as $slider ) {
+                    if ( ! empty( $slider['config']['title'] ) ) {
+                        $title = $slider['config']['title'];
+                    } else if ( ! empty( $slider['config']['slug'] ) ) {
+                        $title = $slider['config']['title'];
+                    } else {
+                        $title = sprintf( __( 'Slider ID #%s', 'soliloquy' ), $slider['id'] );
                     }
+
+                    echo '<option value="' . $slider['id'] . '"' . selected( $slider['id'], $slider_id, false ) . '>' . $title . '</option>';
                 }
                 ?>
             </select>

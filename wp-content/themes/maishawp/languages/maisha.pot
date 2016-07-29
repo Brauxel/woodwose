@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Maisha\n"
-"POT-Creation-Date: 2016-07-12 13:02+0200\n"
-"PO-Revision-Date: 2016-07-12 13:02+0200\n"
+"POT-Creation-Date: 2016-07-29 12:09+0200\n"
+"PO-Revision-Date: 2016-07-29 12:09+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en_GB\n"
@@ -40,7 +40,7 @@ msgstr ""
 msgid "Find more about Maisha"
 msgstr ""
 
-#: admin/admin.php:34 admin/admin.php:276
+#: admin/admin.php:34 admin/admin.php:293
 msgid "Theme Screenshot"
 msgstr ""
 
@@ -91,151 +91,167 @@ msgstr ""
 msgid "Recommended Plugins"
 msgstr ""
 
-#: admin/admin.php:84
-msgid "Give"
+#: admin/admin.php:82
+msgid ""
+"Plugins listed are not mandatory for theme to work! Install only the ones "
+"you need for your website!"
 msgstr ""
 
 #: admin/admin.php:85
+msgid "Give"
+msgstr ""
+
+#: admin/admin.php:86
 msgid ""
 "The most robust, flexible, and intuitive way to accept donations on "
 "WordPress."
 msgstr ""
 
-#: admin/admin.php:89 admin/admin.php:107 admin/admin.php:125
-#: admin/admin.php:143 admin/admin.php:161 admin/admin.php:182
-#: admin/admin.php:200 admin/admin.php:219 admin/admin.php:238
-#: admin/admin.php:255
+#: admin/admin.php:90 admin/admin.php:108 admin/admin.php:126
+#: admin/admin.php:144 admin/admin.php:162 admin/admin.php:183
+#: admin/admin.php:201 admin/admin.php:220 admin/admin.php:239
+#: admin/admin.php:256 admin/admin.php:272
 msgid "Already activated"
 msgstr ""
 
-#: admin/admin.php:95
+#: admin/admin.php:96
 msgid "Install Give"
 msgstr ""
 
-#: admin/admin.php:102
+#: admin/admin.php:103
 msgid "WooCommerce"
 msgstr ""
 
-#: admin/admin.php:103
+#: admin/admin.php:104
 msgid "An e-commerce toolkit that helps you sell anything. Beautifully."
 msgstr ""
 
-#: admin/admin.php:113
+#: admin/admin.php:114
 msgid "Install WooCommerce"
 msgstr ""
 
-#: admin/admin.php:120
+#: admin/admin.php:121
 msgid "BuddyPress"
 msgstr ""
 
-#: admin/admin.php:121
+#: admin/admin.php:122
 msgid ""
 "BuddyPress helps you build any type of community website using WordPress, "
 "with member profiles, activity streams, user groups, messaging, and more."
 msgstr ""
 
-#: admin/admin.php:131
+#: admin/admin.php:132
 msgid "Install BuddyPress"
 msgstr ""
 
-#: admin/admin.php:138
+#: admin/admin.php:139
 msgid "bbPress"
 msgstr ""
 
-#: admin/admin.php:139
+#: admin/admin.php:140
 msgid "bbPress is forum software with a twist from the creators of WordPress."
 msgstr ""
 
-#: admin/admin.php:149
+#: admin/admin.php:150
 msgid "Install bbPress"
 msgstr ""
 
-#: admin/admin.php:156
+#: admin/admin.php:157
 msgid "Contact Form 7"
 msgstr ""
 
-#: admin/admin.php:157
+#: admin/admin.php:158
 msgid "Just another contact form plugin. Simple but flexible."
 msgstr ""
 
-#: admin/admin.php:167
+#: admin/admin.php:168
 msgid "Install Contact Form 7"
 msgstr ""
 
-#: admin/admin.php:177
+#: admin/admin.php:178
 msgid "The Events Calendar"
 msgstr ""
 
-#: admin/admin.php:178
+#: admin/admin.php:179
 msgid ""
 "The Events Calendar is a carefully crafted, extensible plugin that lets you "
 "easily share your events. Beautiful. Solid. Awesome."
 msgstr ""
 
-#: admin/admin.php:188
+#: admin/admin.php:189
 msgid "Install The Events Calendar"
 msgstr ""
 
-#: admin/admin.php:195 admin/admin.php:206
+#: admin/admin.php:196 admin/admin.php:207
 msgid "Widget Visibility"
 msgstr ""
 
-#: admin/admin.php:196
+#: admin/admin.php:197
 msgid "Control which pages your widgets appear on WordPress"
 msgstr ""
 
-#: admin/admin.php:214
+#: admin/admin.php:215
 msgid "Page Builder by SiteOrigin"
 msgstr ""
 
-#: admin/admin.php:215
+#: admin/admin.php:216
 msgid ""
 "A drag and drop, responsive page builder that simplifies building your "
 "website."
 msgstr ""
 
-#: admin/admin.php:225
+#: admin/admin.php:226
 msgid "Install Page Builder by SiteOrigin"
 msgstr ""
 
-#: admin/admin.php:233 admin/admin.php:244
+#: admin/admin.php:234 admin/admin.php:245
 msgid "SiteOrigin Widgets Bundle"
 msgstr ""
 
-#: admin/admin.php:234
+#: admin/admin.php:235
 msgid "A collection of all widgets, neatly bundled into a single plugin."
 msgstr ""
 
-#: admin/admin.php:251
+#: admin/admin.php:252
 msgid "Premium Soliloquy Slider"
 msgstr ""
 
-#: admin/admin.php:261
+#: admin/admin.php:262
 msgid ""
 "Plugin & license key can be found inside the plugins folder within the main "
 "folder you downloaded"
 msgstr ""
 
-#: admin/admin.php:271 inc/customizer.php:627
+#: admin/admin.php:268
+msgid "Custom Google Fonts Plugin"
+msgstr ""
+
+#: admin/admin.php:278
+msgid ""
+"Plugin can be found inside the plugins folder within the main folder you "
+"downloaded"
+msgstr ""
+
+#: admin/admin.php:288 inc/customizer.php:627
 msgid "More Themes by Anariel Design"
 msgstr ""
 
-#: admin/admin.php:274
+#: admin/admin.php:291
 msgid ""
 "Build Your Dream WordPress Site with Premium Niche Themes for Bloggers & "
 "Charities"
 msgstr ""
 
-#: admin/admin.php:279
+#: admin/admin.php:296
 msgid "More Themes"
 msgstr ""
 
-#: admin/admin.php:288
+#: admin/admin.php:305
 #, php-format
 msgid "%1s is proudly brought to you by %2s. %3s: %4s."
 msgstr ""
 
-#: admin/admin.php:288
+#: admin/admin.php:305
 msgid "Theme Demo"
 msgstr ""
 

@@ -2,10 +2,10 @@
 /**
  * Plugin Name: Soliloquy
  * Plugin URI:  http://soliloquywp.com
- * Description: Soliloquy is the best responsive WordPress slider plugin.
+ * Description: Soliloquy is best responsive WordPress slider plugin.
  * Author:      Thomas Griffin
  * Author URI:  http://thomasgriffinmedia.com
- * Version:     2.4.4.3
+ * Version:     2.4.3.4
  * Text Domain: soliloquy
  * Domain Path: languages
  *
@@ -54,7 +54,7 @@ class Soliloquy {
      *
      * @var string
      */
-    public $version = '2.4.4.3';
+    public $version = '2.4.3.4';
 
     /**
      * The name of the plugin.
@@ -281,11 +281,10 @@ class Soliloquy {
      * @return array|bool  Array of slider data or false if none found.
      */
     public function get_slider_by_slug( $slug ) {
-	            
+	    
         // Attempt to return the transient first, otherwise generate the new query to retrieve the data.
         if ( false === ( $slider = get_transient( '_sol_cache_' . $slug ) ) ) {
             $slider = $this->_get_slider_by_slug( $slug );
-                       
             if ( $slider ) {
                 set_transient( '_sol_cache_' . $slug, $slider, DAY_IN_SECONDS );
             }
@@ -318,19 +317,17 @@ class Soliloquy {
         if ( ! $sliders ) {
             return false;
         }
-		
+
         // Loop through the sliders to find a match by slug.
         $ret = false;
         foreach ( $sliders as $data ) {
-
-        	if ( empty( $data['config']['slug'] ) ) {
-				continue;
-        	}
+	        
+            if ( ( $data['config']['type'] != 'fc' && empty( $data['slider'] ) ) || empty( $data['config']['slug'] ) ) {
+                continue;
+            }
 
             if ( $data['config']['slug'] == $slug ) {
-
                 $ret = $data;
-
                 break;
             }
         }
@@ -339,25 +336,7 @@ class Soliloquy {
         return $ret;
 
     }
-    
-	/**
-	 * Utility function for debugging
-	 * 
-	 * @access public
-	 * @param array $array (default: array())
-	 * @return void
-	 * @since 2.4.4.3
-	 */
-	function pretty_print( $array = array() ){
-		
-		echo '<pre>';
-		
-		print_r( $array );
-		
-		echo '</pre>';
-		
-		
-	}
+
     /**
      * Returns all sliders created on the site.
      *
@@ -392,39 +371,33 @@ class Soliloquy {
      */
     public function _get_sliders( $skip_empty = true ) {
 
-        $sliders = new WP_Query( array(
-            'post_type' => 'soliloquy',
-            'post_status' => 'publish',
-            'posts_per_page' => -1,
-            'fields' => 'ids',
-            'meta_query' => array(
-                array(
-                    'key' => '_sol_slider_data',
-                    'compare' => 'EXISTS',
-                ),
-            ),
-        ) );
-        if ( ! isset( $sliders->posts) || empty( $sliders->posts ) ) {
+        $sliders = get_posts(
+            array(
+                'post_type'     => 'any',
+                'no_found_rows' => true,
+                'cache_results' => false,
+                'nopaging'      => true,
+                'fields'        => 'ids',
+                'meta_query'    => array(
+                    array(
+                        'key' => '_sol_slider_data'
+                    )
+                )
+            )
+        );
+        if ( empty( $sliders ) ) {
             return false;
         }
 
         // Now loop through all the sliders found and only use sliders that have images in them.
         $ret = array();
-        foreach ( $sliders->posts as $id ) {
-
+        foreach ( $sliders as $id ) {
             $data = get_post_meta( $id, '_sol_slider_data', true );
-            
-			$content_sliders = $this->content_type_sliders();
-
-			if( ! in_array( Soliloquy_Shortcode::get_instance()->get_config( 'type', $data ), $content_sliders ) ){
-	
-	            if ( $skip_empty && empty( $data['slider'] ) ) {
-	            	
-	               continue;
-	
-				}
-				
-			}
+           
+            // Skip empty sliders, if required
+            if ( $skip_empty && empty( $data['slider'] ) ) {
+                continue;
+            }
 
             // Skip Defaults and Dynamic Sliders
             if ( 'defaults' == Soliloquy_Shortcode::get_instance()->get_config( 'type', $data ) || 'dynamic' == Soliloquy_Shortcode::get_instance()->get_config( 'type', $data ) ) {
@@ -438,22 +411,7 @@ class Soliloquy {
         return $ret;
 
     }
-	
-	/**
-	 * Array of Content Type Sliders
-	 * 
-	 * @access public
-	 * @param array $array (default: array())
-	 * @return void
-	 * @since 2.4.4.3
-	 */
-	function content_type_sliders( $array = array() ){
-		$array = array(
-			'wc',
-			'fc',	
-		);
-		return apply_filters( 'soliloquy_content_sliders', $array );
-	}
+
     /**
      * Returns the license key for Soliloquy.
      *

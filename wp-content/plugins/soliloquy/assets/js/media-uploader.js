@@ -52,9 +52,7 @@
                                 $(soliloquy_output).append(res);
                                 break;
                         }
-                        
-						$( document ).trigger('soliloquyUploaded');
-                        
+
                         $(res).find('.wp-editor-container').each(function(i, el){
                             var id = $(el).attr('id').split('-')[4];
                             quicktags({id: 'soliloquy-caption-' + id, buttons: 'strong,em,link,ul,ol,li,close'});

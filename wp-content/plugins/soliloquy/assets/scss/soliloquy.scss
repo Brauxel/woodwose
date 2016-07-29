@@ -84,11 +84,6 @@
 }
 .soliloquy-container a {
     outline: 0;
-    -webkit-box-shadow: none;
-    -moz-box-shadow: none;
-    -ms-box-shadow: none;
-    -o-box-shadow: none;
-    box-shadow: none;
 }
 .soliloquy-container .soliloquy-item, .soliloquy-container .soliloquy-wrapper {
     width: 100%;
@@ -103,9 +98,7 @@
     min-height: 1px;
     min-width: 1px;
     float: left;
-    
 }
-
 .no-js .soliloquy-container .soliloquy-slides>li:first-child, .soliloquy-container .soliloquy-item.soliloquy-active-slide {
     display: block;
 }
@@ -129,13 +122,6 @@
     outline: 0;
     width: 100%;
     position: relative;
-}
-.soliloquy-container .soliloquy-clone {
-   display: block;
-   
-}
-.soliloquy-carousel .soliloquy-container .soliloquy-clone {
-    display: block;
 }
 .soliloquy-container .soliloquy-image {
     max-width: 100%;
@@ -361,7 +347,7 @@
 /**
 * RTL
 */
-.soliloquy-rtl {	
+.soliloquy-rtl {
 	/**
 	* Pager
 	* - add margin to first child
@@ -372,7 +358,8 @@
 	}
 	.soliloquy-pager-item:last-child {
 		margin-left: 0;
-	}	
+	}
+	
 	/**
 	* Direction Controls
 	* - swap left + right controls over
@@ -396,41 +383,7 @@
 		float: right !important;
 	}
 }
-.rtl{
-	/**
-	* Pager
-	* - add margin to first child
-	* - remove margin from last child
-	*/
-	.soliloquy-pager-item:first-child {
-		margin-left: 7px;
-	}
-	.soliloquy-pager-item:last-child {
-		margin-left: 0;
-	}	
-	/**
-	* Direction Controls
-	* - swap left + right controls over
-	*/
-	.soliloquy-next {
-		left: 10px;
-		right: auto;
-		background-image: url(images/left.png);
-	}
-	.soliloquy-prev {
-		right: 10px;
-		left: auto;
-		background-image: url(images/right.png);
-	}
-	
-	/**
-	* Thumbnails
-	* - float right so they display
-	*/
-	.soliloquy-thumbnails-item {
-		float: right !important;
-	}
-}
+
 /**
 * Thumbnails
 */
@@ -476,9 +429,6 @@
         .soliloquy-container {
             position: absolute;
             z-index: 1;
-			&.soliloquy-fullscreen{
-				position: relative;
-			}
         }
 
         /**
@@ -528,7 +478,7 @@
             }
         }
     }  
-	
+
     /**
     * Thumbnails: Left
     */
@@ -552,46 +502,6 @@
             float: right;
         }
     }
-}
-.soliloquy-fullscreen-outer-container.soliloquy-thumbnails-position-bottom{
-	.soliloquy-thumbnails-container{
-		z-index: 3;
-		position: absolute;
-		bottom: 70px;
-		max-width: 100% !important;
-	}
-}
-.soliloquy-fullscreen-outer-container.soliloquy-thumbnails-position-top{
-	.soliloquy-thumbnails-container{
-		z-index: 3;
-		position: absolute;
-		top: 70px;
-		max-width: 100% !important;
-	}
-}
-.soliloquy-fullscreen-outer-container.soliloquy-thumbnails-position-left{
-
-	.soliloquy-thumbnails-container{
-		z-index: 3;
-		position: absolute;
-		left: 70px;
-		float: none;
-		top:25%;
-		transform: translateY(-50%);
-
-	}
-}
-.soliloquy-fullscreen-outer-container.soliloquy-thumbnails-position-right{
-	.soliloquy-thumbnails-container{
-		z-index: 3;
-		position: absolute;
-		right: 70px;
-		float: none;
-		left: auto;
-		text-align: right;
-		top:25%;	
-		transform: translateY(-50%);
-	}
 }
 
 /**
@@ -644,28 +554,7 @@
     .soliloquy-container .soliloquy-pager {
     	display: none;
 	}
-.soliloquy-fullscreen-outer-container.soliloquy-thumbnails-position-left{
-	.soliloquy-thumbnails-container{
-		left: 0px;
-		top: 25%;
-		transform: translateY(-50%);	
-		.soliloquy-wrapper{
-			max-width: 25% !important;
-		}	
-	}
-}
-.soliloquy-fullscreen-outer-container.soliloquy-thumbnails-position-right{
-	.soliloquy-thumbnails-container{
-		z-index: 3;
-		right: 20px;
-		text-align: right;
-		top: 25%;
-		transform: translateY(-50%);
-		.soliloquy-wrapper{
-			max-width: 25% !important;
-		}
-	}
-}	
+	
 	/**
 	* Force caption to display if enabled
 	*/

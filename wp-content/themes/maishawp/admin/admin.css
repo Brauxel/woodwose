@@ -144,7 +144,8 @@
 	padding: 15px 0;
 	text-align: left;
 }
-.recommend h4 {
+.recommend h4, 
+.recommend p.center {
 	text-align: center;
 }
 .documentation {

@@ -79,6 +79,7 @@ if (!function_exists('maisha_display_theme_page')) {
 							<h4>
 								<?php esc_html_e('Recommended Plugins', 'maisha'); ?>
 							</h4>
+							<p class="center"><?php esc_html_e('Plugins listed are not mandatory for theme to work! Install only the ones you need for your website!', 'maisha'); ?></p>
 							<!-- Give -->
 							<div class="maisha-tab-pane-half maisha-tab-pane-first-half">
 							<p><strong><?php esc_html_e( 'Give', 'maisha' ); ?></strong></p>
@@ -263,6 +264,22 @@ if (!function_exists('maisha_display_theme_page')) {
 							<?php
 							}
 							?>
+							<!-- Custom Google Fonts Plugin -->
+							<p><strong><?php esc_html_e( 'Custom Google Fonts Plugin', 'maisha' ); ?></strong></p>
+
+							<?php if ( is_plugin_active( 'AnarielDesign-GoogleFonts/ad_gfp.php' ) ) { ?>
+
+							<p><span class="maisha-activated button"><?php esc_html_e( 'Already activated', 'maisha' ); ?></span></p>
+
+							<?php
+							}
+							else { ?>
+
+							<p class="bg2"><?php esc_html_e( 'Plugin can be found inside the plugins folder within the main folder you downloaded', 'maisha' ); ?></p>
+
+							<?php
+							}
+							?>
 							</div>
 						</div>
 						<div class="clear"></div>
@@ -273,9 +290,9 @@ if (!function_exists('maisha_display_theme_page')) {
 							<p class="about">
 								<?php printf(esc_html__('Build Your Dream WordPress Site with Premium Niche Themes for Bloggers & Charities',  'maisha'), $theme_data->Name); ?>
 							</p>
-							<a href="<?php echo esc_url('http://www.anarieldesign.com/themes/'); ?>"><img src="http://www.anarieldesign.com/themedemos/marketimages/anarieldesign-themes.jpg" alt="<?php esc_html_e('Theme Screenshot', 'maisha'); ?>" /></a>
+							<a target="_blank" href="<?php echo esc_url('http://www.anarieldesign.com/themes/'); ?>"><img src="http://www.anarieldesign.com/themedemos/marketimages/anarieldesign-themes.jpg" alt="<?php esc_html_e('Theme Screenshot', 'maisha'); ?>" /></a>
 							<p>
-								<a href="<?php echo esc_url('http://www.anarieldesign.com/themes/'); ?>" class="button button-primary advertising">
+								<a target="_blank" href="<?php echo esc_url('http://www.anarieldesign.com/themes/'); ?>" class="button button-primary advertising">
 									<?php esc_html_e('More Themes', 'maisha'); ?>
 								</a>
 							</p>

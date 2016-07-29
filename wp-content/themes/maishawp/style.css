@@ -4,7 +4,7 @@ Theme URI: http://www.anarieldesign.com/themes/
 Author: Anariel Design
 Author URI: http://www.anarieldesign.com/
 Description: Maisha is a beautiful charity WordPress theme inspired by "Virunga" documentary. It is modern, responsive and mobile friendly theme. So, no worries there, Google will love it. Theme offers whole variety of cool features like different blog layouts, different header options, extensive color options and more. It is all very easily customizable directly from the WordPress Customizer. Maisha also comes with number of page templates and includes a couple specially styled to support hugely popular plugins like bbPress, BuddyPress, WooCommerce and The Events Calendar. Above all it is very easy to use, coded according to the latest standards and SEO friendly.
-Version: 1.2.7
+Version: 1.2.8
 License: GNU General Public License v2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Tags:two-columns, left-sidebar, right-sidebar, grid-layout, custom-background, accessibility-ready, custom-colors, custom-header, custom-menu, editor-style, featured-images, microformats, post-formats, rtl-language-support, sticky-post, threaded-comments, footer-widgets
@@ -706,19 +706,22 @@ a:hover {
 	vertical-align: middle;
 }
 
-.navigation-main {
+.navigation-main,
+.main-small-navigation {
 	display: block;
 	font-size: 13px;
 	font-size: 1.3rem;
 }
 
-.navigation-main ul {
+.navigation-main ul,
+.main-small-navigation ul {
 	list-style: none;
 	padding-left: 0;
 	margin: 0;
 }
 
-.navigation-main li {
+.navigation-main li,
+.main-small-navigation li {
 	font-family: 'Raleway', arial, sans-serif;
 	font-weight: 500;
 	display: inline-block;
@@ -726,7 +729,8 @@ a:hover {
 	text-align: right;
 }
 
-.navigation-main a {
+.navigation-main a,
+.main-small-navigation a {
 	color: #333;
 	display: inline-block;
 	padding: 0 15px;
@@ -738,20 +742,30 @@ a:hover {
 	transition: .07s ease-in;
 }
 
-.navigation-main a:hover {
+.navigation-main a:hover,
+.main-small-navigation a:hover {
 	color: #f7931d;
 }
 
-.navigation-main .current_page_item > a, .navigation-main .current-menu-item > a, .navigation-main .current_page_ancestor > a {
+.navigation-main .current_page_item > a, 
+.navigation-main .current-menu-item > a, 
+.navigation-main .current_page_ancestor > a,
+.main-small-navigation .current_page_item > a,
+.main-small-navigation .current-menu-item > a, 
+.main-small-navigation .current_page_ancestor > a {
 	color: #000;
 	font-weight: bold;
 }
 
-.navigation-main li.current_page_item li a, .navigation-main li.current_page_item li li a {
+.navigation-main li.current_page_item li a, 
+.navigation-main li.current_page_item li li a,
+.main-small-navigation li.current_page_item li a, 
+.main-small-navigation li.current_page_item li li a {
 	color: #707070;
 }
 
-.navigation-main ul ul {
+.navigation-main ul ul,
+.main-small-navigation ul ul {
 	background-color: #f6f6f6;
 	float: left;
 	position: absolute;
@@ -761,26 +775,36 @@ a:hover {
 }
 
 .navigation-main ul li:hover > ul,
-.navigation-main ul li.focus > ul {
+.navigation-main ul li.focus > ul,
+.main-small-navigation ul li:hover > ul,
+.main-small-navigation ul li.focus > ul {
 	left: auto;
 }
 .navigation-main ul ul li:hover > ul,
-.navigation-main ul ul li.focus > ul {
+.navigation-main ul ul li.focus > ul,
+.main-small-navigation ul ul li:hover > ul,
+.main-small-navigation ul ul li.focus > ul {
 	right: 100%;
 }
 
-.navigation-main li li, .navigation-main li li li {
+.navigation-main li li, 
+.navigation-main li li li,
+.main-small-navigation li li, 
+.main-small-navigation li li li {
 	display: block;
 	border: none;
 }
 
-.navigation-main ul ul ul {
+.navigation-main ul ul ul,
+.main-small-navigation ul ul ul {
 	z-index: 13;
 	top: 0;
 }
 
 .navigation-main ul ul a,
-.navigation-main ul ul ul a {
+.navigation-main ul ul ul a,
+.main-small-navigation ul ul a,
+.main-small-navigation ul ul ul a {
 	font-size: 14px;
 	font-size: 1.4rem;
 	line-height: 20px;
@@ -793,11 +817,14 @@ a:hover {
 }
 
 .navigation-main ul li:hover > ul,
-.navigation-main ul li.focus > ul {
+.navigation-main ul li.focus > ul,
+.main-small-navigation ul li:hover > ul,
+.main-small-navigation ul li.focus > ul {
 	display: block;
 }
 
-.navigation-main ul li.menu-item-has-children > a:after {
+.navigation-main ul li.menu-item-has-children > a:after,
+.main-small-navigation ul li.menu-item-has-children > a:after {
 	color: #707070;
 	content: '\f502';
 	font-family: 'Genericons';
@@ -816,12 +843,16 @@ a:hover {
 }
 
 .navigation-main ul li.current_page_item.menu-item-has-children > a:after,
-.navigation-main ul ul li.current_page_item.menu-item-has-children > a:after {
+.navigation-main ul ul li.current_page_item.menu-item-has-children > a:after,
+.main-small-navigation ul li.current_page_item.menu-item-has-children > a:after,
+.main-small-navigation ul ul li.current_page_item.menu-item-has-children > a:after {
 	color: #000;
 }
 
 .navigation-main ul li.menu-item-has-children > a,
-.navigation-main ul ul li.menu-item-has-children > a {
+.navigation-main ul ul li.menu-item-has-children > a,
+.main-small-navigation ul li.menu-item-has-children > a,
+.main-small-navigation ul ul li.menu-item-has-children > a {
 	padding: 10px 0 10px 15px;
 }
 
@@ -830,12 +861,34 @@ a:hover {
 .navigation-main li li.current_page_item > a, 
 .navigation-main li li.current-menu-item > a,
 .navigation-main li li li.current_page_item > a, 
-.navigation-main li li li.current-menu-item > a {
+.navigation-main li li li.current-menu-item > a,
+.main-small-navigation ul ul a:hover,
+.main-small-navigation ul ul ul a:hover, 
+.main-small-navigation li li.current_page_item > a, 
+.main-small-navigation li li.current-menu-item > a,
+.main-small-navigation li li li.current_page_item > a, 
+.main-small-navigation li li li.current-menu-item > a  {
 	background-color: #fff;
 }
 
-/* Small menu */
+.menu-toggle {
+	display: none;
+}
 
+@media screen and (max-width: 1300px) {
+.navigation-main a {
+	padding: 0 5px;
+}
+}
+@media screen and (max-width: 1150px) {
+.navigation-main a {
+	font-size: 12px;
+	font-size: 1.2rem;
+	padding: 0 5px;
+}
+}
+@media screen and (max-width: 955px) {
+/* Small menu */
 .menu-toggle {
 	background: #fff;
 	display: none;
@@ -859,14 +912,29 @@ a:hover {
 	background-color: #f5f4f4;
 	padding: 20px 0;
 	text-align: left;
-	margin-top: 30px;
+	margin: 20px 0 30px 0;
 }
 
 .main-small-navigation a {
 	display: block;
 	color: #000;
+	letter-spacing: 0;
 	padding: 8px 0;
 	border-bottom: 1px solid #fff;
+	text-transform: none;
+}
+
+.main-small-navigation ul li.menu-item-has-children > a:after {
+	display: none;
+}
+
+.main-small-navigation ul ul a:hover, 
+.main-small-navigation ul ul ul a:hover, 
+.main-small-navigation li li.current_page_item > a, 
+.main-small-navigation li li.current-menu-item > a, 
+.main-small-navigation li li li.current_page_item > a, 
+.main-small-navigation li li li.current-menu-item > a {
+	background-color: transparent;
 }
 
 .main-small-navigation ul {
@@ -875,33 +943,38 @@ a:hover {
 }
 
 .main-small-navigation li {
+	display: block;
 	border-top: 1px solid rgba(255, 255, 255, 0.1);
 	padding: 0 43px;
+	text-align: inherit;
 }
-
+.main-small-navigation ul ul,
+.main-small-navigation ul ul ul {
+	background-color: transparent;
+	float: none;
+	position: relative;
+	top: auto;
+	left: auto;
+	z-index: 0;
+}
 .main-small-navigation ul ul {
 	display: block;
 	margin-left: 20px;
 }
-
+.main-small-navigation ul ul a, 
+.main-small-navigation ul ul ul a {
+	padding: 8px 0;
+}
 .main-small-navigation li li {
 	border-top: 0;
 	padding: 0;
 }
-
-@media screen and (max-width: 1300px) {
-.navigation-main a {
-	padding: 0 5px;
+.navigation-main ul ul a, 
+.navigation-main ul ul ul a, 
+.main-small-navigation ul ul a, 
+.main-small-navigation ul ul ul a {
+	width: 100%;
 }
-}
-@media screen and (max-width: 1150px) {
-.navigation-main a {
-	font-size: 12px;
-	font-size: 1.2rem;
-	padding: 0 5px;
-}
-}
-@media screen and (max-width: 955px) {
 .menu-toggle {
 	display: inline-block;
 	position: relative;
@@ -963,6 +1036,22 @@ a:hover {
 	float: none;
 	text-align: center;
 	width: 100%;
+}
+.main-small-navigation ul ul li:hover > ul,
+.main-small-navigation ul ul li.focus > ul {
+	right: auto;
+}
+.navigation-main ul ul ul,
+.main-small-navigation ul ul ul {
+	z-index: 0;
+	top: auto;
+}
+.main-small-navigation ul li:hover > ul,
+.main-small-navigation ul li.focus > ul {
+	display: block;
+}
+.main-small-navigation a:hover {
+	color: #000;
 }
 }
 

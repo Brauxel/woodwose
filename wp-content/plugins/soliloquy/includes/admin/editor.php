@@ -109,8 +109,6 @@ class Soliloquy_Editor {
      */
     public function get_slider_selection_modal() {
 
-        global $post;
-
         // Return early if already loaded.
         if ( $this->loaded ) {
             return '';
@@ -119,7 +117,7 @@ class Soliloquy_Editor {
         // Set the loaded flag to true.
         $this->loaded = true;
 
-        // Get sliders
+        global $post;
         $sliders = $this->base->get_sliders();
 
         ob_start();
@@ -137,35 +135,28 @@ class Soliloquy_Editor {
                             <div class="media-frame-content">
                                 <div class="attachments-browser">
                                     <ul class="soliloquy-meta attachments" style="padding-left: 8px; top: 1em;">
-                                        <?php 
-                                        foreach ( (array) $sliders as $slider ) {
-                                            if ( isset( $post->ID ) && $post->ID == $slider['id'] ) {
-                                                continue;
-                                            }
-                                            ?>
-                                            <li class="attachment" data-soliloquy-id="<?php echo absint( $slider['id'] ); ?>" style="margin: 8px;">
-                                                <div class="attachment-preview">
-                                                    <div class="thumbnail">
-                                                        <div class="inside">
-                                                            <?php
-                                                            if ( ! empty( $slider['config']['title'] ) ) {
-                                                                $title = $slider['config']['title'];
-                                                            } else if ( ! empty( $slider['config']['slug'] ) ) {
-                                                                $title = $slider['config']['title'];
-                                                            } else {
-                                                                $title = sprintf( __( 'Slider ID #%s', 'soliloquy' ), $slider['id'] );
-                                                            }
-                                                            ?>
-                                                            <h3 style="margin: 0;"><?php echo $title; ?></h3>
-                                                            <code>[soliloquy id="<?php echo absint( $slider['id'] ); ?>"]</code>
-                                                        </div>
+                                        <?php foreach ( (array) $sliders as $slider ) : if ( $post->ID == $slider['id'] ) continue; ?>
+                                        <li class="attachment" data-soliloquy-id="<?php echo absint( $slider['id'] ); ?>" style="margin: 8px;">
+                                            <div class="attachment-preview">
+                                                <div class="thumbnail">
+                                                    <div class="inside">
+                                                        <?php
+                                                        if ( ! empty( $slider['config']['title'] ) ) {
+                                                            $title = $slider['config']['title'];
+                                                        } else if ( ! empty( $slider['config']['slug'] ) ) {
+                                                            $title = $slider['config']['title'];
+                                                        } else {
+                                                            $title = sprintf( __( 'Slider ID #%s', 'soliloquy' ), $slider['id'] );
+                                                        }
+                                                        ?>
+                                                        <h3 style="margin: 0;"><?php echo $title; ?></h3>
+                                                        <code>[soliloquy id="<?php echo absint( $slider['id'] ); ?>"]</code>
                                                     </div>
-                                                    <a class="check" href="#"><div class="media-modal-icon"></div></a>
                                                 </div>
-                                            </li>
-                                            <?php
-                                        }
-                                        ?>
+                                                <a class="check" href="#"><div class="media-modal-icon"></div></a>
+                                            </div>
+                                        </li>
+                                        <?php endforeach; ?>
                                     </ul>
                                     <!-- end .soliloquy-meta -->
                                     <div class="media-sidebar">

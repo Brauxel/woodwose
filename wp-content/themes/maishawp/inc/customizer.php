@@ -718,7 +718,7 @@ function maisha_customizer_js() {
 		'title'	=> esc_html__('Theme Related Links:', 'maisha'),
 		'themeURL' => esc_url('http://www.anarieldesign.com/themes/non-profit-wordpress-theme/'),
 		'themeLabel' => esc_html__('Theme Info Page', 'maisha'),
-		'docsURL' => esc_url('http://www.anarieldesign.com/documentation/maishalite/'),
+		'docsURL' => esc_url('http://www.anarieldesign.com/documentation/maisha/'),
 		'docsLabel'	=> esc_html__('Theme Documentation', 'maisha'),
 		'rateURL' => esc_url('https://www.youtube.com/watch?v=ghkO-luikII'),
 		'rateLabel'	=> esc_html__('Video Presentation', 'maisha'),

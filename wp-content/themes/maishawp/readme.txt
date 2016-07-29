@@ -8,8 +8,11 @@ Copyright: Automattic, automattic.com
 
 Maisha is distributed under the terms of the GNU GPL
 
+1.2.8 - July 28, 2016
+- small clearings inside the style.css
+- custom Google Fonts plugin is added to the “plugins” folder inside the main download folder
 1.2.7 - July 12, 2016
-- fix for the menu on the @media screen and (max-width: 955px) inside the stlye.css
+- fix for the menu on the @media screen and (max-width: 955px) inside the style.css
 - better Give plugin support - theme is styled for the Give donation plugin, new Give causes page - changes inside the style.css, added “give” folder and archive-give_forms.php file 
 1.2.6 - June 14,2016
 

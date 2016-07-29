@@ -2,5 +2,7 @@
 jQuery(document).ready(function() {
     "use strict";
 	
-	jQuery(".fancybox").fancybox();
+	jQuery(".fancybox").fancybox({
+		openSpeed : 'normal'
+	});
 });
