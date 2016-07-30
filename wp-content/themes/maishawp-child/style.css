@@ -173,17 +173,10 @@
 		width:100%;
 	}
 	#tracability img {
-		-ms-transform: rotate(90deg); /* IE 9 */
-		-webkit-transform: rotate(90deg); /* Chrome, Safari, Opera */
-		transform: rotate(90deg);
-		margin:0 auto;
 		float:none;
-		width:17px;
-		height:122px;
-		display:block;
-	}
-	#tracability img.divider {
-		display:none;
+		height:auto;
+		width:auto;
+		margin:20px auto;
 	}
 	#tracability .desktop {
 		display:none;
@@ -200,5 +193,30 @@
 		width:305px;
 		height:335px;
 		background-image:url(images/tracability/responsive/cotton-plant.png);
+	}
+	#tracability .mobile .cotton-plant {
+		width:305px;
+		height:335px;
+		background-image:url(images/tracability/responsive/cotton-plant.png);
+	}
+	#tracability .mobile .cloth {
+		width:305px;
+		height:354px;
+		background-image:url(images/tracability/responsive/cloth.png);
+	}
+	#tracability .mobile .dye {
+		width:305px;
+		height:292px;
+		background-image:url(images/tracability/responsive/dye.png);
+	}
+	#tracability .mobile .stitch {
+		width:305px;
+		height:259px;
+		background-image:url(images/tracability/responsive/stitch.png);
+	}
+	#tracability .mobile .final-product {
+		width:305px;
+		height:306px;
+		background-image:url(images/tracability/responsive/final-product.png);
 	}
 }

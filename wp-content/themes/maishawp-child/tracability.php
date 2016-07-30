@@ -63,17 +63,83 @@
         </div>
         
         <div class="mobile">
-            <a class="cotton-plant" href="#" rel="cotton-plant">Cotton &amp; Bamboo</a>
-            <section id="cotton-plant">
-                <p><strong>Wildman sources his fibers from farms that are certified by the National Programme for Organic Production (NPOP).</strong> This means only non-GMO* seeds are used and the organic products are grown without the use of any chemical fertilizers and pesticides.</p>
-                <h4>WILDMAN EXPLAINS WHY THIS GOOD FOR YOU &amp; PLANET</h4>
-                <ul>
-                    <li>Only the softest and purest fibers are used for the products</li>
-                    <li>This method of farming helps to keep the soil healthy and preserve the regenerative capacity of the soil</li>
-                    <li>These farms are ecologically and socially responsible</li>
-                </ul>
-                <p><span style="font-size:12px;"><em>* GMO – Genetically modified organisms</em></span></p>
-            </section>
+        	<div class="container">
+                <a class="cotton-plant" href="#" rel="cotton-plant">Cotton &amp; Bamboo</a>
+                <section id="cotton-plant">
+                    <p><strong>Wildman sources his fibers from farms that are certified by the National Programme for Organic Production (NPOP).</strong> This means only non-GMO* seeds are used and the organic products are grown without the use of any chemical fertilizers and pesticides.</p>
+                    <h4>WILDMAN EXPLAINS WHY THIS GOOD FOR YOU &amp; PLANET</h4>
+                    <ul>
+                        <li>Only the softest and purest fibers are used for the products</li>
+                        <li>This method of farming helps to keep the soil healthy and preserve the regenerative capacity of the soil</li>
+                        <li>These farms are ecologically and socially responsible</li>
+                    </ul>
+                    <p><span style="font-size:12px;"><em>* GMO – Genetically modified organisms</em></span></p>
+                </section>
+			</div>
+            
+            <img src="http://localhost/woodwose/wp-content/themes/maishawp-child/images/tracability/responsive/arrow.png" height="38" width="305">
+
+        	<div class="container">
+	            <a class="cloth" href="#" rel="fabric-roll">Fabric Roll</a>
+                <section id="fabric-roll">
+                    <p><strong>Wildman sources his fibers from farms that are certified by the National Programme for Organic Production (NPOP).</strong> This means only non-GMO* seeds are used and the organic products are grown without the use of any chemical fertilizers and pesticides.</p>
+                    <h4>WILDMAN EXPLAINS WHY THIS GOOD FOR YOU &amp; PLANET</h4>
+                    <ul>
+                        <li>Only the softest and purest fibers are used for the products</li>
+                        <li>This method of farming helps to keep the soil healthy and preserve the regenerative capacity of the soil</li>
+                        <li>These farms are ecologically and socially responsible</li>
+                    </ul>
+                    <p><span style="font-size:12px;"><em>* GMO – Genetically modified organisms</em></span></p>
+                </section>
+			</div>
+
+            <img src="http://localhost/woodwose/wp-content/themes/maishawp-child/images/tracability/responsive/arrow.png" height="38" width="305">
+
+        	<div class="container">
+                <a class="dye" href="#" rel="dye">Chemicals</a>
+                <section id="dye">
+                    <p><strong>Wildman sources his fibers from farms that are certified by the National Programme for Organic Production (NPOP).</strong> This means only non-GMO* seeds are used and the organic products are grown without the use of any chemical fertilizers and pesticides.</p>
+                    <h4>WILDMAN EXPLAINS WHY THIS GOOD FOR YOU &amp; PLANET</h4>
+                    <ul>
+                        <li>Only the softest and purest fibers are used for the products</li>
+                        <li>This method of farming helps to keep the soil healthy and preserve the regenerative capacity of the soil</li>
+                        <li>These farms are ecologically and socially responsible</li>
+                    </ul>
+                    <p><span style="font-size:12px;"><em>* GMO – Genetically modified organisms</em></span></p>
+                </section>
+			</div>
+
+            <img src="http://localhost/woodwose/wp-content/themes/maishawp-child/images/tracability/responsive/arrow.png" height="38" width="305">
+
+        	<div class="container">
+                <a class="stitch" href="#" rel="factory">Factory</a>
+                <section id="factory">
+                    <p><strong>Wildman sources his fibers from farms that are certified by the National Programme for Organic Production (NPOP).</strong> This means only non-GMO* seeds are used and the organic products are grown without the use of any chemical fertilizers and pesticides.</p>
+                    <h4>WILDMAN EXPLAINS WHY THIS GOOD FOR YOU &amp; PLANET</h4>
+                    <ul>
+                        <li>Only the softest and purest fibers are used for the products</li>
+                        <li>This method of farming helps to keep the soil healthy and preserve the regenerative capacity of the soil</li>
+                        <li>These farms are ecologically and socially responsible</li>
+                    </ul>
+                    <p><span style="font-size:12px;"><em>* GMO – Genetically modified organisms</em></span></p>
+                </section>
+			</div>
+
+            <img src="http://localhost/woodwose/wp-content/themes/maishawp-child/images/tracability/responsive/arrow.png" height="38" width="305">
+
+        	<div class="container">
+	            <a class="final-product" href="#" rel="final-product">T- Shirt</a>
+                <section id="final-product">
+                    <p><strong>Wildman sources his fibers from farms that are certified by the National Programme for Organic Production (NPOP).</strong> This means only non-GMO* seeds are used and the organic products are grown without the use of any chemical fertilizers and pesticides.</p>
+                    <h4>WILDMAN EXPLAINS WHY THIS GOOD FOR YOU &amp; PLANET</h4>
+                    <ul>
+                        <li>Only the softest and purest fibers are used for the products</li>
+                        <li>This method of farming helps to keep the soil healthy and preserve the regenerative capacity of the soil</li>
+                        <li>These farms are ecologically and socially responsible</li>
+                    </ul>
+                    <p><span style="font-size:12px;"><em>* GMO – Genetically modified organisms</em></span></p>
+                </section>
+			</div>
         <!-- div.mobile ENDS -->
         </div>
     </main>
