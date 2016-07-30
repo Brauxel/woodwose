@@ -89,3 +89,39 @@
 			text-decoration:underline;
 			text-align:center;
 		}
+		
+@media (max-width: 955px) {
+	.heading {
+		margin-top:0px;
+	}
+}
+
+@media (max-width: 850px) {
+	#tracability {
+		width:768px;
+		overflow:hidden;
+	}
+		#tracability a {
+			background-size:contain;
+		}
+		#tracability a.cotton-plant {
+			width:86px;
+			height:96px;
+		}
+		#tracability a.cloth {
+			width:97px;
+			height:115px;
+		}
+		#tracability a.dye {
+			width:122px;
+			height:116px;
+		}
+		#tracability a.stitch {
+			width:119px;
+			height:90px;
+		}
+		#tracability a.final-product {
+			width:312px;
+			height:341px;
+		}
+}
