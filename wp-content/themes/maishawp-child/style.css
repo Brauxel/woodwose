@@ -107,21 +107,98 @@
 		#tracability a.cotton-plant {
 			width:86px;
 			height:96px;
+			margin-top:10px;
 		}
 		#tracability a.cloth {
 			width:97px;
 			height:115px;
+			margin-top:5px;
 		}
 		#tracability a.dye {
 			width:122px;
 			height:116px;
+			margin-top:5px;
 		}
 		#tracability a.stitch {
 			width:119px;
 			height:90px;
+			margin-top:10px;
 		}
 		#tracability a.final-product {
 			width:312px;
 			height:341px;
 		}
+}
+@media (max-width: 770px) {
+	#tracability {
+		width:600px;
+	}
+		#tracability img {
+			height:96px;
+		}
+		#tracability img.divider {
+			height:2px;
+		}
+		#tracability a {
+			margin-left:34px;
+			margin-right:34px;
+		}
+		#tracability a.cotton-plant {
+			width:66px;
+			height:76px;
+			margin-top:10px;
+		}
+		#tracability a.cloth {
+			width:77px;
+			height:95px;
+			margin-top:5px;
+		}
+		#tracability a.dye {
+			width:102px;
+			height:96px;
+			margin-top:5px;
+		}
+		#tracability a.stitch {
+			width:99px;
+			height:70px;
+			margin-top:10px;
+		}
+		#tracability a.final-product {
+			width:292px;
+			height:321px;
+		}
+}
+@media (max-width: 600px) {
+	#tracability {
+		width:100%;
+	}
+	#tracability img {
+		-ms-transform: rotate(90deg); /* IE 9 */
+		-webkit-transform: rotate(90deg); /* Chrome, Safari, Opera */
+		transform: rotate(90deg);
+		margin:0 auto;
+		float:none;
+		width:17px;
+		height:122px;
+		display:block;
+	}
+	#tracability img.divider {
+		display:none;
+	}
+	#tracability .desktop {
+		display:none;
+	}
+	#tracability .mobile {
+		padding-left:7px;
+		padding-right:7px;
+	}
+	#tracability .mobile a {
+		margin:0 auto;
+		float:none;
+	}
+	#tracability .mobile .cotton-plant {
+		width:305px;
+		height:335px;
+		background-image:url(images/tracability/responsive/cotton-plant.png);
+	}
 }
