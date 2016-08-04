@@ -11,17 +11,17 @@
 	<main class="main" id="tracability" role="main">
     	<div class="desktop">
             <a class="cotton-plant fancybox" href="#inline-cotton-plant" title="Cotton &amp; Bamboo">Cotton &amp; Bamboo</a>
-            <img src="http://localhost/woodwose/wp-content/themes/maishawp-child/images/tracability/arrow.png" title="Arrow" alt="Arrow">
+            <img src="http://woodwose.in/wp-content/themes/maishawp-child/images/tracability/arrow.png" title="Arrow" alt="Arrow">
             
             <a class="cloth fancybox" href="#inline-fabric-roll" title="Fabric Roll">Fabric Roll</a>
-            <img src="http://localhost/woodwose/wp-content/themes/maishawp-child/images/tracability/arrow.png" title="Arrow" alt="Arrow">
+            <img src="http://woodwose.in/wp-content/themes/maishawp-child/images/tracability/arrow.png" title="Arrow" alt="Arrow">
     
             <a class="dye fancybox" href="#inline-chemicals" title="Chemicals">Chemicals</a>
-            <img src="http://localhost/woodwose/wp-content/themes/maishawp-child/images/tracability/arrow.png" title="Arrow" alt="Arrow">
+            <img src="http://woodwose.in/wp-content/themes/maishawp-child/images/tracability/arrow.png" title="Arrow" alt="Arrow">
     
             <a class="stitch fancybox" href="#inline-factory" title="Factory">Factory</a>
             <div class="clear"></div>
-            <img class="divider" src="http://localhost/woodwose/wp-content/themes/maishawp-child/images/tracability/divider.png" title="Divider" alt="Divider">
+            <img class="divider" src="http://woodwose.in/wp-content/themes/maishawp-child/images/tracability/divider.png" title="Divider" alt="Divider">
     
             <a class="final-product fancybox" href="#inline-t-shirt">T- Shirt</a>
             
@@ -57,6 +57,7 @@
             </section>
     
             <section id="inline-t-shirt" class="inline">
+	            <h4>WHAT THE WILDMAN GETS</h4>
                 <p>And finally, a product that not only looks great but is 100% sustainable.</p>
             </section>
         <!-- div.desktop ENDS -->
@@ -77,7 +78,7 @@
                 </section>
 			</div>
             
-            <img src="http://localhost/woodwose/wp-content/themes/maishawp-child/images/tracability/responsive/arrow.png" height="38" width="305">
+            <img src="http://woodwose.in/wp-content/themes/maishawp-child/images/tracability/responsive/arrow.png" height="38" width="305">
 
         	<div class="container">
 	            <a class="cloth" href="#" rel="fabric-roll">Fabric Roll</a>
@@ -93,7 +94,7 @@
                 </section>
 			</div>
 
-            <img src="http://localhost/woodwose/wp-content/themes/maishawp-child/images/tracability/responsive/arrow.png" height="38" width="305">
+            <img src="http://woodwose.in/wp-content/themes/maishawp-child/images/tracability/responsive/arrow.png" height="38" width="305">
 
         	<div class="container">
                 <a class="dye" href="#" rel="dye">Chemicals</a>
@@ -109,7 +110,7 @@
                 </section>
 			</div>
 
-            <img src="http://localhost/woodwose/wp-content/themes/maishawp-child/images/tracability/responsive/arrow.png" height="38" width="305">
+            <img src="http://woodwose.in/wp-content/themes/maishawp-child/images/tracability/responsive/arrow.png" height="38" width="305">
 
         	<div class="container">
                 <a class="stitch" href="#" rel="factory">Factory</a>
@@ -125,7 +126,7 @@
                 </section>
 			</div>
 
-            <img src="http://localhost/woodwose/wp-content/themes/maishawp-child/images/tracability/responsive/arrow.png" height="38" width="305">
+            <img src="http://woodwose.in/wp-content/themes/maishawp-child/images/tracability/responsive/arrow.png" height="38" width="305">
 
         	<div class="container">
 	            <a class="final-product" href="#" rel="final-product">T- Shirt</a>
