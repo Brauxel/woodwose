@@ -406,7 +406,7 @@ function bp_activity_set_action( $component_id, $type, $description, $format_cal
  * @param array  $args {
  *     An associative array of tracking parameters. All items are optional.
  *     @type string   $bp_activity_admin_filter String to use in the Dashboard > Activity dropdown.
- *     @type string   $bp_activity_front_filter String to use in frontend dropdown.
+ *     @type string   $bp_activity_front_filter String to use in the front-end dropdown.
  *     @type string   $bp_activity_new_post     String format to use for generating the activity action. Should be a
  *                                              translatable string where %1$s is replaced by a user link and %2$s is
  *                                              the URL of the newly created post.
@@ -837,6 +837,63 @@ function bp_activity_get_types() {
 	 * @param array $actions Array of registered activity types.
 	 */
 	return apply_filters( 'bp_activity_get_types', $actions );
+}
+
+/**
+ * Gets the current activity context.
+ *
+ * The "context" is the current view type, corresponding roughly to the
+ * current component. Use this context to determine which activity actions
+ * should be whitelisted for the filter dropdown.
+ *
+ * @since 2.8.0
+ *
+ * @return string Activity context. 'member', 'member_groups', 'group', 'activity'.
+ */
+function bp_activity_get_current_context() {
+	// On member pages, default to 'member', unless this is a user's Groups activity.
+	if ( bp_is_user() ) {
+		if ( bp_is_active( 'groups' ) && bp_is_current_action( bp_get_groups_slug() ) ) {
+			$context = 'member_groups';
+		} else {
+			$context = 'member';
+		}
+
+	// On individual group pages, default to 'group'.
+	} elseif ( bp_is_active( 'groups' ) && bp_is_group() ) {
+		$context = 'group';
+
+	// 'activity' everywhere else.
+	} else {
+		$context = 'activity';
+	}
+
+	return $context;
+}
+
+/**
+ * Gets a flat list of activity actions compatible with a given context.
+ *
+ * @since 2.8.0
+ *
+ * @param string $context Optional. Name of the context. Defaults to the current context.
+ * @return array
+ */
+function bp_activity_get_actions_for_context( $context = '' ) {
+	if ( ! $context ) {
+		$context = bp_activity_get_current_context();
+	}
+
+	$actions = array();
+	foreach ( bp_activity_get_actions() as $component_actions ) {
+		foreach ( $component_actions as $component_action ) {
+			if ( in_array( $context, (array) $component_action['context'], true ) ) {
+				$actions[] = $component_action;
+			}
+		}
+	}
+
+	return $actions;
 }
 
 /** Favorites ****************************************************************/
@@ -1445,7 +1502,7 @@ function bp_activity_generate_action_string( $activity ) {
 	$action = apply_filters( 'bp_activity_generate_action_string', $activity->action, $activity );
 
 	// Remove the filter for future activity items.
-	remove_filter( 'bp_activity_generate_action_string', $actions->{$activity->component}->{$activity->type}['format_callback'], 10, 2 );
+	remove_filter( 'bp_activity_generate_action_string', $actions->{$activity->component}->{$activity->type}['format_callback'], 10 );
 
 	return $action;
 }
@@ -1663,56 +1720,28 @@ function bp_activity_get( $args = '' ) {
 		 * );
 		 */
 		'filter' => array()
+	), 'activity_get' );
+
+	$activity = BP_Activity_Activity::get( array(
+		'page'              => $r['page'],
+		'per_page'          => $r['per_page'],
+		'max'               => $r['max'],
+		'sort'              => $r['sort'],
+		'search_terms'      => $r['search_terms'],
+		'meta_query'        => $r['meta_query'],
+		'date_query'        => $r['date_query'],
+		'filter_query'      => $r['filter_query'],
+		'filter'            => $r['filter'],
+		'scope'             => $r['scope'],
+		'display_comments'  => $r['display_comments'],
+		'show_hidden'       => $r['show_hidden'],
+		'exclude'           => $r['exclude'],
+		'in'                => $r['in'],
+		'spam'              => $r['spam'],
+		'update_meta_cache' => $r['update_meta_cache'],
+		'count_total'       => $r['count_total'],
+		'fields'            => $r['fields'],
 	) );
-
-	// Attempt to return a cached copy of the first page of sitewide activity.
-	if ( ( 1 === (int) $r['page'] ) && empty( $r['max'] ) && ( 'all' === $r['fields'] ) && empty( $r['search_terms'] ) && empty( $r['meta_query'] ) && empty( $r['date_query'] ) && empty( $r['filter_query'] ) && empty( $r['filter'] ) && empty( $r['scope'] )&& empty( $r['exclude'] ) && empty( $r['in'] ) && ( 'DESC' === $r['sort'] ) && empty( $r['exclude'] ) && ( 'ham_only' === $r['spam'] ) ) {
-
-		$activity = wp_cache_get( 'bp_activity_sitewide_front', 'bp' );
-		if ( false === $activity ) {
-
-			$activity = BP_Activity_Activity::get( array(
-				'page'              => $r['page'],
-				'per_page'          => $r['per_page'],
-				'max'               => $r['max'],
-				'fields'            => $r['fields'],
-				'sort'              => $r['sort'],
-				'search_terms'      => $r['search_terms'],
-				'meta_query'        => $r['meta_query'],
-				'date_query'        => $r['date_query'],
-				'filter_query'      => $r['filter_query'],
-				'filter'            => $r['filter'],
-				'scope'             => $r['scope'],
-				'display_comments'  => $r['display_comments'],
-				'show_hidden'       => $r['show_hidden'],
-				'spam'              => $r['spam'],
-				'update_meta_cache' => $r['update_meta_cache'],
-				'count_total'       => $r['count_total'],
-			) );
-
-			wp_cache_set( 'bp_activity_sitewide_front', $activity, 'bp' );
-		}
-
-	} else {
-		$activity = BP_Activity_Activity::get( array(
-			'page'             => $r['page'],
-			'per_page'         => $r['per_page'],
-			'max'              => $r['max'],
-			'sort'             => $r['sort'],
-			'search_terms'     => $r['search_terms'],
-			'meta_query'       => $r['meta_query'],
-			'date_query'       => $r['date_query'],
-			'filter_query'     => $r['filter_query'],
-			'filter'           => $r['filter'],
-			'scope'            => $r['scope'],
-			'display_comments' => $r['display_comments'],
-			'show_hidden'      => $r['show_hidden'],
-			'exclude'          => $r['exclude'],
-			'in'               => $r['in'],
-			'spam'             => $r['spam'],
-			'count_total'      => $r['count_total'],
-		) );
-	}
 
 	/**
 	 * Filters the requested activity item(s).
@@ -1752,7 +1781,7 @@ function bp_activity_get_specific( $args = '' ) {
 		'sort'              => 'DESC',     // Sort ASC or DESC
 		'spam'              => 'ham_only', // Retrieve items marked as spam.
 		'update_meta_cache' => true,
-	) );
+	), 'activity_get_specific' );
 
 	$get_args = array(
 		'display_comments'  => $r['display_comments'],
@@ -1898,10 +1927,13 @@ function bp_activity_add( $args = '' ) {
  * @since 1.2.0
  *
  * @param array|string $args {
- *     @type string $content The content of the activity update.
- *     @type int    $user_id Optional. Defaults to the logged-in user.
+ *     @type string $content    The content of the activity update.
+ *     @type int    $user_id    Optional. Defaults to the logged-in user.
+ *     @type string $error_type Optional. Error type to return. Either 'bool' or 'wp_error'. Defaults to
+ *                              'bool' for boolean. 'wp_error' will return a WP_Error object.
  * }
- * @return int $activity_id The activity id.
+ * @return int|bool|WP_Error $activity_id The activity id on success. On failure, either boolean false or WP_Error
+ *                                        object depending on the 'error_type' $args parameter.
  */
 function bp_activity_post_update( $args = '' ) {
 
@@ -2640,9 +2672,9 @@ function bp_activity_new_comment( $args = '' ) {
 		 *
 		 * @since 1.2.0
 		 *
-		 * @param int   $comment_id ID of the newly posted activity comment.
-		 * @param array $r          Array of parsed comment arguments.
-		 * @param int   $activity   ID of the activity item being commented on.
+		 * @param int                  $comment_id ID of the newly posted activity comment.
+		 * @param array                $r          Array of parsed comment arguments.
+		 * @param BP_Activity_Activity $activity   Activity item being commented on.
 		 */
 		do_action( 'bp_activity_comment_posted', $comment_id, $r, $activity );
 	} else {
@@ -2652,9 +2684,9 @@ function bp_activity_new_comment( $args = '' ) {
 		 *
 		 * @since 2.5.0
 		 *
-		 * @param int   $comment_id ID of the newly posted activity comment.
-		 * @param array $r          Array of parsed comment arguments.
-		 * @param int   $activity   ID of the activity item being commented on.
+		 * @param int                  $comment_id ID of the newly posted activity comment.
+		 * @param array                $r          Array of parsed comment arguments.
+		 * @param BP_Activity_Activity $activity   Activity item being commented on.
 		 */
 		do_action( 'bp_activity_comment_posted_notification_skipped', $comment_id, $r, $activity );
 	}
@@ -3138,6 +3170,24 @@ function bp_activity_thumbnail_content_images( $content, $link = false, $args = 
 }
 
 /**
+ * Gets the excerpt length for activity items.
+ *
+ * @since 2.8.0
+ *
+ * @return int Character length for activity excerpts.
+ */
+function bp_activity_get_excerpt_length() {
+	/**
+	 * Filters the excerpt length for the activity excerpt.
+	 *
+	 * @since 1.5.0
+	 *
+	 * @param int Character length for activity excerpts.
+	 */
+	return (int) apply_filters( 'bp_activity_excerpt_length', 358 );
+}
+
+/**
  * Create a rich summary of an activity item for the activity stream.
  *
  * More than just a simple excerpt, the summary could contain oEmbeds and other types of media.
@@ -3346,7 +3396,7 @@ function bp_activity_mark_as_spam( &$activity, $source = 'by_a_person' ) {
 
 	// If Akismet is active, and this was a manual spam/ham request, stop Akismet checking the activity.
 	if ( 'by_a_person' == $source && !empty( $bp->activity->akismet ) ) {
-		remove_action( 'bp_activity_before_save', array( $bp->activity->akismet, 'check_activity' ), 4, 1 );
+		remove_action( 'bp_activity_before_save', array( $bp->activity->akismet, 'check_activity' ), 4 );
 
 		// Build data package for Akismet.
 		$activity_data = BP_Akismet::build_akismet_data_package( $activity );
@@ -3393,7 +3443,7 @@ function bp_activity_mark_as_ham( &$activity, $source = 'by_a_person' ) {
 
 	// If Akismet is active, and this was a manual spam/ham request, stop Akismet checking the activity.
 	if ( 'by_a_person' == $source && !empty( $bp->activity->akismet ) ) {
-		remove_action( 'bp_activity_before_save', array( $bp->activity->akismet, 'check_activity' ), 4, 1 );
+		remove_action( 'bp_activity_before_save', array( $bp->activity->akismet, 'check_activity' ), 4 );
 
 		// Build data package for Akismet.
 		$activity_data = BP_Akismet::build_akismet_data_package( $activity );
@@ -3417,6 +3467,211 @@ function bp_activity_mark_as_ham( &$activity, $source = 'by_a_person' ) {
 	do_action( 'bp_activity_mark_as_ham', $activity, $source );
 }
 
+/* Emails *********************************************************************/
+
+/**
+ * Send email and BP notifications when a user is mentioned in an update.
+ *
+ * @since 1.2.0
+ *
+ * @param int $activity_id      The ID of the activity update.
+ * @param int $receiver_user_id The ID of the user who is receiving the update.
+ */
+function bp_activity_at_message_notification( $activity_id, $receiver_user_id ) {
+	$notifications = BP_Core_Notification::get_all_for_user( $receiver_user_id, 'all' );
+
+	// Don't leave multiple notifications for the same activity item.
+	foreach( $notifications as $notification ) {
+		if ( $activity_id == $notification->item_id ) {
+			return;
+		}
+	}
+
+	$activity     = new BP_Activity_Activity( $activity_id );
+	$email_type   = 'activity-at-message';
+	$group_name   = '';
+	$message_link = bp_activity_get_permalink( $activity_id );
+	$poster_name  = bp_core_get_user_displayname( $activity->user_id );
+
+	remove_filter( 'bp_get_activity_content_body', 'convert_smilies' );
+	remove_filter( 'bp_get_activity_content_body', 'wpautop' );
+	remove_filter( 'bp_get_activity_content_body', 'bp_activity_truncate_entry', 5 );
+
+	/** This filter is documented in bp-activity/bp-activity-template.php */
+	$content = apply_filters_ref_array( 'bp_get_activity_content_body', array( $activity->content, &$activity ) );
+
+	add_filter( 'bp_get_activity_content_body', 'convert_smilies' );
+	add_filter( 'bp_get_activity_content_body', 'wpautop' );
+	add_filter( 'bp_get_activity_content_body', 'bp_activity_truncate_entry', 5 );
+
+	// Now email the user with the contents of the message (if they have enabled email notifications).
+	if ( 'no' != bp_get_user_meta( $receiver_user_id, 'notification_activity_new_mention', true ) ) {
+		if ( bp_is_active( 'groups' ) && bp_is_group() ) {
+			$email_type = 'groups-at-message';
+			$group_name = bp_get_current_group_name();
+		}
+
+		$unsubscribe_args = array(
+			'user_id'           => $receiver_user_id,
+			'notification_type' => $email_type,
+		);
+
+		$args = array(
+			'tokens' => array(
+				'activity'         => $activity,
+				'usermessage'      => wp_strip_all_tags( $content ),
+				'group.name'       => $group_name,
+				'mentioned.url'    => $message_link,
+				'poster.name'      => $poster_name,
+				'receiver-user.id' => $receiver_user_id,
+				'unsubscribe' 	   => esc_url( bp_email_get_unsubscribe_link( $unsubscribe_args ) ),
+			),
+		);
+
+		bp_send_email( $email_type, $receiver_user_id, $args );
+	}
+
+	/**
+	 * Fires after the sending of an @mention email notification.
+	 *
+	 * @since 1.5.0
+	 * @since 2.5.0 $subject, $message, $content arguments unset and deprecated.
+	 *
+	 * @param BP_Activity_Activity $activity         Activity Item object.
+	 * @param string               $deprecated       Removed in 2.5; now an empty string.
+	 * @param string               $deprecated       Removed in 2.5; now an empty string.
+	 * @param string               $deprecated       Removed in 2.5; now an empty string.
+	 * @param int                  $receiver_user_id The ID of the user who is receiving the update.
+	 */
+	do_action( 'bp_activity_sent_mention_email', $activity, '', '', '', $receiver_user_id );
+}
+
+/**
+ * Send email and BP notifications when an activity item receives a comment.
+ *
+ * @since 1.2.0
+ * @since 2.5.0 Updated to use new email APIs.
+ *
+ * @param int   $comment_id   The comment id.
+ * @param int   $commenter_id The ID of the user who posted the comment.
+ * @param array $params       {@link bp_activity_new_comment()}.
+ */
+function bp_activity_new_comment_notification( $comment_id = 0, $commenter_id = 0, $params = array() ) {
+	$original_activity = new BP_Activity_Activity( $params['activity_id'] );
+	$poster_name       = bp_core_get_user_displayname( $commenter_id );
+	$thread_link       = bp_activity_get_permalink( $params['activity_id'] );
+
+	remove_filter( 'bp_get_activity_content_body', 'convert_smilies' );
+	remove_filter( 'bp_get_activity_content_body', 'wpautop' );
+	remove_filter( 'bp_get_activity_content_body', 'bp_activity_truncate_entry', 5 );
+
+	/** This filter is documented in bp-activity/bp-activity-template.php */
+	$content = apply_filters_ref_array( 'bp_get_activity_content_body', array( $params['content'], &$original_activity ) );
+
+	add_filter( 'bp_get_activity_content_body', 'convert_smilies' );
+	add_filter( 'bp_get_activity_content_body', 'wpautop' );
+	add_filter( 'bp_get_activity_content_body', 'bp_activity_truncate_entry', 5 );
+
+	if ( $original_activity->user_id != $commenter_id ) {
+
+		// Send an email if the user hasn't opted-out.
+		if ( 'no' != bp_get_user_meta( $original_activity->user_id, 'notification_activity_new_reply', true ) ) {
+
+			$unsubscribe_args = array(
+				'user_id'           => $original_activity->user_id,
+				'notification_type' => 'activity-comment',
+			);
+
+			$args = array(
+				'tokens' => array(
+					'comment.id'                => $comment_id,
+					'commenter.id'              => $commenter_id,
+					'usermessage'               => wp_strip_all_tags( $content ),
+					'original_activity.user_id' => $original_activity->user_id,
+					'poster.name'               => $poster_name,
+					'thread.url'                => esc_url( $thread_link ),
+					'unsubscribe'               => esc_url( bp_email_get_unsubscribe_link( $unsubscribe_args ) ),
+				),
+			);
+
+			bp_send_email( 'activity-comment', $original_activity->user_id, $args );
+		}
+
+		/**
+		 * Fires at the point that notifications should be sent for activity comments.
+		 *
+		 * @since 2.6.0
+		 *
+		 * @param BP_Activity_Activity $original_activity The original activity.
+		 * @param int                  $comment_id        ID for the newly received comment.
+		 * @param int                  $commenter_id      ID of the user who made the comment.
+		 * @param array                $params            Arguments used with the original activity comment.
+		 */
+		do_action( 'bp_activity_sent_reply_to_update_notification', $original_activity, $comment_id, $commenter_id, $params );
+	}
+
+
+	/*
+	 * If this is a reply to another comment, send an email notification to the
+	 * author of the immediate parent comment.
+	 */
+	if ( empty( $params['parent_id'] ) || ( $params['activity_id'] == $params['parent_id'] ) ) {
+		return;
+	}
+
+	$parent_comment = new BP_Activity_Activity( $params['parent_id'] );
+
+	if ( $parent_comment->user_id != $commenter_id && $original_activity->user_id != $parent_comment->user_id ) {
+
+		// Send an email if the user hasn't opted-out.
+		if ( 'no' != bp_get_user_meta( $parent_comment->user_id, 'notification_activity_new_reply', true ) ) {
+
+			$unsubscribe_args = array(
+				'user_id'           => $parent_comment->user_id,
+				'notification_type' => 'activity-comment-author',
+			);
+
+			$args = array(
+				'tokens' => array(
+					'comment.id'             => $comment_id,
+					'commenter.id'           => $commenter_id,
+					'usermessage'            => wp_strip_all_tags( $content ),
+					'parent-comment-user.id' => $parent_comment->user_id,
+					'poster.name'            => $poster_name,
+					'thread.url'             => esc_url( $thread_link ),
+					'unsubscribe'            => esc_url( bp_email_get_unsubscribe_link( $unsubscribe_args ) ),
+				),
+			);
+
+			bp_send_email( 'activity-comment-author', $parent_comment->user_id, $args );
+		}
+
+		/**
+		 * Fires at the point that notifications should be sent for comments on activity replies.
+		 *
+		 * @since 2.6.0
+		 *
+		 * @param BP_Activity_Activity $parent_comment The parent activity.
+		 * @param int                  $comment_id     ID for the newly received comment.
+		 * @param int                  $commenter_id   ID of the user who made the comment.
+		 * @param array                $params         Arguments used with the original activity comment.
+		 */
+		do_action( 'bp_activity_sent_reply_to_reply_notification', $parent_comment, $comment_id, $commenter_id, $params );
+	}
+}
+
+/**
+ * Helper method to map action arguments to function parameters.
+ *
+ * @since 1.9.0
+ *
+ * @param int   $comment_id ID of the comment being notified about.
+ * @param array $params     Parameters to use with notification.
+ */
+function bp_activity_new_comment_notification_helper( $comment_id, $params ) {
+	bp_activity_new_comment_notification( $comment_id, $params['user_id'], $params );
+}
+add_action( 'bp_activity_comment_posted', 'bp_activity_new_comment_notification_helper', 10, 2 );
 
 /** Embeds *******************************************************************/
 
@@ -3495,7 +3750,7 @@ add_action( 'bp_before_activity_comment', 'bp_activity_comment_embed' );
 function bp_dtheme_embed_read_more( $activity ) {
 	buddypress()->activity->read_more_id = $activity->id;
 
-	add_filter( 'embed_post_id',         create_function( '', 'return buddypress()->activity->read_more_id;' ) );
+	add_filter( 'embed_post_id',         function() { return buddypress()->activity->read_more_id; } );
 	add_filter( 'bp_embed_get_cache',    'bp_embed_activity_cache',      10, 3 );
 	add_action( 'bp_embed_update_cache', 'bp_embed_activity_save_cache', 10, 3 );
 }
@@ -3565,21 +3820,21 @@ function bp_embed_activity_save_cache( $cache, $cachekey, $id ) {
  *
  * @since 2.0.0
  *
- *       directory.
- *       is the group activities.
- *
  * @return bool True if activity heartbeat is enabled, otherwise false.
  */
 function bp_activity_do_heartbeat() {
 	$retval = false;
 
-	if ( ! bp_is_activity_heartbeat_active() ) {
-		return $retval;
-	}
-
-	if ( bp_is_activity_directory() || bp_is_group_activity() ) {
+	if ( bp_is_activity_heartbeat_active() && ( bp_is_activity_directory() || bp_is_group_activity() ) ) {
 		$retval = true;
 	}
 
-	return $retval;
+	/**
+	 * Filters whether the heartbeat feature in the activity stream should be active.
+	 *
+	 * @since 2.8.0
+	 *
+	 * @param bool $retval Whether or not activity heartbeat is active.
+	 */
+	return (bool) apply_filters( 'bp_activity_do_heartbeat', $retval );
 }

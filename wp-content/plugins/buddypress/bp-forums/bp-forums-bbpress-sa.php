@@ -149,7 +149,7 @@ function bp_forums_load_bbpress() {
 	 *
 	 * @since 1.1.0
 	 */
-	register_shutdown_function( create_function( '', 'do_action("bb_shutdown");' ) );
+	register_shutdown_function( function() { do_action( 'bb_shutdown' ); } );
 }
 add_action( 'bbpress_init', 'bp_forums_load_bbpress' );
 
@@ -236,8 +236,7 @@ if ( ! class_exists( 'BPDB' ) ) :
 		function __construct( $dbuser, $dbpassword, $dbname, $dbhost ) {
 			parent::__construct( $dbuser, $dbpassword, $dbname, $dbhost );
 
-			$args = func_get_args();
-			$args = call_user_func_array( array( &$this, 'init' ), $args );
+			$args = call_user_func_array( array( &$this, 'init' ), func_get_args() );
 
 			if ( $args['host'] )
 				$this->db_servers['dbh_global'] = $args;
@@ -283,13 +282,13 @@ if ( ! class_exists( 'BPDB' ) ) :
 		function init( $args ) {
 			if ( 4 == func_num_args() ) {
 				$args = array(
-						'user'     => $args,
-						'password' => func_get_arg( 1 ),
-						'name'     => func_get_arg( 2 ),
-						'host'     => func_get_arg( 3 ),
-						'charset'  => defined( 'BBDB_CHARSET' ) ? BBDB_CHARSET : false,
-						'collate'  => defined( 'BBDB_COLLATE' ) ? BBDB_COLLATE : false,
-					     );
+					'user'     => $args,
+					'password' => func_get_arg( 1 ),
+					'name'     => func_get_arg( 2 ),
+					'host'     => func_get_arg( 3 ),
+					'charset'  => defined( 'BBDB_CHARSET' ) ? BBDB_CHARSET : false,
+					'collate'  => defined( 'BBDB_COLLATE' ) ? BBDB_COLLATE : false,
+				);
 			}
 
 			$defaults = array(
@@ -310,14 +309,11 @@ if ( ! class_exists( 'BPDB' ) ) :
 		 *
 		 * @since 1.1.0
 		 *
-		 * @see WPDB::escape_deep() for description of parameters and
-		 *      return values.
-		 *
 		 * @param mixed $data See {@link WPDB::escape_deep()}.
 		 * @return mixed $data See {@link WPDB::escape_deep()}.
 		 */
 		function escape_deep( $data ) {
-			return $this->escape( $data );
+			return esc_sql( $data );
 		}
 	}
 endif; // End class_exists( 'BPDB' ).

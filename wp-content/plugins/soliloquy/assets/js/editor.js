@@ -28,7 +28,7 @@
  *    object for the "soliloquySliderModalData" event, like this:
  *
  *    $(document).on("soliloquySliderModalData", function(e){
- *        console.log(e.slider);
+ *        //console.log(e.slider);
  *    });
  *
  *    This will give you access to the entire array of slider data that

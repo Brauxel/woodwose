@@ -7,6 +7,12 @@
  * @package Soliloquy
  * @author  Thomas Griffin
  */
+
+ // Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
 class Soliloquy_Widget extends WP_Widget {
 
     /**
@@ -49,7 +55,7 @@ class Soliloquy_Widget extends WP_Widget {
 		// Widget options
 		$widget_ops = array(
             'classname'   => 'soliloquy',
-            'description' => __( 'Place a Soliloquy slider into a widgetized area.', 'soliloquy' )
+            'description' => esc_attr__( 'Place a Soliloquy slider into a widgetized area.', 'soliloquy' )
         );
         $widget_ops = apply_filters( 'soliloquy_widget_ops', $widget_ops );
 
@@ -61,7 +67,7 @@ class Soliloquy_Widget extends WP_Widget {
         );
         $control_ops = apply_filters( 'soliloquy_widget_control_ops', $control_ops );
 
-        parent::__construct( 'soliloquy', apply_filters( 'soliloquy_widget_name', __( 'Soliloquy', 'soliloquy' ) ), $widget_ops, $control_ops );
+        parent::__construct( 'soliloquy', apply_filters( 'soliloquy_widget_name', esc_attr__( 'Soliloquy', 'soliloquy' ) ), $widget_ops, $control_ops );
 
     }
 
@@ -138,31 +144,33 @@ class Soliloquy_Widget extends WP_Widget {
     public function form( $instance ) {
 
         // Get all avilable sliders and widget properties.
-        $sliders   = Soliloquy::get_instance()->get_sliders( false );
+        $sliders   = Soliloquy::get_instance()->get_sliders( false, true );
         $title     = isset( $instance['title'] ) ? $instance['title'] : '';
         $slider_id = isset( $instance['soliloquy_id'] ) ? $instance['soliloquy_id'] : false;
 
         do_action( 'soliloquy_widget_before_form', $instance );
         ?>
         <p>
-            <label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e( 'Title', 'soliloquy' ); ?></label>
+            <label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php esc_html_e( 'Title', 'soliloquy' ); ?></label>
             <input id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'title' ) ); ?>" type="text" value="<?php echo esc_attr( $title ); ?>" style="width: 100%;" />
         </p>
         <?php do_action( 'soliloquy_widget_middle_form', $instance ); ?>
         <p>
-            <label for="<?php echo $this->get_field_id( 'soliloquy_id' ); ?>"><?php _e( 'Slider', 'soliloquy' ); ?></label>
+            <label for="<?php echo $this->get_field_id( 'soliloquy_id' ); ?>"><?php esc_html_e( 'Slider', 'soliloquy' ); ?></label>
             <select id="<?php echo esc_attr( $this->get_field_id( 'soliloquy_id' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'soliloquy_id' ) ); ?>" style="width: 100%;">
                 <?php
-                foreach ( $sliders as $slider ) {
-                    if ( ! empty( $slider['config']['title'] ) ) {
-                        $title = $slider['config']['title'];
-                    } else if ( ! empty( $slider['config']['slug'] ) ) {
-                        $title = $slider['config']['title'];
-                    } else {
-                        $title = sprintf( __( 'Slider ID #%s', 'soliloquy' ), $slider['id'] );
-                    }
+                if ( is_array( $sliders ) ) {
+                    foreach ( $sliders as $slider ) {
+                        if ( ! empty( $slider['id'] ) ) {
+                            $title = get_the_title( $slider['id'] );
+                        } else if ( ! empty( $slider['config']['slug'] ) ) {
+                            $title = $slider['config']['title'];
+                        } else {
+                            $title = sprintf( esc_attr__( 'Slider ID #%s', 'soliloquy' ), $slider['id'] );
+                        }
 
-                    echo '<option value="' . $slider['id'] . '"' . selected( $slider['id'], $slider_id, false ) . '>' . $title . '</option>';
+                        echo '<option value="' . $slider['id'] . '"' . selected( $slider['id'], $slider_id, false ) . '>' . $title . '</option>';
+                    }
                 }
                 ?>
             </select>

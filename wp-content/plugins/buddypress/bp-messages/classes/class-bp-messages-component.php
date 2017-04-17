@@ -63,15 +63,13 @@ class BP_Messages_Component extends BP_Component {
 			'filters',
 			'template',
 			'functions',
-			'notifications',
 			'widgets',
 		);
 
-		if ( ! buddypress()->do_autoload ) {
-			$includes[] = 'classes';
-		}
-
 		// Conditional includes.
+		if ( bp_is_active( 'notifications' ) ) {
+			$includes[] = 'notifications';
+		}
 		if ( bp_is_active( $this->id, 'star' ) ) {
 			$includes[] = 'star';
 		}

@@ -70,6 +70,10 @@ function bp_get_template_part( $slug, $name = null ) {
  * @since 2.6.0
  *
  * @see bp_get_template_part() for full documentation.
+ *
+ * @param string      $slug Template slug.
+ * @param string|null $name Template name.
+ * @return string
  */
 function bp_get_asset_template_part( $slug, $name = null ) {
 	return bp_get_template_part( "assets/{$slug}", $name );
@@ -92,6 +96,11 @@ function bp_get_asset_template_part( $slug, $name = null ) {
  * @return string The template filename if one is located.
  */
 function bp_locate_template( $template_names, $load = false, $require_once = true ) {
+
+	// Bail when there are no templates to locate
+	if ( empty( $template_names ) ) {
+		return false;
+	}
 
 	// No file found yet.
 	$located            = false;
@@ -156,7 +165,7 @@ function bp_locate_template( $template_names, $load = false, $require_once = tru
  *
  * @since 2.6.0
  *
- * @param  string     Relative filename to search for.
+ * @param string $filename Relative filename to search for.
  * @return array|bool Array of asset data if one is located (includes absolute filepath and URI).
  *                    Boolean false on failure.
  */

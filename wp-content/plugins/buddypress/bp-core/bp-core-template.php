@@ -585,6 +585,71 @@ function bp_search_form_type_select() {
 }
 
 /**
+ * Output the 'name' attribute for search form input element.
+ *
+ * @since 2.7.0
+ *
+ * @param string $component See bp_get_search_input_name().
+ */
+function bp_search_input_name( $component = '' ) {
+	echo esc_attr( bp_get_search_input_name( $component ) );
+}
+
+/**
+ * Get the 'name' attribute for the search form input element.
+ *
+ * @since 2.7.0
+ *
+ * @param string $component Component name. Defaults to current component.
+ * @return string Text for the 'name' attribute.
+ */
+function bp_get_search_input_name( $component = '' ) {
+	if ( ! $component ) {
+		$component = bp_current_component();
+	}
+
+	$bp = buddypress();
+
+	$name = '';
+	if ( isset( $bp->{$component}->id ) ) {
+		$name = $bp->{$component}->id . '_search';
+	}
+
+	return $name;
+}
+
+/**
+ * Output the placeholder text for the search box for a given component.
+ *
+ * @since 2.7.0
+ *
+ * @param string $component See bp_get_search_placeholder().
+ */
+function bp_search_placeholder( $component = '' ) {
+	echo esc_attr( bp_get_search_placeholder( $component ) );
+}
+
+/**
+ * Get the placeholder text for the search box for a given component.
+ *
+ * @since 2.7.0
+ *
+ * @param string $component Component name. Defaults to current component.
+ * @return string Placeholder text for the search field.
+ */
+function bp_get_search_placeholder( $component = '' ) {
+	$query_arg = bp_core_get_component_search_query_arg( $component );
+
+	if ( $query_arg && ! empty( $_REQUEST[ $query_arg ] ) ) {
+		$placeholder = wp_unslash( $_REQUEST[ $query_arg ] );
+	} else {
+		$placeholder = bp_get_search_default_text( $component );
+	}
+
+	return $placeholder;
+}
+
+/**
  * Output the default text for the search box for a given component.
  *
  * @since 1.5.0
@@ -2399,7 +2464,7 @@ function bp_is_user_change_avatar() {
  *
  * Eg http://example.com/members/joe/profile/change-cover-image/ (or a subpage thereof).
  *
- * @since  2.4.0
+ * @since 2.4.0
  *
  * @return bool True if the current page is a user's profile edit cover image page.
  */
@@ -2621,7 +2686,7 @@ function bp_is_user_settings_profile() {
  * @return True if the current page is the groups directory.
  */
 function bp_is_groups_directory() {
-	if ( bp_is_groups_component() && ! bp_current_action() && ! bp_current_item() ) {
+	if ( bp_is_groups_component() && ! bp_is_group() && ( ! bp_current_action() || ( bp_action_variable() && bp_is_current_action( bp_get_groups_group_type_base() ) ) ) ) {
 		return true;
 	}
 
@@ -3154,7 +3219,7 @@ function bp_get_title_parts( $seplocation = 'right' ) {
 	 *
 	 * @since 2.4.3
 	 *
-	 * @param  array $bp_title_parts Current BuddyPress title parts
+	 * @param array $bp_title_parts Current BuddyPress title parts.
 	 * @return array
 	 */
 	return (array) apply_filters( 'bp_get_title_parts', $bp_title_parts );
@@ -3233,6 +3298,13 @@ function bp_the_body_class() {
 
 		if ( bp_is_user() ) {
 			$bp_classes[] = 'bp-user';
+
+			// Add current user member types.
+			if ( $member_types = bp_get_member_type( bp_displayed_user_id(), false ) ) {
+				foreach( $member_types as $member_type ) {
+					$bp_classes[] = sprintf( 'member-type-%s', esc_attr( $member_type ) );
+				}
+			}
 		}
 
 		if ( ! bp_is_directory() ) {
@@ -3246,6 +3318,10 @@ function bp_the_body_class() {
 
 			if ( bp_is_user_activity() ) {
 				$bp_classes[] = 'my-activity';
+			}
+		} else {
+			if ( bp_get_current_member_type() ) {
+				$bp_classes[] = 'type';
 			}
 		}
 
@@ -3319,6 +3395,13 @@ function bp_the_body_class() {
 
 		if ( bp_is_group() ) {
 			$bp_classes[] = 'group-' . groups_get_current_group()->slug;
+
+			// Add current group types.
+			if ( $group_types = bp_groups_get_group_type( bp_get_current_group_id(), false ) ) {
+				foreach ( $group_types as $group_type ) {
+					$bp_classes[] = sprintf( 'group-type-%s', esc_attr( $group_type ) );
+				}
+			}
 		}
 
 		if ( bp_is_group_leave() ) {
@@ -3724,9 +3807,9 @@ function bp_nav_menu( $args = array() ) {
 /**
  * Prints the Recipient Salutation.
  *
- * @since  2.5.0
+ * @since 2.5.0
  *
- * @param  array $settings Email Settings.
+ * @param array $settings Email Settings.
  */
 function bp_email_the_salutation( $settings = array() ) {
 	echo bp_email_get_salutation( $settings );
@@ -3735,9 +3818,9 @@ function bp_email_the_salutation( $settings = array() ) {
 	/**
 	 * Gets the Recipient Salutation.
 	 *
-	 * @since  2.5.0
+	 * @since 2.5.0
 	 *
-	 * @param  array  $settings Email Settings.
+	 * @param array $settings Email Settings.
 	 * @return string The Recipient Salutation.
 	 */
 	function bp_email_get_salutation( $settings = array() ) {
@@ -3746,7 +3829,7 @@ function bp_email_the_salutation( $settings = array() ) {
 		/**
 		 * Filters The Recipient Salutation inside the Email Template.
 		 *
-		 * @since  2.5.0
+		 * @since 2.5.0
 		 *
 		 * @param string $value    The Recipient Salutation.
 		 * @param array  $settings Email Settings.

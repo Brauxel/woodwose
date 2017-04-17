@@ -10,6 +10,12 @@
  * @package Soliloquy
  * @author  Tim Carr
  */
+ 
+ // Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
 class Soliloquy_Serialization_Admin {
 
     /**

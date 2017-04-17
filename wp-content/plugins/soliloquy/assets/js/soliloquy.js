@@ -1,3 +1,4 @@
+/*global soliloquy_ajax, MediaElementPlayer */
 /**
 * soliloquy.js is a placeholder, which CodeKit attaches the following JS files to, before compiling as min/soliloquy-min.js:
 * - lib/bxslider.js
@@ -6,8 +7,7 @@
 * To load more JS resources:
 * - Add them to the lib subfolder
 * - Add the to the imports directive of this file in CodeKit
-*/
-
+*/		
 // Mobile checker function.
 function soliloquyIsMobile() {
     var check = false;
@@ -18,18 +18,19 @@ function soliloquyIsMobile() {
 }
 
 // Video functions.
-function soliloquyYouTubeVids(data, id, width, height, holder, $){
+function soliloquyYouTubeVids(data, id, width, height, holder, $, $current){
     // Immediately make the holder visible and increase z-index to overlay the player icon.
     $('#' + holder).show().css({'display':'block','z-index':'1210'});
+	player = $current;
 
     // Load a new video into the slider.
     if ( YT.Player ) {
-        
+
         // Only init YouTube player if we haven't done so already for this video ID
         // If we have multiple sliders on a single page, this function is called twice,
         // so if we re-init the player a second time, everything breaks.
         if ( typeof soliloquy_youtube[id] === 'undefined' ) {
-            soliloquy_youtube[id] = new YT.Player(holder, {
+            soliloquy_youtube[id] = new YT.Player( holder, {
                 videoId:    id,
                 playerVars: data,
                 events: {
@@ -60,12 +61,13 @@ function soliloquyYouTubeOnStateChange(event){
 }
 function onYouTubeIframeAPIReady(){}
 function soliloquyVimeoVids(data, id, width, height, holder, $){
+
     // Immediately make the holder visible and increase z-index to overlay the player icon.
     $('#' + holder).show().css({'display':'block','z-index':'1210'});
-
     // Load a new video into the slider.
     if ( $f ) {
         var attrs = {};
+
         $.each($('#' + holder)[0].attributes, function(idx, attr){
             attrs[attr.nodeName] = attr.nodeValue;
         });
@@ -82,10 +84,29 @@ function soliloquyVimeoVids(data, id, width, height, holder, $){
 
         // Store a reference to the video object for use with the API.
         soliloquy_vimeo[id] = $f($('#' + holder)[0]);
+       	var slider_id = $('#' + holder).data('soliloquy-slider-id');
+
         soliloquy_vimeo[id].addEvent('ready', function(){
-            soliloquy_vimeo[id].addEvent('play', soliloquyVimeoSliderPause);
-            soliloquy_vimeo[id].addEvent('pause', soliloquyVimeoSliderStart);
-            soliloquy_vimeo[id].addEvent('finish', soliloquyVimeoSliderStart);
+	        //stopAuto when video ready, prevents autoplay while buffering
+	        if ( soliloquy_slider[slider_id] ) {
+				soliloquy_slider[slider_id].stopAuto();
+    		}
+        	soliloquy_vimeo[id].addEvent('play', function(){
+
+	            if ( soliloquy_slider[slider_id] ) {
+					soliloquy_slider[slider_id].stopAuto();
+    			}
+            });
+            soliloquy_vimeo[id].addEvent('pause', function(){
+	        	if ( soliloquy_slider[slider_id].getSetting('auto') ) {
+					soliloquy_slider[slider_id].startAuto();
+        		}
+            });
+            soliloquy_vimeo[id].addEvent('finish', function(){
+	       		if ( soliloquy_slider[slider_id].getSetting('auto') ) {
+		   			soliloquy_slider[slider_id].startAuto();
+        		}
+            });
         });
     }
 
@@ -125,7 +146,7 @@ function soliloquyWistiaVids(data, id, width, height, holder, $){
         });
 
         wistiaEmbeds.onFind(function(video){
-            if ( id == video.hashedId() ) {
+            if ( id === video.hashedId() ) {
                 soliloquy_wistia[id] = video;
                 soliloquy_wistia[id].bind('play', function(){
                     var id = $(this.container).data('soliloquy-slider-id');
@@ -181,17 +202,21 @@ function soliloquyLocalVids(data, id, width, height, holder, $){
     if (data.volume === 1) {
         features.push('volume');
     }
-
+    if (data.fullscreen === 1) {
+        features.push('fullscreen');
+    }
+    
     // Init MediaElementPlayer
     soliloquy_local[id] = new MediaElementPlayer( 'video#' + holder, {
         features: features,
         success: function( mediaElement, domObject ) {
-            if (data.autoplay === 1) {
-                mediaElement.addEventListener('canplay', function() {
-                    // Player is ready
-                    mediaElement.play();
-                }, false);
+
+            if (data.autoplay == 1) {
+	            
+				mediaElement.play();
+
             }
+            
         }
     });
 

@@ -148,8 +148,7 @@ class BP_Groups_Template {
 				11 => 'page_arg',
 			);
 
-			$func_args = func_get_args();
-			$args      = bp_core_parse_args_array( $old_args_keys, $func_args );
+			$args = bp_core_parse_args_array( $old_args_keys, func_get_args() );
 		}
 
 		$defaults = array(
@@ -165,13 +164,15 @@ class BP_Groups_Template {
 			'slug'               => false,
 			'include'            => false,
 			'exclude'            => false,
+			'parent_id'          => null,
 			'search_terms'       => '',
+			'search_columns'     => array(),
 			'group_type'         => '',
 			'group_type__in'     => '',
 			'group_type__not_in' => '',
 			'meta_query'         => false,
-			'populate_extras'    => true,
 			'update_meta_cache'  => true,
+			'update_admin_cache' => false,
 		);
 
 		$r = wp_parse_args( $args, $defaults );
@@ -194,10 +195,7 @@ class BP_Groups_Template {
 				$group = groups_get_current_group();
 
 			} else {
-				$group = groups_get_group( array(
-					'group_id'        => BP_Groups_Group::get_id_from_slug( $r['slug'] ),
-					'populate_extras' => $r['populate_extras'],
-				) );
+				$group = groups_get_group( BP_Groups_Group::get_id_from_slug( $r['slug'] ) );
 			}
 
 			// Backwards compatibility - the 'group_id' variable is not part of the
@@ -220,14 +218,16 @@ class BP_Groups_Template {
 				'page'               => $this->pag_page,
 				'user_id'            => $user_id,
 				'search_terms'       => $search_terms,
+				'search_columns'     => $search_columns,
 				'meta_query'         => $meta_query,
 				'group_type'         => $group_type,
 				'group_type__in'     => $group_type__in,
 				'group_type__not_in' => $group_type__not_in,
 				'include'            => $include,
 				'exclude'            => $exclude,
-				'populate_extras'    => $populate_extras,
+				'parent_id'          => $parent_id,
 				'update_meta_cache'  => $update_meta_cache,
+				'update_admin_cache' => $update_admin_cache,
 				'show_hidden'        => $show_hidden,
 			) );
 		}

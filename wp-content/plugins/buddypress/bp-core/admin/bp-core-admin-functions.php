@@ -804,7 +804,29 @@ function bp_admin_do_wp_nav_menu_meta_box() {
 			</ul>
 		</div>
 
+		<?php
+		$removed_args = array(
+			'action',
+			'customlink-tab',
+			'edit-menu-item',
+			'menu-item',
+			'page-tab',
+			'_wpnonce',
+		);
+		?>
+
 		<p class="button-controls">
+			<span class="list-controls">
+				<a href="<?php
+				echo esc_url( add_query_arg(
+					array(
+						$post_type_name . '-tab' => 'all',
+						'selectall'              => 1,
+					),
+					remove_query_arg( $removed_args )
+				) );
+				?>#buddypress-menu" class="select-all"><?php _e( 'Select All', 'buddypress' ); ?></a>
+			</span>
 			<span class="add-to-menu">
 				<input type="submit"<?php if ( function_exists( 'wp_nav_menu_disabled_check' ) ) : wp_nav_menu_disabled_check( $nav_menu_selected_id ); endif; ?> class="button-secondary submit-add-to-menu right" value="<?php esc_attr_e( 'Add to Menu', 'buddypress' ); ?>" name="add-custom-menu-item" id="submit-buddypress-menu" />
 				<span class="spinner"></span>
@@ -1091,3 +1113,43 @@ function bp_core_admin_user_spammed_js() {
 	</script>
 	<?php
 }
+
+/**
+ * Catch and process an admin notice dismissal.
+ *
+ * @since 2.7.0
+ */
+function bp_core_admin_notice_dismiss_callback() {
+	if ( ! current_user_can( 'install_plugins' ) ) {
+		wp_send_json_error();
+	}
+
+	if ( empty( $_POST['nonce'] ) || empty( $_POST['notice_id'] ) ) {
+		wp_send_json_error();
+	}
+
+	$notice_id = wp_unslash( $_POST['notice_id'] );
+
+	if ( ! wp_verify_nonce( $_POST['nonce'], 'bp-dismissible-notice-' . $notice_id ) ) {
+		wp_send_json_error();
+	}
+
+	bp_update_option( "bp-dismissed-notice-$notice_id", 1 );
+
+	wp_send_json_success();
+}
+add_action( 'wp_ajax_bp_dismiss_notice', 'bp_core_admin_notice_dismiss_callback' );
+
+/**
+ * Add a "buddypress" class to body element of wp-admin.
+ *
+ * @since 2.8.0
+ *
+ * @param string $classes CSS classes for the body tag in the admin, a comma separated string.
+ *
+ * @return string
+ */
+function bp_core_admin_body_classes( $classes ) {
+	return $classes . ' buddypress';
+}
+add_filter( 'admin_body_class', 'bp_core_admin_body_classes' );

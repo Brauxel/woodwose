@@ -56,7 +56,7 @@ do_action( 'bp_before_activity_entry' ); ?>
 
 			<?php if ( bp_get_activity_type() == 'activity_comment' ) : ?>
 
-				<a href="<?php bp_activity_thread_permalink(); ?>" class="button view bp-secondary-action" title="<?php esc_attr_e( 'View Conversation', 'buddypress' ); ?>"><?php _e( 'View Conversation', 'buddypress' ); ?></a>
+				<a href="<?php bp_activity_thread_permalink(); ?>" class="button view bp-secondary-action"><?php _e( 'View Conversation', 'buddypress' ); ?></a>
 
 			<?php endif; ?>
 
@@ -72,11 +72,11 @@ do_action( 'bp_before_activity_entry' ); ?>
 
 					<?php if ( !bp_get_activity_is_favorite() ) : ?>
 
-						<a href="<?php bp_activity_favorite_link(); ?>" class="button fav bp-secondary-action" title="<?php esc_attr_e( 'Mark as Favorite', 'buddypress' ); ?>"><?php _e( 'Favorite', 'buddypress' ); ?></a>
+						<a href="<?php bp_activity_favorite_link(); ?>" class="button fav bp-secondary-action"><?php _e( 'Favorite', 'buddypress' ); ?></a>
 
 					<?php else : ?>
 
-						<a href="<?php bp_activity_unfavorite_link(); ?>" class="button unfav bp-secondary-action" title="<?php esc_attr_e( 'Remove Favorite', 'buddypress' ); ?>"><?php _e( 'Remove Favorite', 'buddypress' ); ?></a>
+						<a href="<?php bp_activity_unfavorite_link(); ?>" class="button unfav bp-secondary-action"><?php _e( 'Remove Favorite', 'buddypress' ); ?></a>
 
 					<?php endif; ?>
 

@@ -97,16 +97,16 @@ class BP_XProfile_ProfileData {
 		}
 
 		if ( $profiledata ) {
-			$this->id           = $profiledata->id;
-			$this->user_id      = $profiledata->user_id;
-			$this->field_id     = $profiledata->field_id;
+			$this->id           = (int) $profiledata->id;
+			$this->user_id      = (int) $profiledata->user_id;
+			$this->field_id     = (int) $profiledata->field_id;
 			$this->value        = stripslashes( $profiledata->value );
 			$this->last_updated = $profiledata->last_updated;
 
 		} else {
 			// When no row is found, we'll need to set these properties manually.
-			$this->field_id	    = $field_id;
-			$this->user_id	    = $user_id;
+			$this->field_id	    = (int) $field_id;
+			$this->user_id	    = (int) $user_id;
 		}
 	}
 
@@ -323,7 +323,7 @@ class BP_XProfile_ProfileData {
 				} else {
 					$d               = new stdClass;
 					$d->id           = '';
-					$d->user_id      = '';
+					$d->user_id      = $user_id;
 					$d->field_id     = $field_id;
 					$d->value        = '';
 					$d->last_updated = '';
@@ -337,6 +337,18 @@ class BP_XProfile_ProfileData {
 		foreach ( $field_ids as $field_id ) {
 			$cache_key = "{$user_id}:{$field_id}";
 			$data[]    = wp_cache_get( $cache_key, 'bp_xprofile_data' );
+		}
+
+		// Integer casting.
+		foreach ( (array) $data as $key => $d ) {
+			if ( isset( $data[ $key ]->id ) ) {
+				$data[ $key ]->id = (int) $data[ $key ]->id;
+			}
+			if ( isset( $data[ $key ]->user_id ) ) {
+				$data[ $key ]->user_id  = (int) $data[ $key ]->user_id;
+			}
+
+			$data[ $key ]->field_id = (int) $data[ $key ]->field_id;
 		}
 
 		return $data;
@@ -416,7 +428,7 @@ class BP_XProfile_ProfileData {
 			}
 		}
 
-		return $fielddata_id;
+		return (int) $fielddata_id;
 	}
 
 	/**
@@ -477,7 +489,7 @@ class BP_XProfile_ProfileData {
 					$d = new stdClass;
 					$d->id           = '';
 					$d->user_id      = $id;
-					$d->field_id     = '';
+					$d->field_id     = $field_id;
 					$d->value        = '';
 					$d->last_updated = '';
 				}
@@ -492,6 +504,18 @@ class BP_XProfile_ProfileData {
 		foreach ( $user_ids as $user_id ) {
 			$cache_key = "{$user_id}:{$field_id}";
 			$data[]    = wp_cache_get( $cache_key, 'bp_xprofile_data' );
+		}
+
+		// Integer casting.
+		foreach ( (array) $data as $key => $d ) {
+			if ( isset( $data[ $key ]->id ) ) {
+				$data[ $key ]->id = (int) $data[ $key ]->id;
+			}
+			if ( isset( $data[ $key ]->user_id ) ) {
+				$data[ $key ]->user_id  = (int) $data[ $key ]->user_id;
+			}
+
+			$data[ $key ]->field_id = (int) $data[ $key ]->field_id;
 		}
 
 		// If a single ID was passed, just return the value.

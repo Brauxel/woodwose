@@ -13,8 +13,6 @@
  * The following functions are wrappers for hooks, allowing them to be
  * manually called and/or piggy-backed on top of other hooks if needed.
  *
- * @todo use anonymous functions when PHP minimum requirement allows (5.3)
- *
  * @package BuddyPress
  * @subpackage Core
  * @since 1.7.0
@@ -140,7 +138,7 @@ function bp_setup_admin_bar() {
 		 *
 		 * @since 1.5.0
 		 */
-		do_action( 'bp_setup_admin_bar' );
+		do_action( 'bp_setup_admin_bar', array() );
 	}
 }
 
@@ -207,28 +205,12 @@ function bp_setup_cache_groups() {
 /**
  * Set up the currently logged-in user.
  *
- * We white-list the WordPress Customizer which purposely loads the user early.
- * If the current user is being setup before the "init" action has fired,
- * strange (and difficult to debug) role/capability issues will occur.
- *
  * @since 1.7.0
  *
  * @link https://buddypress.trac.wordpress.org/ticket/6046
  * @link https://core.trac.wordpress.org/ticket/24169
- *
  */
 function bp_setup_current_user() {
-	$skip_warning = (
-		( isset( $_REQUEST['wp_customize'] ) && 'on' === $_REQUEST['wp_customize'] ) ||
-		( is_admin() && 'customize.php' === basename( $_SERVER['PHP_SELF'] ) )
-	);
-
-	if ( ! $skip_warning && ! did_action( 'after_setup_theme' ) ) {
-		$e = new Exception;
-		$trace = $e->getTraceAsString();
-
-		_doing_it_wrong( __FUNCTION__, __( 'The current user is being initialized without using $wp->init().', 'buddypress' ) . "\n===\nTrace:\n" . substr( $trace, strpos( $trace, '#6' ) ) . "\n===\n", '1.7' );
-	}
 
 	/**
 	 * Fires to set up the current user setup process.
@@ -406,7 +388,6 @@ function bp_head() {
  * who do not have the proper permission to access certain content.
  *
  * @since 1.6.0
- *
  */
 function bp_template_redirect() {
 
@@ -426,7 +407,6 @@ function bp_template_redirect() {
  * The main action used registering theme directories.
  *
  * @since 1.5.0
- *
  */
 function bp_register_theme_directory() {
 
@@ -446,7 +426,6 @@ function bp_register_theme_directory() {
  * The main action used registering theme packages.
  *
  * @since 1.7.0
- *
  */
 function bp_register_theme_packages() {
 
@@ -462,7 +441,6 @@ function bp_register_theme_packages() {
  * Fire the 'bp_enqueue_scripts' action, where BP enqueues its CSS and JS.
  *
  * @since 1.6.0
- *
  */
 function bp_enqueue_scripts() {
 
@@ -496,7 +474,6 @@ function bp_enqueue_embed_scripts() {
  * Fire the 'bp_add_rewrite_tag' action, where BP adds its custom rewrite tags.
  *
  * @since 1.8.0
- *
  */
 function bp_add_rewrite_tags() {
 
@@ -512,7 +489,6 @@ function bp_add_rewrite_tags() {
  * Fire the 'bp_add_rewrite_rules' action, where BP adds its custom rewrite rules.
  *
  * @since 1.9.0
- *
  */
 function bp_add_rewrite_rules() {
 
@@ -528,7 +504,6 @@ function bp_add_rewrite_rules() {
  * Fire the 'bp_add_permastructs' action, where BP adds its BP-specific permalink structure.
  *
  * @since 1.9.0
- *
  */
 function bp_add_permastructs() {
 
@@ -547,7 +522,6 @@ function bp_add_permastructs() {
  * BuddyPress-specific functionality.
  *
  * @since 1.6.0
- *
  */
 function bp_setup_theme() {
 
@@ -570,7 +544,6 @@ function bp_setup_theme() {
  * before our theme compatibility layer kicks in.
  *
  * @since 1.6.0
- *
  */
 function bp_after_setup_theme() {
 
@@ -699,7 +672,6 @@ function bp_allowed_themes( $themes ) {
  * The main action used for handling theme-side POST requests.
  *
  * @since 1.9.0
- *
  */
 function bp_post_request() {
 
@@ -742,7 +714,6 @@ function bp_post_request() {
  * The main action used for handling theme-side GET requests.
  *
  * @since 1.9.0
- *
  */
 function bp_get_request() {
 

@@ -65,7 +65,14 @@ function bp_blogs_get_blogs( $args = '' ) {
 		$r['include_blog_ids']
 	);
 
-	// Filter and return.
+	/**
+	 * Filters a set of blogs.
+	 *
+	 * @since 1.2.0
+	 *
+	 * @param array $blogs Array of blog data.
+	 * @param array $r     Parsed query arguments.
+	 */
 	return apply_filters( 'bp_blogs_get_blogs', $blogs, $r );
 }
 
@@ -246,9 +253,26 @@ function bp_blogs_record_existing_blogs( $args = array() ) {
  */
 function bp_blogs_is_blog_recordable( $blog_id, $user_id = 0 ) {
 
+	/**
+	 * Filters whether or not a blog is globally activity stream recordable.
+	 *
+	 * @since 1.7.0
+	 *
+	 * @param bool $value   Whether or not recordable. Default true.
+	 * @param int  $blog_id Current blog ID.
+	 */
 	$recordable_globally = apply_filters( 'bp_blogs_is_blog_recordable', true, $blog_id );
 
 	if ( !empty( $user_id ) ) {
+		/**
+		 * Filters whether or not a blog is globally activity stream recordable for user.
+		 *
+		 * @since 1.7.0
+		 *
+		 * @param bool $recordable_globally Whether or not recordable.
+		 * @param int  $blog_id             Current blog ID.
+		 * @param int  $user_id             Current user ID.
+		 */
 		$recordable_for_user = apply_filters( 'bp_blogs_is_blog_recordable_for_user', $recordable_globally, $blog_id, $user_id );
 	} else {
 		$recordable_for_user = $recordable_globally;
@@ -275,9 +299,27 @@ function bp_blogs_is_blog_recordable( $blog_id, $user_id = 0 ) {
  */
 function bp_blogs_is_blog_trackable( $blog_id, $user_id = 0 ) {
 
+	/**
+	 * Filters whether or not a blog is globally trackable.
+	 *
+	 * @since 1.7.0
+	 *
+	 * @param bool $value Whether or not trackable.
+	 * @param int  $blog_id Current blog ID.
+	 */
 	$trackable_globally = apply_filters( 'bp_blogs_is_blog_trackable', bp_blogs_is_blog_recordable( $blog_id, $user_id ), $blog_id );
 
 	if ( !empty( $user_id ) ) {
+
+		/**
+		 * Filters whether or not a blog is globally trackable for user.
+		 *
+		 * @since 1.7.0
+		 *
+		 * @param bool $value   Whether or not trackable.
+		 * @param int  $blog_id Current blog ID.
+		 * @param int  $user_id Current user ID.
+		 */
 		$trackable_for_user = apply_filters( 'bp_blogs_is_blog_trackable_for_user', $trackable_globally, $blog_id, $user_id );
 	} else {
 		$trackable_for_user = $trackable_globally;
@@ -344,6 +386,14 @@ function bp_blogs_record_blog( $blog_id, $user_id, $no_activity = false ) {
 	bp_blogs_update_blogmeta( $recorded_blog->blog_id, 'thread_comments_depth', $thread_depth );
 
 	$is_private = !empty( $_POST['blog_public'] ) && (int) $_POST['blog_public'] ? false : true;
+
+	/**
+	 * Filters whether or not a new blog is public.
+	 *
+	 * @since 1.5.0
+	 *
+	 * @param bool $is_private Whether or not blog is public.
+	 */
 	$is_private = !apply_filters( 'bp_is_new_blog_public', !$is_private );
 
 	/**
@@ -474,6 +524,26 @@ function bp_blogs_update_option_thread_comments_depth( $oldvalue, $newvalue ) {
 	}
 }
 add_action( 'update_option_thread_comments_depth', 'bp_blogs_update_option_thread_comments_depth', 10, 2 );
+
+/**
+ * Syncs site icon URLs to blogmeta.
+ *
+ * @since 2.7.0
+ *
+ * @param int|string $old_value Old value
+ * @param int|string $new_value New value
+ */
+function bp_blogs_update_option_site_icon( $old_value, $new_value ) {
+	if ( 0 === $new_value ) {
+		bp_blogs_update_blogmeta( get_current_blog_id(), 'site_icon_url_thumb', 0 );
+		bp_blogs_update_blogmeta( get_current_blog_id(), 'site_icon_url_full',  0 );
+	} else {
+		// Save site icon URL as blogmeta.
+		bp_blogs_update_blogmeta( get_current_blog_id(), 'site_icon_url_thumb', get_site_icon_url( bp_core_avatar_thumb_width() ) );
+		bp_blogs_update_blogmeta( get_current_blog_id(), 'site_icon_url_full',  get_site_icon_url( bp_core_avatar_full_width()  ) );
+	}
+}
+add_action( 'update_option_site_icon', 'bp_blogs_update_option_site_icon', 10, 2 );
 
 /**
  * Deletes the 'url' blogmeta for a site.
@@ -824,6 +894,14 @@ add_action( 'user_register',    'bp_blogs_add_user_to_blog'        );
  * @return string
  */
 function bp_blogs_get_allowed_roles() {
+
+	/**
+	 * Filters the allowed roles a member must have to be recorded into bp_user_blogs pointer table.
+	 *
+	 * @since 2.1.0
+	 *
+	 * @param array $value Array of potential roles user needs.
+	 */
 	return apply_filters( 'bp_blogs_get_allowed_roles', array( 'contributor', 'author', 'editor', 'administrator' ) );
 }
 
@@ -918,19 +996,6 @@ function bp_blogs_remove_blog_for_user( $user_id, $blog_id ) {
 	do_action( 'bp_blogs_before_remove_blog_for_user', $blog_id, $user_id );
 
 	BP_Blogs_Blog::delete_blog_for_user( $blog_id, $user_id );
-
-	/**
-	 * Delete activity stream item only if the Activity component is active
-	 *
-	 * @see https://buddypress.trac.wordpress.org/ticket/6937
-	 */
-	if ( bp_is_active( 'activity' ) ) {
-		bp_blogs_delete_activity( array(
-			'item_id'   => $blog_id,
-			'component' => buddypress()->blogs->id,
-			'type'      => 'new_blog'
-		) );
-	}
 
 	/**
 	 * Fires after a blog has been removed from the tracker for a specific user.

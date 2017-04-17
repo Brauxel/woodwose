@@ -1,4 +1,10 @@
 <?php
+
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
 /**
  * Posttype class.
  *
@@ -48,18 +54,18 @@ class Soliloquy_Posttype {
 
         // Build the labels for the post type.
         $labels = array(
-            'name'               => __( 'Soliloquy Sliders', 'soliloquy' ),
-            'singular_name'      => __( 'Soliloquy', 'soliloquy' ),
-            'add_new'            => __( 'Add New', 'soliloquy' ),
-            'add_new_item'       => __( 'Add New Soliloquy Slider', 'soliloquy' ),
-            'edit_item'          => __( 'Edit Soliloquy Slider', 'soliloquy' ),
-            'new_item'           => __( 'New Soliloquy Slider', 'soliloquy' ),
-            'view_item'          => __( 'View Soliloquy Slider', 'soliloquy' ),
-            'search_items'       => __( 'Search Soliloquy Sliders', 'soliloquy' ),
-            'not_found'          => __( 'No Soliloquy sliders found.', 'soliloquy' ),
-            'not_found_in_trash' => __( 'No Soliloquy sliders found in trash.', 'soliloquy' ),
+            'name'               => esc_attr__( 'Soliloquy Sliders', 'soliloquy' ),
+            'singular_name'      => esc_attr__( 'Soliloquy', 'soliloquy' ),
+            'add_new'            => esc_attr__( 'Add New', 'soliloquy' ),
+            'add_new_item'       => esc_attr__( 'Add New Soliloquy Slider', 'soliloquy' ),
+            'edit_item'          => esc_attr__( 'Edit Soliloquy Slider', 'soliloquy' ),
+            'new_item'           => esc_attr__( 'New Soliloquy Slider', 'soliloquy' ),
+            'view_item'          => esc_attr__( 'View Soliloquy Slider', 'soliloquy' ),
+            'search_items'       => esc_attr__( 'Search Soliloquy Sliders', 'soliloquy' ),
+            'not_found'          => esc_attr__( 'No Soliloquy sliders found.', 'soliloquy' ),
+            'not_found_in_trash' => esc_attr__( 'No Soliloquy sliders found in trash.', 'soliloquy' ),
             'parent_item_colon'  => '',
-            'menu_name'          => __( 'Soliloquy', 'soliloquy' )
+            'menu_name'          => esc_attr__( 'Soliloquy', 'soliloquy' )
         );
         $labels = apply_filters( 'soliloquy_post_type_labels', $labels );
 
@@ -67,7 +73,7 @@ class Soliloquy_Posttype {
         $args = array(
             'labels'              => $labels,
             'public'              => false,
-            'exclude_from_search' => false,
+            'exclude_from_search' => true,
             'show_ui'             => true,
             'show_in_admin_bar'   => false,
             'rewrite'             => false,

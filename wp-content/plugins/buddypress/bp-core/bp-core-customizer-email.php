@@ -2,10 +2,9 @@
 /**
  * BuddyPress Customizer implementation for email.
  *
- * @since 2.5.0
- *
  * @package BuddyPress
  * @subpackage Core
+ * @since 2.5.0
  */
 
 // Exit if accessed directly.
@@ -45,13 +44,6 @@ function bp_email_init_customizer( WP_Customize_Manager $wp_customize ) {
 	}
 
 	/**
-	 * BP_Customizer_Control_Range class.
-	 */
-	if ( ! buddypress()->do_autoload ) {
-		require_once dirname( __FILE__ ) . '/classes/class-bp-customizer-control-range.php';
-	}
-
-	/**
 	 * Fires to let plugins register extra Customizer controls for emails.
 	 *
 	 * @since 2.5.0
@@ -64,7 +56,6 @@ function bp_email_init_customizer( WP_Customize_Manager $wp_customize ) {
 	foreach ( $controls as $control_id => $args ) {
 		$wp_customize->add_control( new $args['class']( $wp_customize, $control_id, $args ) );
 	}
-
 
 	/*
 	 * Hook actions/filters for further configuration.
@@ -90,7 +81,7 @@ function bp_email_init_customizer( WP_Customize_Manager $wp_customize ) {
 			true
 		);
 
-		// Include the preview loading style
+		// Include the preview loading style.
 		add_action( 'wp_footer', array( $wp_customize, 'customize_preview_loading_style' ) );
 	}
 }
@@ -112,7 +103,7 @@ function bp_is_email_customizer() {
  *
  * @since 2.5.0
  *
- * @param $active Whether the Customizer section is active.
+ * @param bool                 $active  Whether the Customizer section is active.
  * @param WP_Customize_Section $section {@see WP_Customize_Section} instance.
  * @return bool
  */

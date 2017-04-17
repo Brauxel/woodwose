@@ -171,7 +171,7 @@ class BP_Activity_List_Table extends WP_List_Table {
 			$activities['total']      = count( $activities['activities'] );
 
 			// Sort the array by the activity object's date_recorded value.
-			usort( $activities['activities'], create_function( '$a, $b', 'return $a->date_recorded > $b->date_recorded;' ) );
+			usort( $activities['activities'], function( $a, $b ) { return $a->date_recorded > $b->date_recorded; } );
 		}
 
 		// The bp_activity_get function returns an array of objects; cast these to arrays for WP_List_Table.
@@ -428,8 +428,26 @@ class BP_Activity_List_Table extends WP_List_Table {
 				<option value="" <?php selected( ! $selected ); ?>><?php _e( 'View all actions', 'buddypress' ); ?></option>
 
 				<?php foreach ( $activity_actions as $component => $actions ) : ?>
+					<?php
+					// Older avatar activity items use 'profile' for component. See r4273.
+					if ( $component === 'profile' ) {
+						$component = 'xprofile';
+					}
 
-					<optgroup label="<?php echo ucfirst( $component ); ?>">
+					if ( bp_is_active( $component ) ) {
+						if ( $component === 'xprofile' ) {
+							$component_name = buddypress()->profile->name;
+						} else {
+							$component_name = buddypress()->$component->name;
+						}
+
+					} else {
+						// Prevent warnings by other plugins if a component is disabled but the activity type has been registered.
+						$component_name = ucfirst( $component );
+					}
+					?>
+
+					<optgroup label="<?php echo esc_html( $component_name ); ?>">
 
 						<?php foreach ( $actions as $action_key => $action_values ) : ?>
 
@@ -623,15 +641,10 @@ class BP_Activity_List_Table extends WP_List_Table {
 
 		// Get activity content - if not set, use the action.
 		if ( ! empty( $item['content'] ) ) {
+			$activity = new BP_Activity_Activity( $item['id'] );
 
-			/**
-			 * Filters current activity item content.
-			 *
-			 * @since 1.2.0
-			 *
-			 * @param array $item Array index holding current activity item content.
-			 */
-			$content = apply_filters_ref_array( 'bp_get_activity_content_body', array( $item['content'] ) );
+			/** This filter is documented in bp-activity/bp-activity-template.php */
+			$content = apply_filters_ref_array( 'bp_get_activity_content_body', array( $item['content'], &$activity ) );
 		} else {
 			/**
 			 * Filters current activity item action.
@@ -794,6 +807,7 @@ class BP_Activity_List_Table extends WP_List_Table {
 				$parent_activity = (object) $item;
 			} elseif ( 'activity_comment' === $item['type'] ) {
 				$parent_activity = new BP_Activity_Activity( $item['item_id'] );
+				$can_comment     = bp_activity_can_comment_reply( (object) $item );
 			}
 
 			if ( isset( $parent_activity->type ) && bp_activity_post_type_get_tracking_arg( $parent_activity->type, 'post_type' ) ) {

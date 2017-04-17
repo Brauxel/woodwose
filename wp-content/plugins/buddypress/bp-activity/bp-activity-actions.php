@@ -71,7 +71,7 @@ function bp_activity_action_permalink_router() {
 		} else {
 
 			// Set redirect to group activity stream.
-			if ( $group = groups_get_group( array( 'group_id' => $activity->item_id ) ) ) {
+			if ( $group = groups_get_group( $activity->item_id ) ) {
 				$redirect = bp_get_group_permalink( $group ) . bp_get_activity_slug() . '/' . $activity->id . '/';
 			}
 		}
@@ -605,45 +605,6 @@ function bp_activity_action_favorites_feed() {
 add_action( 'bp_actions', 'bp_activity_action_favorites_feed' );
 
 /**
- * Loads Akismet filtering for activity.
- *
- * @since 1.6.0
- * @since 2.3.0 We only support Akismet 3+.
- */
-function bp_activity_setup_akismet() {
-	$bp = buddypress();
-
-	// Bail if Akismet is not active.
-	if ( ! defined( 'AKISMET_VERSION' ) ) {
-		return;
-	}
-
-	// Bail if older version of Akismet.
-	if ( ! class_exists( 'Akismet' ) ) {
-		return;
-	}
-
-	// Bail if no Akismet key is set.
-	if ( ! bp_get_option( 'wordpress_api_key' ) && ! defined( 'WPCOM_API_KEY' ) ) {
-		return;
-	}
-
-	/**
-	 * Filters if BuddyPress Activity Akismet support has been disabled by another plugin.
-	 *
-	 * @since 1.6.0
-	 *
-	 * @param bool $value Return value of bp_is_akismet_active boolean function.
-	 */
-	if ( ! apply_filters( 'bp_activity_use_akismet', bp_is_akismet_active() ) ) {
-		return;
-	}
-
-	// Instantiate Akismet for BuddyPress.
-	$bp->activity->akismet = new BP_Akismet();
-}
-
-/**
  * AJAX endpoint for Suggestions API lookups.
  *
  * @since 2.1.0
@@ -871,7 +832,11 @@ function bp_activity_transition_post_type_comment_status( $new_status, $old_stat
 
 	// Add "new_post_type_comment" to the whitelisted activity types, so that the activity's Akismet history is generated
 	$post_type_comment_action = $activity_comment_object->action_id;
-	$comment_akismet_history = create_function( '$t', '$t[] = $post_type_comment_action; return $t;' );
+	$comment_akismet_history = function ( $activity_types ) use ( $post_type_comment_action ) {
+		$activity_types[] = $post_type_comment_action;
+
+		return $activity_types;
+	};
 	add_filter( 'bp_akismet_get_activity_types', $comment_akismet_history );
 
 	// Make sure the activity change won't edit the comment if sync is on

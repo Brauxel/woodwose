@@ -7,6 +7,12 @@
  * @package Soliloquy
  * @author  Thomas Griffin
  */
+
+ // Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
 class Soliloquy_Common_Admin {
 
     /**
@@ -101,7 +107,7 @@ class Soliloquy_Common_Admin {
 
         ?>
         <div class="updated">
-            <p><strong><?php _e( 'Congratulations! You have upgraded your sliders successfully!', 'soliloquy' ); ?></strong></p>
+            <p><strong><?php esc_html_e( 'Congratulations! You have upgraded your sliders successfully!', 'soliloquy' ); ?></strong></p>
         </div>
         <?php
 
@@ -258,25 +264,96 @@ class Soliloquy_Common_Admin {
      *
      * @since 2.4.1.7
      *
-     * @return array 
+     * @return array
      */
     public function get_slide_positions() {
 
         $positions = array(
             array(
                 'value' => 'before',
-                'name'  => __( 'Before Existing Slides', 'soliloquy' )
+                'name'  => esc_attr__( 'Before Existing Slides', 'soliloquy' )
             ),
             array(
                 'value' => 'after',
-                'name'  => __( 'After Existing Slides', 'soliloquy' )
+                'name'  => esc_attr__( 'After Existing Slides', 'soliloquy' )
             ),
         );
 
         return apply_filters( 'soliloquy_slide_positions', $positions );
-        
+
     }
 
+    /**
+     * Returns an array of positions for new slides to be added to in an existing Slider
+     *
+     * @since 2.4.1.7
+     *
+     * @return array
+     */
+	public function sort_slides( $data, $sort_type ){
+		
+		//Return if we dont have a sort type
+	 	if(  empty( $sort_type ) ){
+		
+		 	return $data;
+	 	
+	 	}
+	 	
+	 	//Update the sort type
+	 	$data['config']['sort_order'] = $sort_type;
+	 	
+	    switch( $sort_type ){
+		    case 'random':
+                // Shuffle keys
+                $keys = array_keys( $data['slider'] );
+                shuffle( $keys );
+
+                // Rebuild array in new order
+                $new = array();
+                foreach( $keys as $key ) {
+                    $new[ $key ] = $data['slider'][ $key ];
+                }
+
+                // Assign back to gallery
+                $data['slider'] = $new;
+                break;
+            case 'src':
+            case 'title':
+            case 'status':
+                // Get metadata
+                $keys = array();
+                foreach ( $data['slider'] as $id => $item ) {
+                    $keys[ $id ] = strip_tags( $item[ $sort_type ] );
+                }
+
+				$sorting_direction = 'ASC';
+
+                // Sort titles / captions
+                if ( $sorting_direction == 'ASC' ) {
+                    natcasesort( $keys );
+                } else {
+                    arsort( $keys );
+                }
+
+                // Iterate through sorted items, rebuilding slider
+                $new = array();
+                foreach( $keys as $key => $title ) {
+                    $new[ $key ] = $data['slider'][ $key ];
+                }
+
+                // Assign back to gallery
+                $data['slider'] = $new;
+                break;
+
+		    break;
+			case 'date':
+			break;
+
+	    }
+
+		return $data;
+
+	}
     /**
      * Returns the singleton instance of the class.
      *

@@ -7,6 +7,12 @@
  * @package Soliloquy
  * @author  Thomas Griffin
  */
+ 
+ // Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
 class Soliloquy_Import {
 
     /**
@@ -81,40 +87,40 @@ class Soliloquy_Import {
         }
 
         if ( ! $this->can_import_slider() ) {
-            $this->errors[] = __( 'Sorry, but you lack the permissions to import a slider to this post.', 'soliloquy' );
+            $this->errors[] = esc_attr__( 'Sorry, but you lack the permissions to import a slider to this post.', 'soliloquy' );
             return;
         }
 
         if ( ! $this->post_can_handle_slider() ) {
-            $this->errors[] = __( 'Sorry, but the post ID you are attempting to import the slider to cannot handle a slider.', 'soliloquy' );
+            $this->errors[] = esc_attr__( 'Sorry, but the post ID you are attempting to import the slider to cannot handle a slider.', 'soliloquy' );
             return;
         }
 
         if ( ! $this->has_imported_slider_files() ) {
-            $this->errors[] = __( 'Sorry, but there are no files available to import a slider.', 'soliloquy' );
+            $this->errors[] = esc_attr__( 'Sorry, but there are no files available to import a slider.', 'soliloquy' );
             return;
         }
 
         if ( ! $this->has_correct_filename() ) {
-            $this->errors[] = __( 'Sorry, but you have attempted to upload a slider import file with an incompatible filename. Soliloquy import files must begin with "soliloquy".', 'soliloquy' );
+            $this->errors[] = esc_attr__( 'Sorry, but you have attempted to upload a slider import file with an incompatible filename. Soliloquy import files must begin with "soliloquy".', 'soliloquy' );
             return;
         }
 
         if ( ! $this->has_json_extension() ) {
-            $this->errors[] = __( 'Sorry, but Soliloquy import files must be in <code>.json</code> format.', 'soliloquy' );
+            $this->errors[] = esc_attr__( 'Sorry, but Soliloquy import files must be in <code>.json</code> format.', 'soliloquy' );
             return;
         }
 
         // Retrieve the JSON contents of the file. If that fails, return an error.
         $contents = $this->get_file_contents();
         if ( ! $contents ) {
-            $this->errors[] = __( 'Sorry, but there was an error retrieving the contents of the slider export file. Please try again.', 'soliloquy' );
+            $this->errors[] = esc_attr__( 'Sorry, but there was an error retrieving the contents of the slider export file. Please try again.', 'soliloquy' );
             return;
         }
 
         // Decode the settings and start processing.
         $data    = json_decode( $contents, true );
-        $post_id = absint( $_POST['soliloquy_post_id'] );
+        $post_id = absint( intval( $_POST['soliloquy_post_id'] ) );
 
         // If the post is an auto-draft (new post), make sure to save as draft first before importing.
         $this->maybe_save_draft( $post_id );
@@ -142,10 +148,15 @@ class Soliloquy_Import {
 
         // Unset any unncessary data from the final slider holder.
         unset( $slider['in_slider'] );
-
-        // Update the slider title and slug to avoid any confusion if importing on same site.
-        $slider['config']['title'] = sprintf( __( 'Imported Slider #%s', 'soliloquy' ), $post_id );
-        $slider['config']['slug']  = 'imported-slider-' . $post_id;
+        
+        //Filter to ignore imported
+		if ( apply_filters( 'soliloquy_imported_title', true ) ){
+			
+	        // Update the slider title and slug to avoid any confusion if importing on same site.
+	        $slider['config']['title'] = sprintf( esc_attr__( 'Imported Slider #%s', 'soliloquy' ), $post_id );
+	        $slider['config']['slug']  = 'imported-slider-' . $post_id;
+        
+        }
 
         // Update the meta for the post that is receiving the slider.
         update_post_meta( $post_id, '_sol_slider_data', $slider );
@@ -171,7 +182,7 @@ class Soliloquy_Import {
         foreach ( (array) $data['slider'] as $id => $item ) {
 
             // Store image locally and get its properties
-            $image = $this->import_slider_item( $id, $item, $data, $post_id );
+            $image = $this->import_slider_item( intval( $id ), $item, $data, intval( $post_id ) );
 
             // Replace image in $item
             $item['id'] = $image['attachment_id'];
@@ -210,7 +221,7 @@ class Soliloquy_Import {
         if ( ! $image ) {
             // We need to stream our image from a remote source.
             if ( empty( $item['src'] ) ) {
-                $this->errors[] = __( 'No valid URL found for the image ID #' . $id . '.', 'soliloquy' );
+                $this->errors[] = esc_attr__( 'No valid URL found for the image ID #' . $id . '.', 'soliloquy' );
             } else {
                 // Stream the image from a remote URL.
                 $new_image = $this->import_remote_image( $item['src'], $data, $post_id, $id, true );
@@ -247,15 +258,36 @@ class Soliloquy_Import {
      * @return array $data      Data with updated import information.
      */
     public function import_remote_image( $src, $data, $post_id, $id = 0, $stream_only = false ) {
-
+				
         // Prepare variables.
         $new_image = $src;
         $stream    = wp_remote_get( $new_image, array( 'timeout' => 60 ) );
         $type      = wp_remote_retrieve_header( $stream, 'content-type' );
-
+        $filename  = basename( $new_image );
+        $fileinfo  = pathinfo( $filename );
+               
+        // If the filename doesn't have an extension on it, determine the filename to use to save this image to the Media Library
+        // This fixes importing URLs with no file extension e.g. http://placehold.it/300x300 (which is a PNG)
+        if ( ! isset( $fileinfo['extension'] ) || empty( $fileinfo['extension'] ) ) {
+            switch ( $type ) {
+                case 'image/jpeg':
+                    $filename = $filename . '.jpeg';
+                    break;
+                case 'image/jpg':
+                    $filename = $filename . '.jpg';
+                    break;
+                case 'image/gif':
+                    $filename = $filename . '.gif';
+                    break;
+                case 'image/png':
+                    $filename = $filename . '.png';
+                    break;
+            }
+        }
+        
         // If we cannot get the image or determine the type, skip over the image.
         if ( is_wp_error( $stream ) || ! $type ) {
-            $this->errors[] = __( 'Could not retrieve a valid image from the URL ' . $new_image . '.', 'soliloquy' );
+            $this->errors[] = esc_attr__( 'Could not retrieve a valid image from the URL ' . $new_image . '.', 'soliloquy' );
 
             // Unset it from the slider data for meta saving.
             if ( $id ) {
@@ -276,6 +308,7 @@ class Soliloquy_Import {
 
                 // Unset it from the slider data for meta saving.
                 if ( $id ) {
+	                
                     $data = $this->purge_image_from_slider( $id, $data );
                 }
 
@@ -300,7 +333,8 @@ class Soliloquy_Import {
                 wp_update_attachment_metadata( $attach_id, $attach_data );
 
                 // Unset it from the slider data for meta saving now that we have a new image in its place.
-                if ( $id ) {
+                if ( $id ) {	          
+
                     $data = $this->purge_image_from_slider( $id, $data );
                 }
                 
@@ -341,8 +375,13 @@ class Soliloquy_Import {
 
         // Remove the image ID from the slider data.
         unset( $data['slider'][$id] );
-        if ( ( $key = array_search( $id, (array) $data['in_slider'] ) ) !== false ) {
-            unset( $data['in_slider'][$key] );
+        
+        if ( isset( $data['in_slider'] ) ) {
+	
+	        if ( ( $key = array_search( $id, (array) $data['in_slider'] ) ) !== false ) {
+	            unset( $data['in_slider'][$key] );
+	        }
+	        
         }
 
         // Return the purged data.
@@ -381,8 +420,10 @@ class Soliloquy_Import {
      * @return array $data   Data with updated meta information.
      */
     public function update_attachment_meta( $data, $attach_id ) {
-
-        return soliloquy_ajax_prepare_slider_data( $data, $attach_id );
+		
+		$ajax = Soliloquy_Ajax::get_instance();
+		
+        return $ajax->prepare_slider_data( $data, $attach_id );
 
     }
 
@@ -597,7 +638,7 @@ class Soliloquy_Import {
         if ( isset( $_GET['soliloquy-imported'] ) && $_GET['soliloquy-imported'] ) :
         ?>
         <div id="message" class="updated">
-            <p><?php _e( 'Soliloquy slider imported. Please check to ensure all images and data have been imported properly.', 'soliloquy' ); ?></p>
+            <p><?php esc_html_e( 'Soliloquy slider imported. Please check to ensure all images and data have been imported properly.', 'soliloquy' ); ?></p>
         </div>
         <?php
         endif;

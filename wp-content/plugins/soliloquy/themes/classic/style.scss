@@ -174,7 +174,11 @@
 .soliloquy-theme-classic .soliloquy-caption .soliloquy-fc-caption .soliloquy-fc-read-more.soliloquy-fc-content-above {
 	margin-top: 10px;
 }
-
+.soliloquy-caption-bottom {
+	.soliloquy-caption-inside{
+		padding-bottom: 25px;
+	}
+}
 /* ==========================================================================
    Thumbnails
    ========================================================================== */
@@ -257,6 +261,13 @@ only screen and (                min-resolution: 2dppx) {
 		margin-top: -5px;
 		width: 16px;
 	}
+	.soliloquy-thumbnails-position-right,
+	.soliloquy-thumbnails-position-left{
+		.soliloquy-theme-classic{
+			.soliloquy-prev{ background-size: 50% !important; }
+		 	.soliloquy-next{ background-size: 50% !important; }
+		 	}
+	 }
 
     .soliloquy-transition-vertical.soliloquy-theme-classic .soliloquy-next {
 		background: url('images/slider-arrows-vertical@2x.png') no-repeat scroll -17px 0;

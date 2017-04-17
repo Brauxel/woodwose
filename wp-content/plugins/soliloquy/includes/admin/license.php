@@ -7,6 +7,12 @@
  * @package Soliloquy
  * @author  Thomas Griffin
  */
+ 
+ // Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
 class Soliloquy_License {
 
     /**
@@ -125,7 +131,7 @@ class Soliloquy_License {
 
         // If it returns false, send back a generic error message and return.
         if ( ! $verify ) {
-            $this->errors[] = __( 'There was an error connecting to the remote key API. Please try again later.', 'soliloquy' );
+            $this->errors[] = esc_attr__( 'There was an error connecting to the remote key API. Please try again later.', 'soliloquy' );
             return;
         }
 
@@ -142,7 +148,7 @@ class Soliloquy_License {
         $option['is_expired']  = false;
         $option['is_disabled'] = false;
         $option['is_invalid']  = false;
-        $this->success[]       = isset( $verify->success ) ? $verify->success : __( 'Congratulations! This site is now receiving automatic updates.', 'soliloquy' );
+        $this->success[]       = isset( $verify->success ) ? $verify->success : esc_attr__( 'Congratulations! This site is now receiving automatic updates.', 'soliloquy' );
         update_option( 'soliloquy', $option );
 
     }
@@ -182,24 +188,21 @@ class Soliloquy_License {
      */
     public function maybe_validate_key() {
 
-        // Perform a request to validate the key.
-        if ( false === ( $validate = get_transient( '_sol_validate_license' ) ) ) {
-            // Only run every 12 hours.
-            $timestamp = get_option( 'soliloquy_license_updates' );
-            if ( ! $timestamp ) {
-                $timestamp = strtotime( '+12 hours' );
-                update_option( 'soliloquy_license_updates', $timestamp );
-                $this->validate_key();
-            } else {
-                $current_timestamp = time();
-                if ( $current_timestamp < $timestamp ) {
-                    return;
-                } else {
-                    update_option( 'soliloquy_license_updates', strtotime( '+12 hours' ) );
-                    $this->validate_key();
-                }
-            }
-        }
+		// Only run every 12 hours.
+		$timestamp = get_option( 'soliloquy_license_updates' );
+		if ( ! $timestamp ) {
+		    $timestamp = strtotime( '+12 hours' );
+		    update_option( 'soliloquy_license_updates', $timestamp );
+		    $this->validate_key();
+		} else {
+		    $current_timestamp = time();
+		    if ( $current_timestamp < $timestamp ) {
+		        return;
+		    } else {
+		        update_option( 'soliloquy_license_updates', strtotime( '+12 hours' ) );
+		        $this->validate_key();
+		    }
+		}
 
     }
 
@@ -218,16 +221,14 @@ class Soliloquy_License {
         if ( ! $validate ) {
             // If forced, set contextual success message.
             if ( $forced ) {
-                $this->errors[] = __( 'There was an error connecting to the remote key API. Please try again later.', 'soliloquy' );
+                $this->errors[] = esc_attr__( 'There was an error connecting to the remote key API. Please try again later.', 'soliloquy' );
             }
 
-            set_transient( '_sol_validate_license', false, 10 * MINUTE_IN_SECONDS );
             return;
         }
 
         // If a key or author error is returned, the license no longer exists or the user has been deleted, so reset license.
         if ( isset( $validate->key ) || isset( $validate->author ) ) {
-            set_transient( '_sol_validate_license', false, DAY_IN_SECONDS );
             $option                = get_option( 'soliloquy' );
             $option['is_expired']  = false;
             $option['is_disabled'] = false;
@@ -238,7 +239,6 @@ class Soliloquy_License {
 
         // If the license has expired, set the transient and expired flag and return.
         if ( isset( $validate->expired ) ) {
-            set_transient( '_sol_validate_license', false, DAY_IN_SECONDS );
             $option                = get_option( 'soliloquy' );
             $option['is_expired']  = true;
             $option['is_disabled'] = false;
@@ -249,7 +249,6 @@ class Soliloquy_License {
 
         // If the license is disabled, set the transient and disabled flag and return.
         if ( isset( $validate->disabled ) ) {
-            set_transient( '_sol_validate_license', false, DAY_IN_SECONDS );
             $option                = get_option( 'soliloquy' );
             $option['is_expired']  = false;
             $option['is_disabled'] = true;
@@ -260,11 +259,10 @@ class Soliloquy_License {
 
         // If forced, set contextual success message.
         if ( $forced ) {
-            $this->success[] = __( 'Congratulations! Your key has been refreshed successfully.', 'soliloquy' );
+            $this->success[] = esc_attr__( 'Congratulations! Your key has been refreshed successfully.', 'soliloquy' );
         }
 
         // Otherwise, our check has returned successfully. Set the transient and update our license type and flags.
-        set_transient( '_sol_validate_license', true, DAY_IN_SECONDS );
         $option                = get_option( 'soliloquy' );
         $option['type']        = isset( $validate->type ) ? $validate->type : $option['type'];
         $option['is_expired']  = false;
@@ -307,7 +305,7 @@ class Soliloquy_License {
 
         // If it returns false, send back a generic error message and return.
         if ( ! $deactivate ) {
-            $this->errors[] = __( 'There was an error connecting to the remote key API. Please try again later.', 'soliloquy' );
+            $this->errors[] = esc_attr__( 'There was an error connecting to the remote key API. Please try again later.', 'soliloquy' );
             return;
         }
 
@@ -318,7 +316,7 @@ class Soliloquy_License {
         }
 
         // Otherwise, our request has been done successfully. Reset the option and set the success message.
-        $this->success[] = isset( $deactivate->success ) ? $deactivate->success : __( 'Congratulations! You have deactivated the key from this site successfully.', 'soliloquy' );
+        $this->success[] = isset( $deactivate->success ) ? $deactivate->success : esc_attr__( 'Congratulations! You have deactivated the key from this site successfully.', 'soliloquy' );
         update_option( 'soliloquy', Soliloquy::default_options() );
 
     }
@@ -407,60 +405,66 @@ class Soliloquy_License {
         // Grab the option and output any nag dealing with license keys.
         $key    = $this->base->get_license_key();
         $option = get_option( 'soliloquy' );
-
-        // If there is no license key, output nag about ensuring key is set for automatic updates.
-        if ( ! $key ) :
-        ?>
-        <div class="error">
-            <p><?php printf( __( 'No valid license key has been entered, so automatic updates for Soliloquy have been turned off. <a href="%s">Please click here to enter your license key and begin receiving automatic updates.</a>', 'soliloquy' ), esc_url( add_query_arg( array( 'post_type' => 'soliloquy', 'page' => 'soliloquy-settings' ), admin_url( 'edit.php' ) ) ) ); ?></p>
-        </div>
-        <?php
-        endif;
-
-        // If a key has expired, output nag about renewing the key.
-        if ( isset( $option['is_expired'] ) && $option['is_expired'] ) :
-        ?>
-        <div class="error">
-            <p><?php printf( __( 'Your license key for Soliloquy has expired. <a href="%s" target="_blank">Please click here to renew your license key and continue receiving automatic updates.</a>', 'soliloquy' ), 'https://soliloquywp.com/login/' ); ?></p>
-        </div>
-        <?php
-        endif;
-
-        // If a key has been disabled, output nag about using another key.
-        if ( isset( $option['is_disabled'] ) && $option['is_disabled'] ) :
-        ?>
-        <div class="error">
-            <p><?php _e( 'Your license key for Soliloquy has been disabled. Please use a different key to continue receiving automatic updates.', 'soliloquy' ); ?></p>
-        </div>
-        <?php
-        endif;
-
-        // If a key is invalid, output nag about using another key.
-        if ( isset( $option['is_invalid'] ) && $option['is_invalid'] ) :
-        ?>
-        <div class="error">
-            <p><?php _e( 'Your license key for Soliloquy is invalid. The key no longer exists or the user associated with the key has been deleted. Please use a different key to continue receiving automatic updates.', 'soliloquy' ); ?></p>
-        </div>
-        <?php
-        endif;
-
-        // If there are any license errors, output them now.
-        if ( ! empty( $this->errors ) ) :
-        ?>
-        <div class="error">
-            <p><?php echo implode( '<br>', $this->errors ); ?></p>
-        </div>
-        <?php
-        endif;
-
-        // If there are any success messages, output them now.
-        if ( ! empty( $this->success ) ) :
-        ?>
-        <div class="updated">
-            <p><?php echo implode( '<br>', $this->success ); ?></p>
-        </div>
-        <?php
-        endif;
+        
+        //Only display notices to admin users
+		if ( current_user_can( 'manage_options' ) ) {
+   
+	        // If there is no license key, output nag about ensuring key is set for automatic updates.
+	        if ( ! $key ) :
+	        ?>
+	        <div class="error">
+	            <p><?php printf( __( 'No valid license key has been entered, so automatic updates for Soliloquy have been turned off. <a href="%s">Please click here to enter your license key and begin receiving automatic updates.</a>', 'soliloquy' ), esc_url( add_query_arg( array( 'post_type' => 'soliloquy', 'page' => 'soliloquy-settings' ), admin_url( 'edit.php' ) ) ) ); ?></p>
+	        </div>
+	        <?php
+	        endif;
+	
+	        // If a key has expired, output nag about renewing the key.
+	        if ( isset( $option['is_expired'] ) && $option['is_expired'] ) :
+	        ?>
+	        <div class="error">
+	            <p><?php printf( __( 'Your license key for Soliloquy has expired. <a href="%s" target="_blank">Please click here to renew your license key and continue receiving automatic updates.</a>', 'soliloquy' ), 'https://soliloquywp.com/login/' ); ?></p>
+	        </div>
+	        <?php
+	        endif;
+	
+	        // If a key has been disabled, output nag about using another key.
+	        if ( isset( $option['is_disabled'] ) && $option['is_disabled'] ) :
+	        ?>
+	        <div class="error">
+	            <p><?php esc_html_e( 'Your license key for Soliloquy has been disabled. Please use a different key to continue receiving automatic updates.', 'soliloquy' ); ?></p>
+	        </div>
+	        <?php
+	        endif;
+	
+	        // If a key is invalid, output nag about using another key.
+	        if ( isset( $option['is_invalid'] ) && $option['is_invalid'] ) :
+	        ?>
+	        <div class="error">
+	            <p><?php esc_html_e( 'Your license key for Soliloquy is invalid. The key no longer exists or the user associated with the key has been deleted. Please use a different key to continue receiving automatic updates.', 'soliloquy' ); ?></p>
+	        </div>
+	        <?php
+	        endif;
+	
+	        // If there are any license errors, output them now.
+	        if ( ! empty( $this->errors ) ) :
+	        ?>
+	        <div class="error">
+	            <p><?php echo implode( '<br>', $this->errors ); ?></p>
+	        </div>
+	        <?php
+	        endif;
+	
+	        // If there are any success messages, output them now.
+	        if ( ! empty( $this->success ) ) :
+	        ?>
+	        <div class="updated">
+	            <p><?php echo implode( '<br>', $this->success ); ?></p>
+	        </div>
+	        <?php
+		        
+	        endif;
+        	
+        }
 
     }
 
@@ -513,7 +517,7 @@ class Soliloquy_License {
         if ( 200 != $response_code || is_wp_error( $response_body ) ) {
             return false;
         }
-
+                
         // Return the json decoded content.
         return json_decode( $response_body );
 

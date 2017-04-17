@@ -1,4 +1,10 @@
 <?php
+	
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+	
 // For backwards compat, load the v1 template tag if it doesn't exist.
 if ( ! function_exists( 'soliloquy_slider' ) ) {
     /**

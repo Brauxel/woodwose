@@ -98,10 +98,12 @@ if ( class_exists( 'Tribe__Events__Main' ) ) {
 		$ven_id = tribe_get_venue_id( $postId );
 		$url = esc_url_raw( get_permalink( $ven_id ) );
 
-		if ( $full_link ) {
-			$name = tribe_get_venue( $ven_id );
+		if ( ! class_exists( 'Tribe__Events__Pro__Main' ) ) {
+			$link = tribe_get_venue( $ven_id );
+		} elseif ( $full_link ) {
+			$name       = tribe_get_venue( $ven_id );
 			$attr_title = the_title_attribute( array( 'post' => $ven_id, 'echo' => false ) );
-			$link = ! empty( $url ) && ! empty( $name ) ? '<a href="' . esc_url( $url ) . '" title="'.$attr_title.'">' . $name . '</a>' : false;
+			$link       = ! empty( $url ) && ! empty( $name ) ? '<a href="' . esc_url( $url ) . '" title="' . $attr_title . '">' . $name . '</a>' : false;
 		} else {
 			$link = $url;
 		}
@@ -144,9 +146,9 @@ if ( class_exists( 'Tribe__Events__Main' ) ) {
 	 */
 	function tribe_get_full_address( $postId = null, $includeVenueName = false ) {
 		$postId    = tribe_get_venue_id( $postId );
-		$tribe_ecp = Tribe__Events__Main::instance();
+		$tec = Tribe__Events__Main::instance();
 
-		return apply_filters( 'tribe_get_full_address', $tribe_ecp->fullAddress( $postId, $includeVenueName ) );
+		return apply_filters( 'tribe_get_full_address', $tec->fullAddress( $postId, $includeVenueName ) );
 	}
 
 	/**
@@ -445,21 +447,26 @@ if ( class_exists( 'Tribe__Events__Main' ) ) {
 	}
 
 	/**
-	* Gets venue details for use in some single-event templates.
-	*
-	* @param null $post_id
-	*
-	* @return array The venue name and venue address.
-	*/
-	function tribe_get_venue_details() {
+	 * Gets venue details for use in some single-event templates.
+	 *
+	 * @param null $post_id
+	 *
+	 * @return array The venue name and venue address.
+	 */
+	function tribe_get_venue_details( $post_id = null ) {
+		$post_id = Tribe__Main::post_id_helper( $post_id );
+
+		if ( ! $post_id ) {
+			return array();
+		}
 
 		$venue_details = array();
 
-		if ( $venue_name = tribe_get_meta( 'tribe_event_venue_name' ) ) {
-			$venue_details['name'] = $venue_name;
+		if ( $venue_link = tribe_get_venue_link( $post_id ) ) {
+			$venue_details['linked_name'] = $venue_link;
 		}
 
-		if ( $venue_address = tribe_get_meta( 'tribe_event_venue_address' ) ) {
+		if ( $venue_address = tribe_get_full_address( $post_id ) ) {
 			$venue_details['address'] = $venue_address;
 		}
 

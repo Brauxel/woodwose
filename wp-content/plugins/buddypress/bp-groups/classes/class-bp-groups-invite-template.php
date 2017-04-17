@@ -88,8 +88,7 @@ class BP_Groups_Invite_Template {
 				1  => 'group_id',
 			);
 
-			$func_args = func_get_args();
-			$args      = bp_core_parse_args_array( $old_args_keys, $func_args );
+			$args = bp_core_parse_args_array( $old_args_keys, func_get_args() );
 		}
 
 		$r = wp_parse_args( $args, array(
@@ -197,10 +196,11 @@ class BP_Groups_Invite_Template {
 			 *
 			 * @since 1.1.0
 			 * @since 2.3.0 `$this` parameter added.
+			 * @since 2.7.0 Action renamed from `loop_start`.
 			 *
 			 * @param BP_Groups_Invite_Template $this Instance of the current Invites template.
 			 */
-			do_action( 'loop_end', $this );
+			do_action( 'group_invitation_loop_end', $this );
 
 			// Do some cleaning up after the loop
 			$this->rewind_invites();
@@ -261,10 +261,11 @@ class BP_Groups_Invite_Template {
 			 *
 			 * @since 1.1.0
 			 * @since 2.3.0 `$this` parameter added.
+			 * @since 2.7.0 Action renamed from `loop_start`.
 			 *
 			 * @param BP_Groups_Invite_Template $this Instance of the current Invites template.
 			 */
-			do_action( 'loop_start', $this );
+			do_action( 'group_invitation_loop_start', $this );
 		}
 	}
 }

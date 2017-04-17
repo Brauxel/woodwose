@@ -14,10 +14,6 @@
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit;
 
-if ( ! buddypress()->do_autoload ) {
-	require dirname( __FILE__ ) . '/classes/class-bp-activity-theme-compat.php';
-}
-
 /**
  * Load the Activity directory.
  *
@@ -236,7 +232,7 @@ function bp_activity_screen_single_activity_permalink() {
 
 		// Check to see if the group is not public, if so, check the
 		// user has access to see this activity.
-		if ( $group = groups_get_group( array( 'group_id' => $activity->item_id ) ) ) {
+		if ( $group = groups_get_group( $activity->item_id ) ) {
 
 			// Group is not public.
 			if ( 'public' != $group->status ) {

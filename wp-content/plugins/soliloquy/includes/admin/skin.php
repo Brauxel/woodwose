@@ -7,6 +7,12 @@
  * @package Soliloquy
  * @author  Thomas Griffin
  */
+ 
+ // Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
 class Soliloquy_Skin extends WP_Upgrader_Skin {
 
     /**
@@ -76,7 +82,7 @@ class Soliloquy_Skin extends WP_Upgrader_Skin {
     function error( $errors ) {
 
         if ( ! empty( $errors ) ) {
-            echo json_encode( array( 'error' => __( 'There was an error installing the addon. Please try again.', 'soliloquy' ) ) );
+            echo json_encode( array( 'error' => esc_attr__( 'There was an error installing the addon. Please try again.', 'soliloquy' ) ) );
             die;
         }
 

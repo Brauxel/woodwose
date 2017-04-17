@@ -52,6 +52,11 @@ function bp_attachments_uploads_dir_get( $data = '' ) {
 		foreach ( $upload_data as $key => $value ) {
 			if ( 'basedir' === $key || 'baseurl' === $key ) {
 				$upload_data[ $key ] = trailingslashit( $value ) . $attachments_dir;
+
+				// Fix for HTTPS.
+				if ( 'baseurl' === $key && is_ssl() ) {
+					$upload_data[ $key ] = str_replace( 'http://', 'https://', $upload_data[ $key ] );
+				}
 			} else {
 				unset( $upload_data[ $key ] );
 			}
@@ -507,7 +512,7 @@ function bp_attachments_delete_file( $args = array() ) {
 	 * @since 2.5.1
 	 *
 	 * @param bool $value Whether or not to delete the BuddyPress attachment.
-	 * @param array Array of arguments for the attachment deletion.
+`	 * @param array $args Array of arguments for the attachment deletion.
 	 */
 	if ( ! apply_filters( 'bp_attachments_pre_delete_file', true, $args ) ) {
 		return true;
@@ -944,7 +949,7 @@ function bp_attachments_get_template_part( $slug ) {
  * @since 2.4.0
  *
  * @param string $component The component to get the settings for ("xprofile" for user or "groups").
- * @return array The cover image settings.
+ * @return array|bool The cover image settings in array, false on failure.
  */
 function bp_attachments_get_cover_image_settings( $component = 'xprofile' ) {
 	// Default parameters.
@@ -963,7 +968,7 @@ function bp_attachments_get_cover_image_settings( $component = 'xprofile' ) {
 	 * Eg: for the user's profile cover image use:
 	 * add_filter( 'bp_before_xprofile_cover_image_settings_parse_args', 'your_filter', 10, 1 );
 	 *
-	 * @since  2.4.0
+	 * @since 2.4.0
 	 *
 	 * @param array $settings The cover image settings
 	 */
@@ -990,12 +995,12 @@ function bp_attachments_get_cover_image_settings( $component = 'xprofile' ) {
 }
 
 /**
- * Get cover image Width and Height
+ * Get cover image Width and Height.
  *
  * @since 2.4.0
  *
  * @param string $component The BuddyPress component concerned ("xprofile" for user or "groups").
- * @return array An associative array containing the advised width and height for the cover image.
+ * @return array|bool An associative array containing the advised width and height for the cover image. False if settings are empty.
  */
 function bp_attachments_get_cover_image_dimensions( $component = 'xprofile' ) {
 	// Let's prevent notices when setting the warning strings.
@@ -1180,7 +1185,7 @@ function bp_attachments_cover_image_generate_file( $args = array(), $cover_image
  *
  * @since 2.4.0
  *
- * @return string|null A json object containing success data if the upload succeeded
+ * @return string|null A json object containing success data if the upload succeeded,
  *                     error message otherwise.
  */
 function bp_attachments_cover_image_ajax_upload() {
@@ -1242,10 +1247,7 @@ function bp_attachments_cover_image_ajax_upload() {
 
 		if ( ! bp_get_current_group_id() && ! empty( $bp_params['item_id'] ) ) {
 			$needs_reset = array( 'component' => 'groups', 'key' => 'current_group', 'value' => $bp->groups->current_group );
-			$bp->groups->current_group = groups_get_group( array(
-				'group_id'        => $bp_params['item_id'],
-				'populate_extras' => false,
-			) );
+			$bp->groups->current_group = groups_get_group( $bp_params['item_id'] );
 		}
 
 	// Other object's cover image.
@@ -1421,6 +1423,19 @@ function bp_attachments_cover_image_ajax_delete() {
 
 	// Handle delete.
 	if ( bp_attachments_delete_file( array( 'item_id' => $cover_image_data['item_id'], 'object_dir' => $dir, 'type' => 'cover-image' ) ) ) {
+		/**
+		 * Fires if the cover image was successfully deleted.
+		 *
+		 * The dynamic portion of the hook will be xprofile in case of a user's
+		 * cover image, groups in case of a group's cover image. For instance:
+		 * Use add_action( 'xprofile_cover_image_deleted' ) to run your specific
+		 * code once the user has deleted his cover image.
+		 *
+		 * @since 2.8.0
+		 *
+		 * @param int $item_id Inform about the item id the cover image was deleted for.
+		 */
+		do_action( "{$component}_cover_image_deleted", (int) $cover_image_data['item_id'] );
 
 		// Defaults no cover image.
 		$response = array(

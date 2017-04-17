@@ -7,6 +7,11 @@
  * @package Soliloquy
  * @author  Thomas Griffin
  */
+ // Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
 class Soliloquy_Common {
 
     /**
@@ -61,7 +66,7 @@ class Soliloquy_Common {
         $sizes = array(
             array(
                 'value'  => 'default',
-                'name'   => __( 'Default', 'soliloquy' ),
+                'name'   => esc_attr__( 'Default', 'soliloquy' ),
                 'width'  => 0,
                 'height' => 0
             )
@@ -69,7 +74,7 @@ class Soliloquy_Common {
 
         $sizes[] = array(
             'value'  => 'full_width',
-            'name'   => __( 'Full Width', 'soliloquy' ),
+            'name'   => esc_attr__( 'Full Width', 'soliloquy' ),
             'width'  => 0,
             'height' => 0
         );
@@ -118,12 +123,12 @@ class Soliloquy_Common {
         $themes = array(
             array(
                 'value' => 'base',
-                'name'  => __( 'Base', 'soliloquy' ),
+                'name'  => esc_attr__( 'Base', 'soliloquy' ),
                 'file'  => $this->base->file
             ),
             array(
                 'value' => 'classic',
-                'name'  => __( 'Classic', 'soliloquy' ),
+                'name'  => esc_attr__( 'Classic', 'soliloquy' ),
                 'file'  => $this->base->file
             )
         );
@@ -144,19 +149,19 @@ class Soliloquy_Common {
         $transitions = array(
             array(
                 'value' => 'fade',
-                'name'  => __( 'Fade', 'soliloquy' )
+                'name'  => esc_attr__( 'Fade', 'soliloquy' )
             ),
             array(
                 'value' => 'horizontal',
-                'name'  => __( 'Scroll Horizontal', 'soliloquy' )
+                'name'  => esc_attr__( 'Scroll Horizontal', 'soliloquy' )
             ),
             array(
                 'value' => 'vertical',
-                'name'  => __( 'Scroll Vertical', 'soliloquy' )
+                'name'  => esc_attr__( 'Scroll Vertical', 'soliloquy' )
             ),
             array(
                 'value' => 'ticker',
-                'name'  => __( 'Ticker (Continuous) Scroll Horizontal', 'soliloquy' )
+                'name'  => esc_attr__( 'Ticker (Continuous) Scroll Horizontal', 'soliloquy' )
             )
         );
 
@@ -176,26 +181,60 @@ class Soliloquy_Common {
         $positions = array(
             array(
                 'value' => 'center',
-                'name'  => __( 'Center', 'soliloquy' )
+                'name'  => esc_attr__( 'Center', 'soliloquy' )
             ),
             array(
                 'value' => 'left',
-                'name'  => __( 'Left', 'soliloquy' )
+                'name'  => esc_attr__( 'Left', 'soliloquy' )
             ),
             array(
                 'value' => 'right',
-                'name'  => __( 'Right', 'soliloquy' )
+                'name'  => esc_attr__( 'Right', 'soliloquy' )
             ),
             array(
                 'value' => 'none',
-                'name'  => __( 'None', 'soliloquy' )
+                'name'  => esc_attr__( 'None', 'soliloquy' )
             )
         );
 
         return apply_filters( 'soliloquy_slider_positions', $positions );
 
     }
+    /**
+     * Helper method for retrieving slider sort options.
+     *
+     * @since 1.0.0
+     *
+     * @return array Array of slider sort data.
+     */
+    public function get_slider_sort() {
 
+        $sort = array(
+            array(
+                'value' => 'manual',
+                'name'  => esc_attr__( 'Manual Sorting', 'soliloquy' )
+            ),
+            array(
+                'value' => 'random',
+                'name'  => esc_attr__( 'Random', 'soliloquy' )
+            ),
+            array(
+                'value' => 'title',
+                'name'  => esc_attr__( 'Title', 'soliloquy' )
+            ),
+            array(
+                'value' => 'src',
+                'name'  => esc_attr__( 'Filename', 'soliloquy' )
+            ),
+            array(
+                'value' => 'status',
+                'name'  => esc_attr__( 'Status', 'soliloquy' )
+            ),
+        );
+
+        return apply_filters( 'soliloquy_slider_sort', $sort );
+
+    }
     /**
      * Helper method for retrieving caption positions.
      *
@@ -208,19 +247,19 @@ class Soliloquy_Common {
         $positions = array(
             array(
                 'value' => 'top',
-                'name'  => __( 'Top', 'soliloquy' )
+                'name'  => esc_attr__( 'Top', 'soliloquy' )
             ),
             array(
                 'value' => 'bottom',
-                'name'  => __( 'Bottom', 'soliloquy' )
+                'name'  => esc_attr__( 'Bottom', 'soliloquy' )
             ),
             array(
                 'value' => 'left',
-                'name'  => __( 'Left', 'soliloquy' )
+                'name'  => esc_attr__( 'Left', 'soliloquy' )
             ),
             array(
                 'value' => 'right',
-                'name'  => __( 'Right', 'soliloquy' )
+                'name'  => esc_attr__( 'Right', 'soliloquy' )
             ),
         );
 
@@ -240,15 +279,15 @@ class Soliloquy_Common {
         $values = array(
             array(
                 'value' => 'off',
-                'name'  => __( 'Off', 'soliloquy' )
+                'name'  => esc_attr__( 'Off', 'soliloquy' )
             ),
             array(
                 'value' => 'polite',
-                'name'  => __( 'Polite', 'soliloquy' )
+                'name'  => esc_attr__( 'Polite', 'soliloquy' )
             ),
             array(
                 'value' => 'assertive',
-                'name'  => __( 'Assertive', 'soliloquy' )
+                'name'  => esc_attr__( 'Assertive', 'soliloquy' )
             ),
         );
 
@@ -309,7 +348,7 @@ class Soliloquy_Common {
             'slider'            => 1,
             'caption_position'  => 'bottom',
             'caption_delay'     => 0,
-            'mobile'            => 1,
+            'mobile'            => 0,
             'mobile_width'      => 600,
             'mobile_height'     => 200,
             'auto'              => 1,
@@ -331,10 +370,12 @@ class Soliloquy_Common {
             'aria_live'         => 'polite',
 
             // Misc
-            'classes'       => array(),
-            'title'         => '',
-            'slug'          => '',
-            'rtl'           => 0,
+            'classes'       	=> array(),
+            'title'        		=> '',
+            'slug'          	=> '',
+            'rtl'           	=> 0,
+            'sort_order'   		=> 'manual',
+
         );
         return apply_filters( 'soliloquy_defaults', $defaults, $post_id );
 
@@ -351,7 +392,7 @@ class Soliloquy_Common {
 
         $supported_file_types = array(
             array(
-                'title'     => __( 'Image Files', 'soliloquy' ),
+                'title'     => esc_attr__( 'Image Files', 'soliloquy' ),
                 'extensions'=> 'jpg,jpeg,jpe,gif,png,bmp,tif,tiff,JPG,JPEG,JPE,GIF,PNG,BMP,TIF,TIFF',
             ),
         );
@@ -512,7 +553,7 @@ class Soliloquy_Common {
 
             // If an editor cannot be found, the user needs to have GD or Imagick installed.
             if ( is_wp_error( $editor ) ) {
-                return new WP_Error( 'soliloquy-error-no-editor', __( 'No image editor could be selected. Please verify with your webhost that you have either the GD or Imagick image library compiled with your PHP install on your server.', 'soliloquy' ) );
+                return new WP_Error( 'soliloquy-error-no-editor', esc_attr__( 'No image editor could be selected. Please verify with your webhost that you have either the GD or Imagick image library compiled with your PHP install on your server.', 'soliloquy' ) );
             }
 
             // Set the image editor quality.
@@ -615,7 +656,7 @@ class Soliloquy_Common {
 
         // Return an error if no URL is present.
         if ( empty( $url ) ) {
-            return new WP_Error( 'soliloquy-error-no-url', __( 'No image URL specified for cropping.', 'soliloquy' ) );
+            return new WP_Error( 'soliloquy-error-no-url', esc_attr__( 'No image URL specified for cropping.', 'soliloquy' ) );
         }
 
         // Get the image file path.
@@ -634,7 +675,7 @@ class Soliloquy_Common {
 
         // Attempt to stream and import the image if it does not exist based on URL provided.
         if ( ! file_exists( $file_path ) ) {
-            return new WP_Error( 'soliloquy-error-no-file', __( 'No file could be found for the image URL specified.', 'soliloquy' ) );
+            return new WP_Error( 'soliloquy-error-no-file', esc_attr__( 'No file could be found for the image URL specified.', 'soliloquy' ) );
         }
 
         // Get original image size.
@@ -642,7 +683,7 @@ class Soliloquy_Common {
 
         // If no size data obtained, return an error.
         if ( ! $size ) {
-            return new WP_Error( 'soliloquy-error-no-size', __( 'The dimensions of the original image could not be retrieved for cropping.', 'soliloquy' ) );
+            return new WP_Error( 'soliloquy-error-no-size', esc_attr__( 'The dimensions of the original image could not be retrieved for cropping.', 'soliloquy' ) );
         }
 
         // Set original width and height.
@@ -654,7 +695,7 @@ class Soliloquy_Common {
         } else if ( $height && ! $width ) {
             $width = floor( $orig_width * ($height / $orig_height) );
         } else if ( ! $width && ! $height ) {
-            return new WP_Error( 'soliloquy-error-no-size', __( 'The dimensions of the original image could not be retrieved for cropping.', 'soliloquy' ) );
+            return new WP_Error( 'soliloquy-error-no-size', esc_attr__( 'The dimensions of the original image could not be retrieved for cropping.', 'soliloquy' ) );
         }
 
         // Allow for different retina image sizes.
@@ -734,6 +775,272 @@ class Soliloquy_Common {
 
         $time = ini_get( 'max_execution_time' );
         return ! $time || empty( $time ) ? (int) 0 : $time;
+
+    }
+
+
+    /**
+     * Returns the video type an other attributes for the given video URL
+     *
+     * @since 1.0.0
+     *
+     * @param string $url Video URL
+     * @param array $item Gallery Item
+     * @param array $data Gallery Data
+     * @param bool $type_only Only return the video type
+     * @return mixed (array) Video Attributes, (string) Video Type, (bool) Unsupported Video Type
+     */
+    public function get_video_type( $url, $item, $data, $type_only = false ) {
+
+        $result = false;
+        $regex = $this->get_self_hosted_supported_filetypes_string();
+
+    	// Check if the URL is a video
+    	if ( preg_match( '#(?<=v=)[a-zA-Z0-9-]+(?=&)|(?<=v\/)[^&\n]+(?=\?)|(?<=v=)[^&\n]+|(?<=youtu.be/)[^&\n]+#', $url, $y_matches ) ) {
+            // YouTube
+            $video_id = $y_matches[0];
+            $type = 'youtube';
+
+            if ( $type_only ) {
+                return $type;
+            }
+
+            $embed_url = esc_url( add_query_arg( $this->get_youtube_args( $data ), '//youtube.com/embed/' . $y_matches[0] ) );
+        } elseif ( preg_match( '#(?:https?:\/\/(?:[\w]+\.)*vimeo\.com(?:[\/\w]*\/videos?)?\/([0-9]+)[^\s]*)#i', $url, $v_matches ) ) {
+            // Vimeo
+            $video_id = $v_matches[1];
+            $type = 'vimeo';
+
+            if ( $type_only ) {
+                return $type;
+            }
+
+            $embed_url = esc_url( add_query_arg( $this->get_vimeo_args( $data ), '//player.vimeo.com/video/' . $v_matches[1] ) );
+        } elseif ( preg_match( '/https?:\/\/(.+)?(wistia.com|wi.st)\/.*/i', $url, $w_matches ) ) {
+            // Wistia
+            $parts = explode( '/', $w_matches[0] );
+            $video_id = array_pop( $parts );
+            $type = 'wistia';
+
+            if ( $type_only ) {
+                return $type;
+            }
+
+            $embed_url   = esc_url( add_query_arg( $this->get_wistia_args( $data ), '//fast.wistia.net/embed/iframe/' . $video_id ) );
+        } elseif ( preg_match( '/(' . $regex . ')/', $url, $matches ) ) {
+            // Self hosted
+            $parts = explode( '.', $matches[0] );
+            $type = $parts[1];
+
+            if ( $type_only ) {
+                return $type;
+            }
+
+            $video_id = 0;
+            $embed_url = $url;
+        }
+
+        // If a video type was found, return an array of video attributes
+        if ( isset( $type ) ) {
+        	$result = array(
+        		'type' 		=> $type,
+        		'video_id'	=> $video_id,
+                'embed_url' => $embed_url,
+        	);
+        }
+
+        // Allow devs and custom addons to build their own routine for populating attribute data for their custom video type
+        $result = apply_filters( 'soliloquy_get_video_type', $result, $url, $item, $data );
+
+        return $result;
+
+    }
+
+    /**
+     * Returns the query args to be passed to YouTube embedded videos.
+     *
+     * @since 1.0.0
+     *
+     * @param array $data Array of gallery data.
+     */
+    public function get_youtube_args( $data ) {
+
+        // Get instance
+        $instance = Soliloquy_Shortcode::get_instance();
+
+        $args = array(
+            'enablejsapi'    => 1,
+            'version'        => 3,
+            'wmode'          => 'transparent',
+            'rel'            => 0,
+            'showinfo'       => 0,
+            'modestbranding' => 1,
+            'autoplay'       => 1,
+            'controls'		 => 1,
+            'origin'         => get_home_url()
+        );
+
+        return apply_filters( 'soliloquy_youtube_args', $args, $data );
+
+    }
+
+    /**
+     * Returns the query args to be passed to Vimeo embedded videos.
+     *
+     * @since 1.0.0
+     *
+     * @param array $data Array of gallery data.
+     */
+    public function get_vimeo_args( $data ) {
+
+        $args = array(
+            'api'        => 1,
+            'wmode'      => 'transparent',
+            'byline'     => 0,
+            'title'      => 0,
+            'portrait'   => 0,
+            'autoplay'   => 1,
+            'badge'      => 0,
+            'fullscreen' => 1
+        );
+
+        return apply_filters( 'soliloquy_vimeo_args', $args, $data );
+
+    }
+
+    /**
+     * Returns the query args to be passed to Wistia embedded videos.
+     *
+     * @since 1.0.0
+     *
+     * @param array $data Array of gallery data.
+     */
+    public function get_wistia_args( $data ) {
+
+        // Get instance
+        $instance = Soliloquy_Shortcode::get_instance();
+
+        $args = array(
+            'version'               => 'v1',
+            'wmode'                 => 'opaque',
+            'volumeControl'         => 1,
+            'controlsVisibleOnLoad' => 1,
+            'videoFoam'             => 1
+        );
+
+        return apply_filters( 'soliloquy_wistia_args', $args, $data );
+
+    }
+
+    /**
+     * Returns the query args to be passed to Local videos.
+     *
+     * @since 2.4.1.4
+     *
+     * @param array $data Array of slider data.
+     */
+    public function get_local_video_args( $data ) {
+
+        $args = array(
+            'autoplay'  	=> 1,
+            'playpause' 	=> 1,
+            'progress'  	=> 1,
+            'current'   	=> 1,
+            'duration'  	=> 1,
+            'volume'    	=> 1,
+            'fullscreen'	=> 1,
+        );
+
+        return apply_filters( 'soliloquy_local_video_args', $args, $data );
+
+    }
+
+    /**
+     * Returns an array of positions for new slides to be added to in an existing Slider
+     *
+     * @since 2.4.1.7
+     *
+     * @return array
+     */
+	public function sort_slides( $data, $sort_type ){
+
+		//Return if we dont have a sort type
+	 	if(  empty( $sort_type ) ){
+
+		 	return $data;
+
+	 	}
+
+	 	//Update the sort type
+	 	$data['config']['sort_order'] = $sort_type;
+
+	    switch( $sort_type ){
+		    case 'random':
+                // Shuffle keys
+                $keys = array_keys( $data['slider'] );
+                shuffle( $keys );
+
+                // Rebuild array in new order
+                $new = array();
+                foreach( $keys as $key ) {
+                    $new[ $key ] = $data['slider'][ $key ];
+                }
+
+                // Assign back to gallery
+                $data['slider'] = $new;
+                break;
+            case 'src':
+            case 'title':
+            case 'status':
+                // Get metadata
+                $keys = array();
+                foreach ( $data['slider'] as $id => $item ) {
+                    $keys[ $id ] = strip_tags( $item[ $sort_type ] );
+                }
+
+				$sorting_direction = 'ASC';
+
+                // Sort titles / captions
+                if ( $sorting_direction == 'ASC' ) {
+                    natcasesort( $keys );
+                } else {
+                    arsort( $keys );
+                }
+
+                // Iterate through sorted items, rebuilding slider
+                $new = array();
+                foreach( $keys as $key => $title ) {
+                    $new[ $key ] = $data['slider'][ $key ];
+                }
+
+                // Assign back to gallery
+                $data['slider'] = $new;
+                break;
+
+		    break;
+			case 'date':
+			break;
+
+	    }
+
+		return $data;
+
+	}
+    /**
+     * Returns the query args to be passed to embedded / self hosted videos
+     *
+     * @since 1.0.0
+     *
+     * @param array $data Array of gallery data.
+     * @param string $url Video URL
+     */
+    public function get_embed_args( $data, $url ) {
+
+        $args = array(
+            'url' => urlencode( $url ),
+        );
+
+        return apply_filters( 'soliloquy_embed_args', $args, $data, $url );
 
     }
 

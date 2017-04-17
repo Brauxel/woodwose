@@ -7,6 +7,12 @@
  * @package Soliloquy
  * @author  Thomas Griffin
  */
+
+ // Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
 class Soliloquy_Settings {
 
     /**
@@ -70,7 +76,14 @@ class Soliloquy_Settings {
         if ( ! $publishing_default ) {
             update_option ( 'soliloquy-publishing-default', 'active' );
         }
-
+        
+        // Check if the soliloquy_slide_view option is set. If not, default it to grid
+        $defaul_view = get_option( 'soliloquy_slide_view' );
+        if ( ! $defaul_view ) {
+	        
+            update_option ( 'soliloquy_slide_view', 'grid' );
+        }
+        
         // Possibly add a callback for upgrading.
         $upgrade_lite = get_option( 'soliloquy_upgrade' );
         if ( $upgrade_lite ) {
@@ -96,8 +109,8 @@ class Soliloquy_Settings {
         // Register the submenu.
         $this->hook = add_submenu_page(
             'edit.php?post_type=soliloquy',
-            __( 'Soliloquy Settings', 'soliloquy' ),
-            __( 'Settings', 'soliloquy' ),
+            esc_attr__( 'Soliloquy Settings', 'soliloquy' ),
+            esc_attr__( 'Settings', 'soliloquy' ),
             apply_filters( 'soliloquy_menu_cap', 'manage_options' ),
             $this->base->plugin_slug . '-settings',
             array( $this, 'settings_page' )
@@ -105,7 +118,6 @@ class Soliloquy_Settings {
 
         // If successful, load admin assets only on that page and check for addons refresh.
         if ( $this->hook ) {
-            add_action( 'load-' . $this->hook, array( $this, 'maybe_refresh_addons' ) );
             add_action( 'load-' . $this->hook, array( $this, 'maybe_fix_migration' ) );
             add_action( 'load-' . $this->hook, array( $this, 'update_settings' ) );
             add_action( 'load-' . $this->hook, array( $this, 'settings_page_assets' ) );
@@ -114,31 +126,6 @@ class Soliloquy_Settings {
     }
 
     /**
-     * Maybe refreshes the addons page.
-     *
-     * @since 1.0.0
-     *
-     * @return null Return early if not refreshing the addons.
-     */
-    public function maybe_refresh_addons() {
-
-        if ( ! $this->is_refreshing_addons() ) {
-            return;
-        }
-
-        if ( ! $this->refresh_addons_action() ) {
-            return;
-        }
-
-        if ( ! $this->base->get_license_key() ) {
-            return;
-        }
-
-        $this->get_addons_data( $this->base->get_license_key() );
-
-    }
-    
-    /**
      * Maybe fixes the broken migration.
      *
      * @since 2.3.9.6
@@ -146,7 +133,7 @@ class Soliloquy_Settings {
      * @return null Return early if not fixing the broken migration
      */
     public function maybe_fix_migration() {
-	    
+
 	    // Check if user pressed 'Fix' button and nonce is valid
 	    if ( !isset( $_POST['soliloquy-serialization-submit'] ) ) {
 		   	return;
@@ -154,34 +141,34 @@ class Soliloquy_Settings {
 		if ( !wp_verify_nonce( $_POST['soliloquy-serialization-nonce'], 'soliloquy-serialization-nonce' ) ) {
 			return;
 		}
-		
+
 		// If here, fix potentially broken migration
 		// Get WPDB and serialization class
 		global $wpdb, $fixedSliders;
 		require plugin_dir_path( __FILE__ ) . 'serialization.php';
 		$instance = Soliloquy_Serialization_Admin::get_instance();
-		 
+
 		// Keep count of the number of sliders that get fixed
 		$fixedSliders = 0;
-		
+
 		// Query to get all Soliloquy CPTs
 		$sliders = new WP_Query( array (
 			'post_type' => 'soliloquy',
 			'post_status' => 'any',
-			'posts_per_page' => -1,	
+			'posts_per_page' => -1,
 		) );
-		
+
 		// Iterate through sliders
 		if ( $sliders->posts ) {
 			foreach ( $sliders->posts as $slider ) {
-				
+
 				// Attempt to get slider data
 				$slider_data = get_post_meta( $slider->ID, '_sol_slider_data', true );
 				if ( is_array( $slider_data ) ) {
 					// Nothing to fix here, continue
 					continue;
 				}
-				
+
 				// Need to fix the broken serialized string for this slider
 				// Get raw string from DB
 				$query = $wpdb->prepare( "	SELECT meta_value
@@ -192,10 +179,10 @@ class Soliloquy_Settings {
 					        				$slider->ID,
 					        				'_sol_slider_data' );
 				$raw_slider_data = $wpdb->get_row( $query );
-				
+
 				// Do the fix, which returns an unserialized array
 				$slider_data = $instance->fix_serialized_string( $raw_slider_data->meta_value );
-				
+
 				// Check we now have an array of unserialized data
 				if ( is_array ( $slider_data ) ) {
 					update_post_meta( $slider->ID, '_sol_slider_data', $slider_data );
@@ -203,12 +190,12 @@ class Soliloquy_Settings {
 				}
 			}
 		}
-	    
+
 	    // Output an admin notice so the user knows what happened
 	    add_action( 'admin_notices', array( $this, 'fixed_migration' ) );
-	    
+
     }
-    
+
     /**
      * Update settings, if defined
      *
@@ -219,7 +206,7 @@ class Soliloquy_Settings {
     public function update_settings() {
 
         // Check form was submitted
-        if ( ! isset( $_POST['soliloquy-settings-submit'] ) ) {	
+        if ( ! isset( $_POST['soliloquy-settings-submit'] ) ) {
             return;
         }
 
@@ -227,16 +214,17 @@ class Soliloquy_Settings {
 		if ( ! wp_verify_nonce( $_POST['soliloquy-settings-nonce'], 'soliloquy-settings-nonce' ) ) {
 			return;
 		}
-	
+
 		// Update options
 		update_option( 'soliloquy-publishing-default', $_POST['soliloquy-publishing-default'] );
         update_option( 'soliloquy_slide_position', $_POST['soliloquy_slide_position'] );
+        update_option( 'soliloquy_slide_view', $_POST['soliloquy_slide_view'] );
 
         // Show confirmation notice
         add_action( 'admin_notices', array( $this, 'updated_settings' ) );
-    
+
     }
-    
+
     /**
 	 * Outputs a WordPress style notification to tell the user how many sliders were
 	 * fixed after running the migration fixer
@@ -245,15 +233,15 @@ class Soliloquy_Settings {
 	 */
     public function fixed_migration() {
 	    global $fixedSliders;
-	    
+
 	    ?>
 	    <div class="updated">
-            <p><strong><?php echo $fixedSliders . __( ' slider(s) fixed successfully.', 'soliloquy' ); ?></strong></p>
+            <p><strong><?php echo $fixedSliders . esc_html__( ' slider(s) fixed successfully.', 'soliloquy' ); ?></strong></p>
         </div>
 	    <?php
-		    
+
     }
-    
+
      /**
 	 * Outputs a WordPress style notification to tell the user their settings were saved
 	 *
@@ -262,10 +250,10 @@ class Soliloquy_Settings {
     public function updated_settings() {
 	    ?>
 	    <div class="updated">
-            <p><?php _e( 'Settings updated.', 'soliloquy' ); ?></p>
+            <p><?php esc_html_e( 'Settings updated.', 'soliloquy' ); ?></p>
         </div>
 	    <?php
-		    
+
     }
 
     /**
@@ -303,28 +291,20 @@ class Soliloquy_Settings {
     public function enqueue_admin_scripts() {
 
         wp_enqueue_script( 'jquery-ui-tabs' );
-        wp_register_script( $this->base->plugin_slug . '-settings-script', plugins_url( 'assets/js/settings.js', $this->base->file ), array( 'jquery', 'jquery-ui-tabs' ), $this->base->version, true );
+	    wp_register_script( $this->base->plugin_slug . '-chosen', plugins_url( 'assets/js/min/chosen.jquery-min.js', $this->base->file ), array(), $this->base->version, true );
+		wp_enqueue_script( $this->base->plugin_slug . '-chosen' );
+
+        wp_register_script( $this->base->plugin_slug . '-settings-script', plugins_url( 'assets/js/min/settings-min.js', $this->base->file ), array( 'jquery', 'jquery-ui-tabs' ), $this->base->version, true );
         wp_enqueue_script( $this->base->plugin_slug . '-settings-script' );
         wp_localize_script(
             $this->base->plugin_slug . '-settings-script',
             'soliloquy_settings',
             array(
-                'active'           => __( 'Status: Active', 'soliloquy' ),
-                'activate'         => __( 'Activate', 'soliloquy' ),
-                'activate_nonce'   => wp_create_nonce( 'soliloquy-activate' ),
-                'activating'       => __( 'Activating...', 'soliloquy' ),
                 'ajax'             => admin_url( 'admin-ajax.php' ),
-                'deactivate'       => __( 'Deactivate', 'soliloquy' ),
-                'deactivate_nonce' => wp_create_nonce( 'soliloquy-deactivate' ),
-                'deactivating'     => __( 'Deactivating...', 'soliloquy' ),
-                'inactive'         => __( 'Status: Inactive', 'soliloquy' ),
-                'install'          => __( 'Install Addon', 'soliloquy' ),
-                'install_nonce'    => wp_create_nonce( 'soliloquy-install' ),
-                'installing'       => __( 'Installing...', 'soliloquy' ),
-                'proceed'          => __( 'Proceed', 'soliloquy' ),
-                'ajax'             => admin_url( 'admin-ajax.php' ),
+                'proceed'          => esc_attr__( 'Proceed', 'soliloquy' ),
                 'redirect'         => esc_url( add_query_arg( array( 'post_type' => 'soliloquy', 'soliloquy-upgraded' => true ), admin_url( 'edit.php' ) ) ),
                 'upgrade_nonce'    => wp_create_nonce( 'soliloquy-upgrade' )
+
             )
         );
 
@@ -341,23 +321,40 @@ class Soliloquy_Settings {
     public function settings_page() {
 
         ?>
+        <h1 id="soliloquy-tabs-nav" class="soliloquy-clear">
+
+        <?php $i = 0; foreach ( (array) $this->get_soliloquy_settings_tab_nav() as $id => $title ) : $class = 0 === $i ? 'soliloquy-active nav-tab-active' : ''; ?>
+
+        <a class="nav-tab <?php echo $class; ?>" href="#soliloquy-tab-<?php echo $id; ?>" title="<?php echo $title; ?>"><?php echo $title; ?></a>
+
+        <?php $i++; endforeach; ?>
+
+        </h1>
+
         <div id="soliloquy-settings" class="wrap">
-            <h2><?php echo esc_html( get_admin_page_title() ); ?></h2>
+
+	        <h1 class="soliloquy-hideme"></h1>
+
             <div class="soliloquy soliloquy-clear">
+
                 <div id="soliloquy-tabs" class="soliloquy-clear">
-                    <h2 id="soliloquy-tabs-nav" class="soliloquy-clear nav-tab-wrapper">
-                    <?php $i = 0; foreach ( (array) $this->get_soliloquy_settings_tab_nav() as $id => $title ) : $class = 0 === $i ? 'soliloquy-active nav-tab-active' : ''; ?>
-                        <a class="nav-tab <?php echo $class; ?>" href="#soliloquy-tab-<?php echo $id; ?>" title="<?php echo $title; ?>"><?php echo $title; ?></a>
-                    <?php $i++; endforeach; ?>
-                    </h2>
+
                     <?php $i = 0; foreach ( (array) $this->get_soliloquy_settings_tab_nav() as $id => $title ) : $class = 0 === $i ? 'soliloquy-active' : ''; ?>
+
                     <div id="soliloquy-tab-<?php echo $id; ?>" class="soliloquy-tab soliloquy-clear <?php echo $class; ?>">
+
                         <?php do_action( 'soliloquy_tab_settings_' . $id ); ?>
+
                     </div>
+
                     <?php $i++; endforeach; ?>
+
                 </div>
+
             </div>
+
         </div>
+
         <?php
 
     }
@@ -372,8 +369,7 @@ class Soliloquy_Settings {
     public function get_soliloquy_settings_tab_nav() {
 
         $tabs = array(
-            'general' => __( 'General', 'soliloquy' ), // This tab is required. DO NOT REMOVE VIA FILTERING.
-            'addons'  => __( 'Addons', 'soliloquy' ),
+            'general' => esc_attr__( 'General', 'soliloquy' ), // This tab is required. DO NOT REMOVE VIA FILTERING.
         );
         $tabs = apply_filters( 'soliloquy_settings_tab_nav', $tabs );
 
@@ -388,7 +384,7 @@ class Soliloquy_Settings {
             return $tabs;
         }
 
-        $tabs['upgrade'] = __( 'Upgrade', 'soliloquy' );
+        $tabs['upgrade'] = esc_attr__( 'Upgrade', 'soliloquy' );
 
         return $tabs;
 
@@ -400,208 +396,184 @@ class Soliloquy_Settings {
      * @since 1.0.0
      */
     public function settings_general_tab() {
-	    
+
 	    // Get settings
 	    $publishingDefault = get_option( 'soliloquy-publishing-default' );
         $slide_position = get_option( 'soliloquy_slide_position' );
+        $slide_view = get_option( 'soliloquy_slide_view' );
+
         if ( empty ( $slide_position ) ) {
             $slide_position = 'after';
         }
         ?>
         <div id="soliloquy-settings-general">
-            <table class="form-table">
+
+            <table class="form-table soliloquy-settings-table" cellpadding="40">
+
                 <tbody>
+
                     <tr id="soliloquy-settings-key-box">
+
                         <th scope="row">
-                            <label for="soliloquy-settings-key"><?php _e( 'Soliloquy License Key', 'soliloquy' ); ?></label>
+
+                            <label for="soliloquy-settings-key"><?php esc_html_e( 'Soliloquy License Key', 'soliloquy' ); ?></label>
+
                         </th>
+
                         <td>
+
                             <form id="soliloquy-settings-verify-key" method="post">
-                                <input type="password" name="soliloquy-license-key" id="soliloquy-settings-key" value="<?php echo ( $this->base->get_license_key() ? $this->base->get_license_key() : '' ); ?>" />
+
+                                <input class="soliloquy-input" type="password" name="soliloquy-license-key" id="soliloquy-settings-key" value="<?php echo ( $this->base->get_license_key() ? $this->base->get_license_key() : '' ); ?>" />
+
                                 <?php wp_nonce_field( 'soliloquy-key-nonce', 'soliloquy-key-nonce' ); ?>
-                                <?php submit_button( __( 'Verify Key', 'soliloquy' ), 'primary', 'soliloquy-verify-submit', false ); ?>
-                                <?php submit_button( __( 'Deactivate Key', 'soliloquy' ), 'secondary', 'soliloquy-deactivate-submit', false ); ?>
-                                <p class="description"><?php _e( 'License key to enable automatic updates for Soliloquy.', 'soliloquy' ); ?></p>
+
+                                <?php submit_button( esc_attr__( 'Verify Key', 'soliloquy' ), 'button-soliloquy', 'soliloquy-verify-submit', false ); ?>
+
+                                <?php submit_button( esc_attr__( 'Deactivate Key', 'soliloquy' ), 'button-soliloquy-secondary', 'soliloquy-deactivate-submit', false ); ?>
+
+                                <p class="description"><?php esc_html_e( 'License key to enable automatic updates for Soliloquy.', 'soliloquy' ); ?></p>
+
                             </form>
+
                         </td>
+
                     </tr>
+
                     <?php $type = $this->base->get_license_key_type(); if ( ! empty( $type ) ) : ?>
+
                     <tr id="soliloquy-settings-key-type-box">
+
                         <th scope="row">
-                            <label for="soliloquy-settings-key-type"><?php _e( 'Soliloquy License Key Type', 'soliloquy' ); ?></label>
+
+                            <label for="soliloquy-settings-key-type"><?php esc_html_e( 'Soliloquy License Key Type', 'soliloquy' ); ?></label>
+
                         </th>
+
                         <td>
+
                             <form id="soliloquy-settings-key-type" method="post">
+
                                 <span class="soliloquy-license-type"><?php printf( __( 'Your license key type for this site is <strong>%s.</strong>', 'soliloquy' ), $this->base->get_license_key_type() ); ?>
-                                <input type="hidden" name="soliloquy-license-key" value="<?php echo $this->base->get_license_key(); ?>" />
+
+                                <input class="soliloquy-input" type="hidden" name="soliloquy-license-key" value="<?php echo $this->base->get_license_key(); ?>" />
+
                                 <?php wp_nonce_field( 'soliloquy-key-nonce', 'soliloquy-key-nonce' ); ?>
-                                <?php submit_button( __( 'Refresh Key', 'soliloquy' ), 'primary', 'soliloquy-refresh-submit', false ); ?>
-                                <p class="description"><?php _e( 'Your license key type (handles updates and Addons). Click refresh if your license has been upgraded or the type is incorrect.', 'soliloquy' ); ?></p>
+
+                                <?php submit_button( esc_attr__( 'Refresh Key', 'soliloquy' ), 'button-soliloquy', 'soliloquy-refresh-submit', false ); ?>
+
+                                <p class="description"><?php esc_html_e( 'Your license key type (handles updates and Addons). Click refresh if your license has been upgraded or the type is incorrect.', 'soliloquy' ); ?></p>
+
                             </form>
+
                         </td>
+
                     </tr>
+
                     <?php endif; ?>
-                    
+
                     <tr id="soliloquy-serialization-box">
+
                         <th scope="row">
-                            <label for="soliloquy-serialization"><?php _e( 'Fix Broken Migration', 'soliloquy' ); ?></label>
+
+                            <label for="soliloquy-serialization"><?php esc_html_e( 'Fix Broken Migration', 'soliloquy' ); ?></label>
+
                         </th>
+
                         <td>
+
                             <form id="soliloquy-serialization" method="post">
+
                                 <?php wp_nonce_field( 'soliloquy-serialization-nonce', 'soliloquy-serialization-nonce' ); ?>
-                                <?php submit_button( __( 'Fix', 'soliloquy' ), 'primary', 'soliloquy-serialization-submit', false ); ?>
-                                <p class="description"><?php _e( 'If you have changed the URL of your WordPress web site, and manually executed a search/replace query on URLs in your WordPress database, your sliders will probably no longer show any slides.  <strong>If this is the case</strong>, click the button above to fix this. We recommend using a migration plugin or script next time :)', 'soliloquy' ); ?></p>
+
+                                <?php submit_button( esc_attr__( 'Fix', 'soliloquy' ), 'button-soliloquy', 'soliloquy-serialization-submit', false ); ?>
+
+                                <p class="description"><?php esc_html_e( 'If you have changed the URL of your WordPress web site, and manually executed a search/replace query on URLs in your WordPress database, your sliders will probably no longer show any slides.  <strong>If this is the case</strong>, click the button above to fix this. We recommend using a migration plugin or script next time :)', 'soliloquy' ); ?></p>
+
                             </form>
+
                         </td>
+
                     </tr>
+
                 </tbody>
+
             </table>
 
             <!-- General Settings -->
             <form id="soliloquy-settings" method="post">
-                <table class="form-table">
-                    <tbody> 
+
+                <table class="form-table soliloquy-settings-table">
+
+                    <tbody>
+
                         <!-- Publishing Default -->
                         <tr id="soliloquy-publishing-default">
                             <th scope="row">
-                                <label for="soliloquy-publishing-default"><?php _e( 'New Slide Status', 'soliloquy' ); ?></label>
+                                <label for="soliloquy-publishing-default"><?php esc_html_e( 'New Slide Status', 'soliloquy' ); ?></label>
                             </th>
                             <td>
-                                <select name="soliloquy-publishing-default" size="1">
-	                                <option value="active"<?php selected( $publishingDefault, 'active' ); ?>><?php _e( 'Published', 'soliloquy' ); ?></option>
-	                                <option value="pending"<?php selected( $publishingDefault, 'pending' ); ?>><?php _e( 'Draft', 'soliloquy' ); ?></option>
-                                </select>
-                                <p class="description"><?php _e( 'Choose the default status of any new slides that are added/uploaded to your Soliloquy sliders. You can always change slides on an individual basis by editing them.', 'soliloquy' ); ?></p>
+	                            <div class="soliloquy-select">
+	                                <select name="soliloquy-publishing-default" size="1" class="soliloquy-chosen" data-soliloquy-chosen-options='{ "disable_search":"true" }'>
+		                                <option value="active"<?php selected( $publishingDefault, 'active' ); ?>><?php esc_html_e( 'Published', 'soliloquy' ); ?></option>
+		                                <option value="pending"<?php selected( $publishingDefault, 'pending' ); ?>><?php esc_html_e( 'Draft', 'soliloquy' ); ?></option>
+	                                </select>
+	                            </div>
+                                <p class="description"><?php esc_html_e( 'Choose the default status of any new slides that are added/uploaded to your Soliloquy sliders. You can always change slides on an individual basis by editing them.', 'soliloquy' ); ?></p>
                             </td>
                         </tr>
 
                         <!-- Media Position -->
-                        <tr id="soliloquy-slide-position-box">
+                        <tr id="soliloquy-slide-view-box">
                             <th scope="row">
-                                <label for="soliloquy-slide-position"><?php _e( 'New Slide Position', 'soliloquy' ); ?></label>
+                                <label for="soliloquy-slide-position"><?php esc_html_e( 'New Slide Position', 'soliloquy' ); ?></label>
                             </th>
                             <td>
-                                <select id="soliloquy-slide-position" name="soliloquy_slide_position">
+	                            <div class="soliloquy-select">
+                                <select id="soliloquy-view" name="soliloquy_slide_position" class="soliloquy-chosen" data-soliloquy-chosen-options='{ "disable_search":"true" }'>
                                     <?php foreach ( (array) Soliloquy_Common_Admin::get_instance()->get_slide_positions() as $i => $data ) : ?>
                                         <option value="<?php echo $data['value']; ?>"<?php selected( $data['value'], $slide_position ); ?>><?php echo $data['name']; ?></option>
                                     <?php endforeach; ?>
                                 </select>
-                                <p class="description"><?php _e( 'When adding slides to a Slider, choose whether to add slides before or after any existing slides.', 'soliloquy' ); ?></p>
+	                            </div>
+                                <p class="description"><?php esc_html_e( 'When adding slides to a Slider, choose whether to add slides before or after any existing slides.', 'soliloquy' ); ?></p>
                             </td>
                         </tr>
+                        <!-- Media Position -->
+                        <tr id="soliloquy-slide-view-box">
+                            <th scope="row">
+                                <label for="soliloquy-slide-view"><?php esc_html_e( 'Default View Position', 'soliloquy' ); ?></label>
+                            </th>
+                            <td>
+	                            <div class="soliloquy-select">
+                                <select id="soliloquy-slide-view" name="soliloquy_slide_view" class="soliloquy-chosen" data-soliloquy-chosen-options='{ "disable_search":"true" }'>
+                                        <option value="grid"<?php selected( 'grid', $slide_view ); ?>><?php esc_html_e( 'Grid', 'soliloquy' ); ?></option>
+                                        <option value="list"<?php selected( 'list', $slide_view ); ?>><?php esc_html_e( 'List', 'soliloquy' ); ?></option>
 
+                                </select>
+	                            </div>
+                                <p class="description"><?php esc_html_e( 'Default view When adding slides to a Slider.', 'soliloquy' ); ?></p>
+                            </td>
+                        </tr>
                         <!-- Submit -->
-                        <tr>
+                        <tr class="soliloquy-no-border">
                             <th scope="row">
                                 &nbsp;
                             </th>
                             <td>
-                                <?php 
+                                <?php
                                 wp_nonce_field( 'soliloquy-settings-nonce', 'soliloquy-settings-nonce' );
-                                submit_button( __( 'Update', 'soliloquy' ), 'primary', 'soliloquy-settings-submit', false ); 
+                                submit_button( esc_attr__( 'Save Settings', 'soliloquy' ), 'button-soliloquy', 'soliloquy-settings-submit', false );
                                 ?>
                             </td>
-                        </tr>      
-                        
+                        </tr>
+
                         <?php do_action( 'soliloquy_settings_general_box' ); ?>
                     </tbody>
                 </table>
             </form>
         </div>
         <?php
-
-    }
-
-    /**
-     * Callback for displaying the UI for addons settings tab.
-     *
-     * @since 1.0.0
-     */
-    public function settings_addons_tab() {
-
-        // Go ahead and grab the type of license. It will be necessary for displaying Addons.
-        $type = $this->base->get_license_key_type();
-
-        // Only display the Addons information if no license key errors are present.
-        if ( ! $this->base->get_license_key_errors() ) :
-        ?>
-        <div id="soliloquy-settings-addons">
-            <?php if ( empty( $type ) ) : ?>
-                <div class="error below-h2"><p><?php _e( 'In order to get access to Addons, you need to verify your license key for Soliloquy.', 'soliloquy' ); ?></p></div>
-            <?php else : ?>
-                <?php $addons = $this->get_addons(); if ( $addons ) : ?>
-                    <form id="soliloquy-settings-refresh-addons-form" method="post">
-                        <p><?php _e( 'Missing addons that you think you should be able to see? Try clicking the button below to refresh the addon data.', 'soliloquy' ); ?></p>
-                        <?php wp_nonce_field( 'soliloquy-refresh-addons', 'soliloquy-refresh-addons' ); ?>
-                        <?php submit_button( __( 'Refresh Addons', 'soliloquy' ), 'primary', 'soliloquy-refresh-addons-submit', false ); ?>
-                    </form>
-                    <div id="soliloquy-addons-area" class="soliloquy-clear">
-                        <?php
-                        // Let's begin outputting the addons.
-                        $i = 0;
-                        foreach ( (array) $addons as $i => $addon ) {
-                            // Attempt to get the plugin basename if it is installed or active.
-                            $plugin_basename   = $this->get_plugin_basename_from_slug( $addon->slug );
-                            $installed_plugins = get_plugins();
-                            $last              = ( 2 == $i%3 ) ? 'last' : '';
-                            
-                            // If site is HTTPS, serve $addon->image as HTTPS too, this prevents warnings
-                            if ( is_ssl() ) {
-	                            $addon->image = str_replace( 'http://', 'https://', $addon->image );
-                            }
-
-                            echo '<div class="soliloquy-addon ' . $last . '">';
-                                echo '<img class="soliloquy-addon-thumb" src="' . esc_url( $addon->image ) . '" width="300px" height="250px" alt="' . esc_attr( $addon->title ) . '" />';
-                                echo '<h3 class="soliloquy-addon-title">' . esc_html( $addon->title ) . '</h3>';
-
-                                // If the plugin is active, display an active message and deactivate button.
-                                if ( is_plugin_active( $plugin_basename ) ) {
-                                    echo '<div class="soliloquy-addon-active soliloquy-addon-message">';
-                                        echo '<span class="addon-status">' . __( 'Status: Active', 'soliloquy' ) . '</span>';
-                                        echo '<div class="soliloquy-addon-action">';
-                                            echo '<a class="button button-primary soliloquy-addon-action-button soliloquy-deactivate-addon" href="#" rel="' . esc_attr( $plugin_basename ) . '">' . __( 'Deactivate', 'soliloquy' ) . '</a><span class="spinner soliloquy-spinner"></span>';
-                                        echo '</div>';
-                                    echo '</div>';
-                                }
-
-                                // If the plugin is not installed, display an install message and install button.
-                                if ( ! isset( $installed_plugins[$plugin_basename] ) ) {
-                                    echo '<div class="soliloquy-addon-not-installed soliloquy-addon-message">';
-                                        echo '<span class="addon-status">' . __( 'Status: Not Installed', 'soliloquy' ) . '</span>';
-                                        echo '<div class="soliloquy-addon-action">';
-                                            echo '<a class="button button-primary soliloquy-addon-action-button soliloquy-install-addon" href="#" rel="' . esc_url( $addon->url ) . '">' . __( 'Install Addon', 'soliloquy' ) . '</a><span class="spinner soliloquy-spinner"></span>';
-                                        echo '</div>';
-                                    echo '</div>';
-                                }
-                                // If the plugin is installed but not active, display an activate message and activate button.
-                                elseif ( is_plugin_inactive( $plugin_basename ) ) {
-                                    echo '<div class="soliloquy-addon-inactive soliloquy-addon-message">';
-                                        echo '<span class="addon-status">' . __( 'Status: Inactive', 'soliloquy' ) . '</span>';
-                                        echo '<div class="soliloquy-addon-action">';
-                                            echo '<a class="button button-primary soliloquy-addon-action-button soliloquy-activate-addon" href="#" rel="' . esc_attr( $plugin_basename ) . '">' . __( 'Activate', 'soliloquy' ) . '</a><span class="spinner soliloquy-spinner"></span>';
-                                        echo '</div>';
-                                    echo '</div>';
-                                }
-
-                                echo '<p class="soliloquy-addon-excerpt">' . esc_html( $addon->excerpt ) . '</p>';
-                            echo '</div>';
-                            $i++;
-                        }
-                        ?>
-                    </div>
-                <?php else : ?>
-                    <form id="soliloquy-settings-refresh-addons-form" method="post">
-                        <p><?php _e( 'There was an issue retrieving the addons for this site. Please click on the button below the refresh the addons data.', 'soliloquy' ); ?></p>
-                        <?php wp_nonce_field( 'soliloquy-refresh-addons', 'soliloquy-refresh-addons' ); ?>
-                        <?php submit_button( __( 'Refresh Addons', 'soliloquy' ), 'primary', 'soliloquy-refresh-addons-submit', false ); ?>
-                    </form>
-                <?php endif; ?>
-            <?php endif; ?>
-        </div>
-        <?php else : ?>
-            <div class="error below-h2"><p><?php _e( 'In order to get access to Addons, you need to resolve your license key errors.', 'soliloquy' ); ?></p></div>
-        <?php
-        endif;
 
     }
 
@@ -614,88 +586,10 @@ class Soliloquy_Settings {
 
         ?>
         <div id="soliloquy-settings-upgrade">
-            <p><strong><?php _e( 'You have upgraded to v2 of Soliloquy. You need to upgrade your sliders using our custom upgrading tool. Click on the button below to start the process.', 'soliloquy' ); ?></strong></p>
-            <p><a class="button button-primary soliloquy-start-upgrade" href="#" title="<?php esc_attr_e( 'Click Here to Start the Upgrade Process', 'soliloquy' ); ?>"><?php _e( 'Click Here to Start the Upgrade Process', 'soliloquy' ); ?></a> <span class="spinner soliloquy-spinner"></span></p>
+            <p><strong><?php esc_html_e( 'You have upgraded to v2 of Soliloquy. You need to upgrade your sliders using our custom upgrading tool. Click on the button below to start the process.', 'soliloquy' ); ?></strong></p>
+            <p><a class="button button-primary soliloquy-start-upgrade" href="#" title="<?php esc_attr_e( 'Click Here to Start the Upgrade Process', 'soliloquy' ); ?>"><?php esc_html_e( 'Click Here to Start the Upgrade Process', 'soliloquy' ); ?></a> <span class="spinner soliloquy-spinner"></span></p>
         </div>
         <?php
-
-    }
-
-    /**
-     * Retrieves addons from the stored transient or remote server.
-     *
-     * @since 1.0.0
-     *
-     * @return bool|array False if no key or failure, array of addon data otherwise.
-     */
-    public function get_addons() {
-
-        $key = $this->base->get_license_key();
-        if ( ! $key ) {
-            return false;
-        }
-
-        if ( false === ( $addons = get_transient( '_sol_addons' ) ) ) {
-            $addons = $this->get_addons_data( $key );
-        } else {
-            return $addons;
-        }
-
-    }
-
-    /**
-     * Pings the remote server for addons data.
-     *
-     * @since 1.0.0
-     *
-     * @param string $key The user license key.
-     * @return bool|array False if no key or failure, array of addon data otherwise.
-     */
-    public function get_addons_data( $key ) {
-
-        $addons = Soliloquy_License::get_instance()->perform_remote_request( 'get-addons-data', array( 'tgm-updater-key' => $key ) );
-
-        // If there was an API error, set transient for only 10 minutes.
-        if ( ! $addons ) {
-            set_transient( '_sol_addons', false, 10 * MINUTE_IN_SECONDS );
-            return false;
-        }
-
-        // If there was an error retrieving the addons, set the error.
-        if ( isset( $addons->error ) ) {
-            set_transient( '_sol_addons', false, 10 * MINUTE_IN_SECONDS );
-            return false;
-        }
-
-        // Otherwise, our request worked. Save the data and return it.
-        set_transient( '_sol_addons', $addons, DAY_IN_SECONDS );
-        return $addons;
-
-    }
-
-    /**
-     * Flag to determine if addons are being refreshed.
-     *
-     * @since 1.0.0
-     *
-     * @return bool True if being refreshed, false otherwise.
-     */
-    public function is_refreshing_addons() {
-
-        return isset( $_POST['soliloquy-refresh-addons-submit'] );
-
-    }
-
-    /**
-     * Verifies nonces that allow addon refreshing.
-     *
-     * @since 1.0.0
-     *
-     * @return bool True if nonces check out, false otherwise.
-     */
-    public function refresh_addons_action() {
-
-        return isset( $_POST['soliloquy-refresh-addons-submit'] ) && wp_verify_nonce( $_POST['soliloquy-refresh-addons'], 'soliloquy-refresh-addons' );
 
     }
 
@@ -731,7 +625,7 @@ class Soliloquy_Settings {
      */
     public function settings_link( $links ) {
 
-        $settings_link = sprintf( '<a href="%s">%s</a>', esc_url( add_query_arg( array( 'post_type' => 'soliloquy', 'page' => 'soliloquy-settings' ), admin_url( 'edit.php' ) ) ), __( 'Settings', 'soliloquy' ) );
+        $settings_link = sprintf( '<a href="%s">%s</a>', esc_url( add_query_arg( array( 'post_type' => 'soliloquy', 'page' => 'soliloquy-settings' ), admin_url( 'edit.php' ) ) ), esc_attr__( 'Settings', 'soliloquy' ) );
         array_unshift( $links, $settings_link );
 
         return $links;

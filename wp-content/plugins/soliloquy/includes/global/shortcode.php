@@ -7,6 +7,12 @@
  * @package Soliloquy
  * @author  Thomas Griffin
  */
+
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
 class Soliloquy_Shortcode {
 
     /**
@@ -35,7 +41,7 @@ class Soliloquy_Shortcode {
      * @var object
      */
     public $base;
-
+	public $common;
     /**
      * Holds the slider data.
      *
@@ -125,6 +131,8 @@ class Soliloquy_Shortcode {
      * @var array
      */
     public $stylesheets = array();
+    
+    public $slider_data = array();
 
     /**
      * Primary class constructor.
@@ -135,16 +143,17 @@ class Soliloquy_Shortcode {
 
         // Load the base class object.
         $this->base = Soliloquy::get_instance();
-
+		$this->common = Soliloquy_Common::get_instance();
+		
         // Register the main slider style.
         $this->stylesheets[] = array(
             'id'    => 'soliloquy-style-css',
             'href'  => esc_url( add_query_arg( 'ver', $this->base->version, plugins_url( 'assets/css/soliloquy.css', $this->base->file ) ) ),
         );
-         
+
         // Register main slider script.
         wp_register_script( $this->base->plugin_slug . '-script', plugins_url( 'assets/js/min/soliloquy-min.js', $this->base->file ), array( 'jquery' ), $this->base->version, true );
-        
+
         // Load hooks and filters.
         add_shortcode( 'soliloquy', array( $this, 'shortcode' ) );
         add_filter( 'widget_text', 'do_shortcode' );
@@ -189,26 +198,28 @@ class Soliloquy_Shortcode {
 
         // Allow the data to be filtered before it is stored and used to create the slider output.
         $data = apply_filters( 'soliloquy_pre_data', $data, $slider_id );
-        
+
         // If there is no data to output or the slider is inactive, do nothing.
         if ( ! $data || empty( $data['slider'] ) || isset( $data['status'] ) && 'inactive' == $data['status'] && ! is_preview() ) {
             return false;
         }
 
+		$this->slider_data = $data;
+
         // If the data is to be randomized, do it now.
-        if ( $this->get_config( 'random', $data ) ) {
-            $data = $this->shuffle( $data );
+        if ( $this->get_config( 'random', $this->slider_data ) ) {
+            $this->slider_data = $this->shuffle( $this->slider_data );
         }
 
         // Prepare variables.
-        $this->data[$data['id']]  = $data;
+        $this->data[$data['id']]  = $this->slider_data;
         $this->index[$data['id']] = array();
         $slider                   = '';
         $i                        = 1;
 
         // If this is a feed view, customize the output and return early.
         if ( is_feed() ) {
-            return $this->do_feed_output( $data );
+            return $this->do_feed_output( $this->slider_data );
         }
 
         // Load scripts
@@ -223,106 +234,104 @@ class Soliloquy_Shortcode {
         wp_enqueue_script( $this->base->plugin_slug . '-script' );
 
         // Load custom slider themes if necessary.
-        if ( 'base' !== $this->get_config( 'slider_theme', $data ) ) {
-            $this->load_slider_theme( $this->get_config( 'slider_theme', $data ) );
+        if ( 'base' !== $this->get_config( 'slider_theme', $this->slider_data ) ) {
+            $this->load_slider_theme( $this->get_config( 'slider_theme', $this->slider_data ) );
         }
-        
+
         // Filter CSS
-        $this->stylesheets = apply_filters( 'soliloquy_css', $this->stylesheets, $data );
-        
+        $this->stylesheets = apply_filters( 'soliloquy_css', $this->stylesheets, $this->slider_data );
+
         // Load CSS and JS
         // For AJAX requests, we do this in a different way to get things working
         if ( $this->is_ajax_request() ) {
             add_filter( 'soliloquy_output', array( $this, 'slider_init_ajax' ), 1000, 2 );
         } else {
-            $this->get_stylesheets( $data );
-            add_action( 'wp_footer', array( $this, 'slider_init' ), 1000 );  
+            $this->get_stylesheets( $this->slider_data );
+            add_action( 'wp_footer', array( $this, 'slider_init' ), 1000 );
         }
-        
 
         // Run a hook before the slider output begins but after scripts and inits have been set.
-        do_action( 'soliloquy_before_output', $data );
+        do_action( 'soliloquy_before_output', $this->slider_data );
 
         // Container for all of this slider
-        $slider = '<div class="' . $this->get_slider_container_classes( $data ) . '" data-soliloquy-loaded="0">';
+        $slider = '<div class="' . $this->get_slider_container_classes( $this->slider_data ) . '" data-soliloquy-loaded="0">';
 
         // Apply a filter before starting the slider HTML.
-        $slider = apply_filters( 'soliloquy_output_start', $slider, $data );
+        $slider = apply_filters( 'soliloquy_output_start', $slider, $this->slider_data );
 
         // If mobile is set, add the filter to add in a mobile src attribute.
-        if ( $this->get_config( 'mobile', $data ) ) {
+        if ( $this->get_config( 'mobile', $this->slider_data ) ) {
             add_filter( 'soliloquy_output_image_attr', array( $this, 'mobile_image' ), 999, 4 );
         }
 
         // If positioning is set, add the filter to add the custom positioning style.
-        if ( $this->get_config( 'position', $data ) ) {
+        if ( $this->get_config( 'position', $this->slider_data ) ) {
             add_filter( 'soliloquy_output_container_style', array( $this, 'position_slider' ), 999, 2 );
         }
 
         // If using the full width option, run a special setting on the width/height.
-        if ( 'full_width' == $this->get_config( 'slider_size', $data ) ) {
+        if ( 'full_width' == $this->get_config( 'slider_size', $this->slider_data ) ) {
             add_filter( 'soliloquy_output_container_style', array( $this, 'full_width' ), 999, 2 );
         }
-
         // Build out the slider HTML.
-        $slider .= '<div aria-live="' . $this->get_config( 'aria_live', $data ) . '" id="soliloquy-container-' . sanitize_html_class( $data['id'] ) . '" class="' . $this->get_slider_classes( $data ) . '" style="max-width:' . $this->get_config( 'slider_width', $data ) . 'px;max-height:' . $this->get_config( 'slider_height', $data ) . 'px;' . apply_filters( 'soliloquy_output_container_style', '', $data ) . '"' . apply_filters( 'soliloquy_output_container_attr', '', $data ) . '>';
-            
-            $slider = apply_filters( 'soliloquy_output_before_list', $slider, $data ); // v2.4.2.2+
+        $slider .= '<div aria-live="' . $this->get_config( 'aria_live', $this->slider_data ) . '" id="soliloquy-container-' . sanitize_html_class( $this->slider_data['id'] ) . '" class="' . $this->get_slider_classes( $this->slider_data ) . '" style="max-width:' . $this->get_config( 'slider_width', $this->slider_data ) . 'px;max-height:' . $this->get_config( 'slider_height', $this->slider_data ) . 'px;' . apply_filters( 'soliloquy_output_container_style', '', $this->slider_data ) . '"' . apply_filters( 'soliloquy_output_container_attr', '', $this->slider_data ) . '>';
 
-            $slider .= '<ul id="soliloquy-' . sanitize_html_class( $data['id'] ) . '" class="soliloquy-slider soliloquy-slides soliloquy-wrap soliloquy-clear">';
-                $slider = apply_filters( 'soliloquy_output_before_container', $slider, $data );
+            $slider = apply_filters( 'soliloquy_output_before_list', $slider, $this->slider_data ); // v2.4.2.2+
 
-                foreach ( (array) $data['slider'] as $id => $item ) {
+            $slider .= '<ul id="soliloquy-' . sanitize_html_class( $this->slider_data['id'] ) . '" class="soliloquy-slider soliloquy-slides soliloquy-wrap soliloquy-clear">';
+                $slider = apply_filters( 'soliloquy_output_before_container', $slider, $this->slider_data );
+
+                foreach ( (array) $this->slider_data['slider'] as $id => $item ) {
                     // Skip over images that are pending (ignore if in Preview mode).
                     if ( isset( $item['status'] ) && 'pending' == $item['status'] && ! is_preview() ) {
                         continue;
                     }
 
                     // Allow filtering of individual items.
-                    $item     = apply_filters( 'soliloquy_output_item_data', $item, $id, $data, $i );
+                    $item     = apply_filters( 'soliloquy_output_item_data', $item, $id, $this->slider_data, $i );
 
-                    $slider   = apply_filters( 'soliloquy_output_before_item', $slider, $id, $item, $data, $i );
-                    $output   = '<li aria-hidden="true" class="' . $this->get_slider_item_classes( $item, $i, $data ) . '"' . apply_filters( 'soliloquy_output_item_attr', '', $id, $item, $data, $i ) . ' draggable="false" style="' . apply_filters( 'soliloquy_output_item_style', 'list-style:none;', $id, $item, $data, $i ) . '">';
-                        $output .= $this->get_slide( $id, $item, $data, $i );
+                    $slider   = apply_filters( 'soliloquy_output_before_item', $slider, $id, $item, $this->slider_data, $i );
+                    $output   = '<li aria-hidden="true" class="' . $this->get_slider_item_classes( $item, $i, $this->slider_data ) . '"' . apply_filters( 'soliloquy_output_item_attr', '', $id, $item, $this->slider_data, $i ) . ' draggable="false" style="' . apply_filters( 'soliloquy_output_item_style', 'list-style:none;', $id, $item, $this->slider_data, $i ) . '">';
+                        $output .= $this->get_slide( $id, $item, $this->slider_data, $i );
                     $output .= '</li>';
-                    $output  = apply_filters( 'soliloquy_output_single_item', $output, $id, $item, $data, $i );
+                    $output  = apply_filters( 'soliloquy_output_single_item', $output, $id, $item, $this->slider_data, $i );
                     $slider .= $output;
-                    $slider  = apply_filters( 'soliloquy_output_after_item', $slider, $id, $item, $data, $i );
+                    $slider  = apply_filters( 'soliloquy_output_after_item', $slider, $id, $item, $this->slider_data, $i );
 
                     // Increment the iterator.
                     $i++;
                 }
 
-                $slider = apply_filters( 'soliloquy_output_after_container', $slider, $data );
+                $slider = apply_filters( 'soliloquy_output_after_container', $slider, $this->slider_data );
             $slider .= '</ul>';
-            
-            $slider = apply_filters( 'soliloquy_output_after_list', $slider, $data ); // v2.4.2.2+
-            $slider = apply_filters( 'soliloquy_output_end', $slider, $data ); // Historic, but retained due to soliloquy_output_start for backward compat
-        
+
+            $slider = apply_filters( 'soliloquy_output_after_list', $slider, $this->slider_data ); // v2.4.2.2+
+            $slider = apply_filters( 'soliloquy_output_end', $slider, $this->slider_data ); // Historic, but retained due to soliloquy_output_start for backward compat
+
         $slider .= '</div>';
 
         // Increment the counter.
         $this->counter++;
 
         // Remove any contextual filters so they don't affect other sliders on the page.
-        if ( $this->get_config( 'mobile', $data ) ) {
+        if ( $this->get_config( 'mobile', $this->slider_data ) ) {
             remove_filter( 'soliloquy_output_image_attr', array( $this, 'mobile_image' ), 999, 4 );
         }
 
-        if ( $this->get_config( 'position', $data ) ) {
+        if ( $this->get_config( 'position', $this->slider_data ) ) {
             remove_filter( 'soliloquy_output_container_style', array( $this, 'position_slider' ), 999, 2 );
         }
 
-        if ( 'full_width' == $this->get_config( 'slider_size', $data ) ) {
+        if ( 'full_width' == $this->get_config( 'slider_size', $this->slider_data ) ) {
             remove_filter( 'soliloquy_output_container_style', array( $this, 'full_width' ), 999, 2 );
         }
 
         // Add no JS fallback support.
-        $no_js_css = '<style type="text/css">#soliloquy-container-' . sanitize_html_class( $data['id'] ) . '{opacity:1}#soliloquy-container-' . sanitize_html_class( $data['id'] ) . ' li > .soliloquy-caption{display:none}#soliloquy-container-' . sanitize_html_class( $data['id'] ) . ' li:first-child > .soliloquy-caption{display:block}</style>';
+        $no_js_css = '<style type="text/css" scoped>#soliloquy-container-' . sanitize_html_class( $this->slider_data['id'] ) . '{opacity:1}#soliloquy-container-' . sanitize_html_class( $this->slider_data['id'] ) . ' li > .soliloquy-caption{display:none}#soliloquy-container-' . sanitize_html_class( $data['id'] ) . ' li:first-child > .soliloquy-caption{display:block}</style>';
         $no_js   = '<noscript>';
-        $no_js  .= apply_filters( 'soliloquy_output_no_js', $no_js_css, $data );
+        $no_js  .= apply_filters( 'soliloquy_output_no_js', $no_js_css, $this->slider_data );
 
-        $index   = $this->get_indexable_images( $data['id'] );
+        $index   = $this->get_indexable_images( $this->slider_data['id'] );
 
         $no_js  .= '<div class="soliloquy-no-js" style="display:none;visibility:hidden;height:0;line-height:0;opacity:0;">' . $index . '</div>';
         $no_js  .= '</noscript>';
@@ -332,7 +341,7 @@ class Soliloquy_Shortcode {
         $slider .= '</div>';
 
         // Filter slider output
-        $slider = apply_filters( 'soliloquy_output', $slider, $data );
+        $slider = apply_filters( 'soliloquy_output', $slider, $this->slider_data );
 
         return $slider;
 
@@ -384,7 +393,7 @@ class Soliloquy_Shortcode {
         // Grab our image src and prepare our output.
         $imagesrc = $this->get_image_src( $id, $item, $data );
         $output   = '';
-        
+
         // If our image is linked, link it.
         if ( ! empty( $item['link'] ) ) {
             $output  = apply_filters( 'soliloquy_output_before_link', $output, $id, $item, $data, $i );
@@ -461,18 +470,18 @@ class Soliloquy_Shortcode {
         $vid_type = $this->get_video_data( $id, $item, $data, 'type' );
         $vid_id   = $this->get_video_data( $id, $item, $data );
         $output   = '';
-        
+
         // If there is an error retrieving the video type or ID, return with an error message.
         if ( ! $vid_type || ! $vid_id ) {
-            $error_message = __( '<p><strong>Oops - it looks like we had trouble retrieving data about the video you requested. Please make sure your video URL is supported and in the proper format.</strong></p>', 'soliloquy' );
+            $error_message = esc_html__( '<p><strong>Oops - it looks like we had trouble retrieving data about the video you requested. Please make sure your video URL is supported and in the proper format.</strong></p>', 'soliloquy' );
             return apply_filters( 'soliloquy_output_video_error', $error_message, $id, $item, $data, $i );
         }
 
         // We need to link our video slides to process click handlers to play videos.
         $output  = apply_filters( 'soliloquy_output_before_link', $output, $id, $item, $data, $i );
-        
+
         // Filter CSS classes to apply to the link
-        $classes = apply_filters( 'soliloquy_get_video_slide_link_classes', array( 'soliloquy-video-link' ), $id, $item, $data, $i );
+        $classes = apply_filters( 'soliloquy_get_video_slide_link_classes', array( 'soliloquy-video-link', 'soliloquy-link' ), $id, $item, $data, $i );
 
         $output .= '<a href="#" class="' . implode( ' ', $classes ) . '" title="' . esc_attr( $item['title'] ) . '"' . apply_filters( 'soliloquy_output_link_attr', '', $id, $item, $data, $i ) . '>';
 
@@ -485,7 +494,7 @@ class Soliloquy_Shortcode {
                     $content_type = 'video/mp4'; // Works with most video types
                     $mime_type_parts = explode( '.', $item['url'] );
                     if ( is_array( $mime_type_parts ) && count( $mime_type_parts ) > 0 ) {
-                    $ext = $mime_type_parts[ count( $mime_type_parts ) - 1 ];              
+                    $ext = $mime_type_parts[ count( $mime_type_parts ) - 1 ];
                         switch ( $ext ) {
                             case 'mp4':
                                 $content_type = 'video/mp4';
@@ -499,10 +508,13 @@ class Soliloquy_Shortcode {
                             case 'webm':
                                 $content_type = 'video/webm';
                                 break;
+                            case 'flv':
+                                $content_type = 'video/flv';
+                                break;
                         }
                     }
 
-                    $output .= '<video id="' . sanitize_html_class( $id ) . '-holder" width="100%" height="100%" cover="' . esc_url( $imagesrc ) . '" preload="metadata"><source type="' . $content_type . '" src="' . $item['url'] . '" /></video>';
+                    $output .= '<video id="' . sanitize_html_class( $id ) . '-holder" width="100%" height="100%" poster="' . esc_url( $imagesrc ) . '" preload="metadata"><source type="' . $content_type . '" src="' . $item['url'] . '" /></video>';
                     $output .= '<span class="soliloquy-video-icon soliloquy-' . $vid_type . '-video" data-soliloquy-video-type="' . $vid_type . '" data-soliloquy-video-id="' . $id . '" data-soliloquy-video-holder="' . sanitize_html_class( $id ) . '"></span>';
                     break;
 
@@ -560,13 +572,11 @@ class Soliloquy_Shortcode {
      * @return bool|string   False if unsuccessful, otherwise the data requested about the video.
      */
     public function get_video_data( $id, $item, $data, $key = 'id' ) {
-        
+
         // If no video URL is set, return false.
         if ( empty( $item['url'] ) ) {
             return false;
         }
-
-        $instance = Soliloquy_Common::get_instance();
 
         // Use regex to grab data about the video from the URL provided.
         $source = '';
@@ -580,14 +590,14 @@ class Soliloquy_Shortcode {
             $source                           = 'vimeo';
             $this->vimeo                      = true;
             $this->data[$data['id']]['vimeo'] = true;
-            
+
             wp_enqueue_script( $this->base->plugin_slug . '-' . $source, '//secure-a.vimeocdn.com/js/froogaloop2.min.js', array(), $this->base->version, true );
         } else if ( preg_match( '/https?:\/\/(.+)?(wistia.com|wi.st)\/.*/i', $item['url'], $w_matches ) ) {
             $source                            = 'wistia';
             $this->wistia                      = true;
             $this->data[$data['id']]['wistia'] = true;
             wp_enqueue_script( $this->base->plugin_slug . '-' . $source, '//fast.wistia.net/static/embed_shepherd-v1.js', array(), $this->base->version, true );
-        } elseif ( preg_match( '/(' . $instance->get_self_hosted_supported_filetypes_string() . ')/', $item['url'], $l_matches ) ) {
+        } elseif ( preg_match( '/(' . $this->common->get_self_hosted_supported_filetypes_string() . ')/', $item['url'], $l_matches ) ) {
             // Self hosted
             $source                            = 'local';
             $this->local                       = true;
@@ -604,20 +614,20 @@ class Soliloquy_Shortcode {
         if ( empty( $source ) ) {
             return false;
         }
-        
+
         // Return the requested data.
         switch ( $key ) {
             case 'id' :
                 if ( 'youtube' == $source ) {
                     $ret = $y_matches[0];
-                    
+
                     // Strip ? param if it still exists
                     // This fixes buggy URLS e.g. mAeaUPejVgU?list=UUSZ7JbZ882uAgM6BcJjgmdQ
                     if ( strpos ($ret, '?') !== false ) {
                         $url_parts = explode( '?', $ret );
                         $ret = $url_parts[0];
                     }
-                    
+
                 } else if ( 'vimeo' == $source ) {
                     $ret = $v_matches[1];
                 } else if ( 'wistia' == $source ) {
@@ -634,13 +644,13 @@ class Soliloquy_Shortcode {
                 break;
             case 'url' :
                 if ( 'youtube' == $source ) {
-                    $ret = esc_url( add_query_arg( $this->get_youtube_args( $data ), '//youtube.com/embed/' . $y_matches[0] ) );
+                    $ret = esc_url( add_query_arg( $this->common->get_youtube_args( $data ), '//youtube.com/embed/' . $y_matches[0] ) );
                 } else if ( 'vimeo' == $source ) {
-                    $ret = esc_url( add_query_arg( $this->get_vimeo_args( $data ), '//player.vimeo.com/video/' . $v_matches[1] ) );
+                    $ret = esc_url( add_query_arg( $this->common->get_vimeo_args( $data ), '//player.vimeo.com/video/' . $v_matches[1] ) );
                 } else if ( 'wistia' == $source ) {
                     $parts = explode( '/', $w_matches[0] );
                     $id    = array_pop( $parts );
-                    $ret   = esc_url( add_query_arg( $this->get_wistia_args( $data ), '//fast.wistia.net/embed/iframe/' . $id ) );
+                    $ret   = esc_url( add_query_arg( $this->common->get_wistia_args( $data ), '//fast.wistia.net/embed/iframe/' . $id ) );
                 } else if ( 'local' == $source ) {
                     $ret   = $item['url'];
                 } else {
@@ -651,7 +661,7 @@ class Soliloquy_Shortcode {
                 $ret = apply_filters( 'soliloquy_video_data', false, $source, $id, $item, $data );
                 break;
         }
-        
+
         return apply_filters( 'soliloquy_video_data', $ret, $id, $item, $data, $key );
 
     }
@@ -749,8 +759,8 @@ class Soliloquy_Shortcode {
     */
     public function slider_init_single( $data, $return = false ) {
 
-        ob_start(); 
-        do_action( 'soliloquy_api_start_global', $data ); 
+        ob_start();
+        do_action( 'soliloquy_api_start_global', $data );
         ?>
         if ( typeof soliloquy_slider === 'undefined' || false === soliloquy_slider ) {
             soliloquy_slider = {};
@@ -811,7 +821,7 @@ class Soliloquy_Shortcode {
 
             <?php do_action( 'soliloquy_api_preload', $data ); ?>
 
-            <?php 
+            <?php
             // Process video handlers.
             if ( ! empty( $data['youtube'] ) ) : ?>
             soliloquy_container_<?php echo $data['id']; ?>.find('.soliloquy-video-youtube').each(function(){
@@ -825,8 +835,10 @@ class Soliloquy_Shortcode {
                     id     = $this.data('soliloquy-video-id'),
                     hold   = $this.data('soliloquy-video-holder') + '-holder',
                     width  = $('#soliloquy-container-<?php echo $data['id']; ?>').width(),
-                    height = $('#soliloquy-container-<?php echo $data['id']; ?>').height();
-                soliloquyYouTubeVids(<?php echo json_encode( $this->get_youtube_args( $data ) ); ?>, id, width, height, hold, jQuery);
+                    height = $('#soliloquy-container-<?php echo $data['id']; ?>').height(),
+                    $current = $this.parent().parent().find( '#' + hold );
+
+                soliloquyYouTubeVids(<?php echo json_encode( $this->common->get_youtube_args( $data ) ); ?>, id, width, height, hold, jQuery, $current );
             });
             <?php endif; ?>
 
@@ -843,7 +855,7 @@ class Soliloquy_Shortcode {
                     hold   = $this.data('soliloquy-video-holder') + '-holder',
                     width  = $('#soliloquy-container-<?php echo $data['id']; ?>').width(),
                     height = $('#soliloquy-container-<?php echo $data['id']; ?>').height();
-                soliloquyVimeoVids(<?php echo json_encode( $this->get_vimeo_args( $data ) ); ?>, id, width, height, hold, jQuery);
+                soliloquyVimeoVids(<?php echo json_encode( $this->common->get_vimeo_args( $data ) ); ?>, id, width, height, hold, jQuery);
             });
             <?php endif; ?>
 
@@ -860,7 +872,7 @@ class Soliloquy_Shortcode {
                     hold   = $this.data('soliloquy-video-holder') + '-holder',
                     width  = $('#soliloquy-container-<?php echo $data['id']; ?>').width(),
                     height = $('#soliloquy-container-<?php echo $data['id']; ?>').height();
-                soliloquyWistiaVids(<?php echo json_encode( $this->get_wistia_args( $data ) ); ?>, id, width, height, hold, jQuery);
+                soliloquyWistiaVids(<?php echo json_encode( $this->common->get_wistia_args( $data ) ); ?>, id, width, height, hold, jQuery);
             });
             <?php endif; ?>
 
@@ -877,7 +889,7 @@ class Soliloquy_Shortcode {
                     hold   = $this.data('soliloquy-video-holder') + '-holder',
                     width  = $('#soliloquy-container-<?php echo $data['id']; ?>').width(),
                     height = $('#soliloquy-container-<?php echo $data['id']; ?>').height();
-                soliloquyLocalVids(<?php echo json_encode( $this->get_local_video_args( $data ) ); ?>, id, width, height, hold, jQuery);
+                soliloquyLocalVids(<?php echo json_encode( $this->common->get_local_video_args( $data ) ); ?>, id, width, height, hold, jQuery);
             });
             <?php endif; ?>
 
@@ -941,41 +953,66 @@ class Soliloquy_Shortcode {
                         soliloquy_container_<?php echo $data['id']; ?>.find('.soliloquy-controls').addClass('soliloquy-hide');
                     }
                     soliloquy_<?php echo $data['id']; ?>.find('.soliloquy-item:not(.soliloquy-clone):eq(' + currentIndex + ')').addClass('soliloquy-active-slide').attr('aria-hidden','false');
-                    soliloquy_container_<?php echo $data['id']; ?>.find('.soliloquy-clone').find('*').removeAttr('id');
-
+					$('.soliloquy-clone .soliloquy-video-holder').remove();
                     soliloquy_container_<?php echo $data['id']; ?>.find('.soliloquy-controls-direction').attr('aria-label','carousel buttons').attr('aria-controls', '<?php echo 'soliloquy-container-' . $data['id']; ?>');
                     soliloquy_container_<?php echo $data['id']; ?>.find('.soliloquy-controls-direction a.soliloquy-prev').attr('aria-label','previous');
                     soliloquy_container_<?php echo $data['id']; ?>.find('.soliloquy-controls-direction a.soliloquy-next').attr('aria-label','next');
-                  
+
                     $(window).trigger('resize');
 
                     soliloquy_container_<?php echo $data['id']; ?>.parent().attr('data-soliloquy-loaded', 1);
 
+                    <?php if (  $this->get_config( 'autoplay_video', $data ) ){ ?>
+
+				    var slide_video = soliloquy_<?php echo $data['id']; ?>.find('.soliloquy-item:not(.soliloquy-clone):eq(' + currentIndex + ') .soliloquy-video-icon');
+				    if ( slide_video.length > 0 ) {
+				                setTimeout(function(){
+				                    slide_video.trigger('click');
+				                }, 500);
+				    }
                     <?php
-                    do_action( 'soliloquy_api_on_load', $data ); 
+
+	                }
+                    do_action( 'soliloquy_api_on_load', $data );
                     ?>
                 },
-                onSlideBefore: function(element, oldIndex, newIndex){
+                onSlideBefore: function(element, oldIndex, newIndex, oldelm ){
                     soliloquy_container_<?php echo $data['id']; ?>.find('.soliloquy-active-slide').removeClass('soliloquy-active-slide').attr('aria-hidden','true');
                     $(element).addClass('soliloquy-active-slide').attr('aria-hidden','false');
                     <?php if ( ! empty( $data['youtube'] ) ) : ?>
+                    youtube_id =  $(oldelm).find('.soliloquy-youtube-video').data('soliloquy-video-id');
+
                     $.each(soliloquy_youtube, function(id, yt){
-                        yt.pauseVideo();
-                    });
+
+	                    if ( youtube_id  === id ){
+
+                        	yt.pauseVideo();
+
+						}
+
+					});
+
                     <?php endif; ?>
                     <?php if ( ! empty( $data['vimeo'] ) ) : ?>
                     $.each(soliloquy_vimeo, function(id, vm){
-                        vm.api('pause');
+
+						vm.api('pause');
+
                     });
                     <?php endif; ?>
                     <?php if ( ! empty( $data['wistia'] ) ) : ?>
                     $.each(soliloquy_wistia, function(id, wi){
+
                         wi.pause();
+
                     });
                     <?php endif; ?>
                     <?php if ( ! empty( $data['local'] ) ) : ?>
+
                     $.each(soliloquy_local, function(id, lo){
+
                         lo.pause();
+
                     });
                     <?php endif; ?>
                     <?php if ( $this->get_config( 'caption_delay', $data ) > 0 ) : ?>
@@ -984,13 +1021,20 @@ class Soliloquy_Shortcode {
                     <?php do_action( 'soliloquy_api_before_transition', $data ); ?>
                 },
                 onSlideAfter: function(element, oldIndex, newIndex){
-                    <?php if ( $this->get_config( 'caption_delay', $data ) > 0 ) : ?>
-                    setTimeout(function() {
-                        $('div.soliloquy-caption', $(element)).fadeIn();    
-                    }, <?php echo $this->get_config( 'caption_delay', $data ); ?>);
-                    <?php endif; ?>
 
-                    <?php 
+                    <?php if ( $this->get_config( 'caption_delay', $data ) > 0 ) : ?>
+                    <?php if ( $this->is_mobile() &&  ! $this->get_config( 'mobile_caption', $data ) ):
+	                  	//do nothings
+
+	                    else: ?>
+                    setTimeout(function() {
+                        $('div.soliloquy-caption', $(element)).fadeIn();
+                    }, <?php echo $this->get_config( 'caption_delay', $data ); ?>);
+                    <?php
+	                    endif;
+	                   endif; ?>
+
+                    <?php
                     // Stop + Start if Auto + Resume are both enabled
                     if ( $this->get_config( 'auto', $data ) && ! $this->get_config( 'pause', $data ) ) {
                         ?>
@@ -998,14 +1042,26 @@ class Soliloquy_Shortcode {
                         soliloquy_slider['<?php echo $data['id']; ?>'].startAuto();
                         <?php
                     }
-                    
+
+                    if (  $this->get_config( 'autoplay_video', $data ) ){ ?>
+
+				    var slide_video = $(element).find('.soliloquy-video-icon');
+				    if ( slide_video.length > 0 ) {
+				                setTimeout(function(){
+				                    slide_video.trigger('click');
+				                }, 500);
+				    }
+
+                    <?php
+
+	                }
                     do_action( 'soliloquy_api_after_transition', $data ); ?>
                 }
                 <?php do_action( 'soliloquy_api_config_end', $data ); ?>
             });
 
             <?php
-            do_action( 'soliloquy_api_slider', $data ); 
+            do_action( 'soliloquy_api_slider', $data );
 
             // Mousewheel support
             if ( $this->get_config( 'mousewheel', $data ) ) {
@@ -1048,10 +1104,11 @@ class Soliloquy_Shortcode {
 
             <?php do_action( 'soliloquy_api_end', $data ); ?>
         });
-        
-        <?php 
+
+        <?php
         // Minify before outputting to improve page load time.
-        do_action( 'soliloquy_api_end_global', $data ); 
+        do_action( 'soliloquy_api_end_global', $data );
+        
         $result = $this->minify( ob_get_clean() );
 
         // Return or echo
@@ -1065,7 +1122,7 @@ class Soliloquy_Shortcode {
 
     /**
     * Checks if the given request is an AJAX request
-    * 
+    *
     * @since 2.4.1.6
     *
     * @return bool AJAX Request
@@ -1094,7 +1151,7 @@ class Soliloquy_Shortcode {
      * @return string     String of stylesheet declarations.
      */
     public function get_stylesheets( $data ) {
-        
+
         foreach ( $this->stylesheets as $stylesheet ) {
             wp_enqueue_style( $stylesheet['id'], $stylesheet['href'], false, $this->base->version, 'all' );
         }
@@ -1109,9 +1166,9 @@ class Soliloquy_Shortcode {
      * @param string $theme The custom theme slug to load.
      */
     public function load_slider_theme( $theme ) {
-        
+
         // Loop through the available themes and enqueue the one called.
-        foreach ( Soliloquy_Common::get_instance()->get_slider_themes() as $array => $data ) {
+        foreach ($this->common->get_slider_themes() as $array => $data ) {
             if ( $theme !== $data['value'] ) {
                 continue;
             }
@@ -1120,7 +1177,7 @@ class Soliloquy_Shortcode {
                 'id'    => $this->base->plugin_slug . $theme . '-theme-style-css',
                 'href'  => esc_url( add_query_arg( 'ver', $this->base->version, plugins_url( 'themes/' . $theme . '/style.css', $data['file'] ) ) ),
             );
-            
+
             break;
         }
 
@@ -1191,7 +1248,7 @@ class Soliloquy_Shortcode {
 
         // Add custom class based on the theme.
         $classes[] = 'soliloquy-theme-' . $this->get_config( 'slider_theme', $data );
-        
+
         // If the slider has RTL support, add a class for it.
         if ( $this->get_config( 'rtl', $data ) ) {
             $classes[] = 'soliloquy-rtl';
@@ -1221,7 +1278,7 @@ class Soliloquy_Shortcode {
         $classes[] = 'soliloquy-item-' . $i;
 
         if ( isset( $item['id'] ) ) {
-            $classes[] = 'soliloquy-id-' . $item['id'];        
+            $classes[] = 'soliloquy-id-' . $item['id'];
         }
 
         // Set the type of slide as a class.
@@ -1232,7 +1289,7 @@ class Soliloquy_Shortcode {
         return trim( implode( ' ', array_map( 'trim', array_map( 'sanitize_html_class', array_unique( $classes ) ) ) ) );
 
     }
-    
+
     /**
      * Helper method for adding custom slider image classes.
      *
@@ -1261,7 +1318,7 @@ class Soliloquy_Shortcode {
         return trim( implode( ' ', array_map( 'trim', array_map( 'sanitize_html_class', array_unique( $classes ) ) ) ) );
 
     }
-    
+
      /**
      * Helper method for adding custom slider image classes.
      *
@@ -1306,13 +1363,13 @@ class Soliloquy_Shortcode {
      * @return string      The proper image src attribute for the image.
      */
     public function get_image_src( $id, $item, $data, $type = 'slider' ) {
-        
+
         // Before we do anything, we need to ensure that the default slider type is being used. If not, return the src provided.
         $slider_type = $this->get_config( 'type', $data );
-        if ( 'default' !== $slider_type && 'fc' !== $slider_type && 'dynamic' !== $slider_type ) {
+        if ( 'default' !== $slider_type && 'fc' !== $slider_type && 'wc' !== $slider_type && 'dynamic' !== $slider_type ) {
             return apply_filters( 'soliloquy_image_src', $item['src'], $id, $item, $data );
         }
-        
+
         // Get the full image src. If it does not return the data we need, return the image link instead.
         $size_type  = $this->get_config( 'slider_size', $data );
         $size       = 'default' == $size_type || 'thumbnails' == $type || 'full_width' == $size_type ? 'full' : $size_type;
@@ -1327,7 +1384,7 @@ class Soliloquy_Shortcode {
         // If no image, return with the base link.
         if ( ! $image ) {
             $image = ! empty( $item['src'] ) ? $item['src'] : false;
-            
+
             if ( ! $image ) {
                 if ( ! empty( $item['link'] ) ) {
                     return apply_filters( 'soliloquy_no_image_src', '', $id, $item, $data );
@@ -1344,7 +1401,7 @@ class Soliloquy_Shortcode {
                 }
             }
         }
-        
+
         // Prep our indexable images.
         if ( $image && 'mobile' !== $type ) {
             $this->index[$data['id']][$id] = array(
@@ -1363,11 +1420,10 @@ class Soliloquy_Shortcode {
         if ( empty( $type ) ) {
             return apply_filters( 'soliloquy_no_image_type', $item['link'], $id, $item, $data );
         }
-        
+
         // If the setting exists, go onward with cropping.
         if ( isset( $data['config']['slider'] ) && $data['config']['slider'] ) {
             if ( isset( $data['config'][$type] ) && $data['config'][$type] ) {
-                $common = Soliloquy_Common::get_instance();
                 $args = array(
                     'position' => 'c',
                     'width'    => $this->get_config( $type . '_width', $data ),
@@ -1376,7 +1432,7 @@ class Soliloquy_Shortcode {
                     'retina'   => false
                 );
                 $args = apply_filters( 'soliloquy_crop_image_args', $args, $id, $item, $data, $type );
-                $cropped_image = $common->resize_image( $image, $args['width'], $args['height'], true, $args['position'], $args['quality'], $args['retina'], $data );
+                $cropped_image = $this->common->resize_image( $image, $args['width'], $args['height'], true, $args['position'], $args['quality'], $args['retina'], $data );
 
                 // If there is an error, possibly output error message and return the default image src.
                 if ( is_wp_error( $cropped_image ) ) {
@@ -1398,7 +1454,6 @@ class Soliloquy_Shortcode {
             }
         } else if ( 'thumbnails' == $type && isset( $data['config']['thumbnails'] ) && $data['config']['thumbnails'] ) {
             if ( isset( $data['config']['thumbnails_crop'] ) && $data['config']['thumbnails_crop'] ) {
-                $common = Soliloquy_Common::get_instance();
                 $args = array(
                     'position' => 'c',
                     'width'    => $this->get_config( 'thumbnails_width', $data ),
@@ -1407,7 +1462,7 @@ class Soliloquy_Shortcode {
                     'retina'   => false
                 );
                 $args = apply_filters( 'soliloquy_crop_image_args', $args, $id, $item, $data, $type );
-                $cropped_image = $common->resize_image( $image, $args['width'], $args['height'], true, $args['position'], $args['quality'], $args['retina'], $data );
+                $cropped_image = $this->common->resize_image( $image, $args['width'], $args['height'], true, $args['position'], $args['quality'], $args['retina'], $data );
 
                 // If there is an error, possibly output error message and return the default image src.
                 if ( is_wp_error( $cropped_image ) ) {
@@ -1429,7 +1484,6 @@ class Soliloquy_Shortcode {
             }
         } else if ( 'lightbox' == $type && isset( $data['config']['lightbox_thumbs'] ) && $data['config']['lightbox_thumbs'] ) {
             if ( isset( $data['config']['thumbnails_crop'] ) && $data['config']['thumbnails_crop'] ) {
-                $common = Soliloquy_Common::get_instance();
                 $args = array(
                     'position' => 'c',
                     'width'    => $this->get_config( 'lightbox_twidth', $data ),
@@ -1438,7 +1492,7 @@ class Soliloquy_Shortcode {
                     'retina'   => false
                 );
                 $args = apply_filters( 'soliloquy_crop_image_args', $args, $id, $item, $data, $type );
-                $cropped_image = $common->resize_image( $image, $args['width'], $args['height'], true, $args['position'], $args['quality'], $args['retina'], $data );
+                $cropped_image = $this->common->resize_image( $image, $args['width'], $args['height'], true, $args['position'], $args['quality'], $args['retina'], $data );
 
                 // If there is an error, possibly output error message and return the default image src.
                 if ( is_wp_error( $cropped_image ) ) {
@@ -1475,7 +1529,7 @@ class Soliloquy_Shortcode {
      * @return bool|string   False if unsuccessful, otherwise the video thumbnail.
      */
     public function get_video_thumbnail( $id, $item, $data ) {
-        
+
         $thumb = false;
         $id    = $this->get_video_data( $id, $item, $data );
         $type  = $this->get_video_data( $id, $item, $data, 'type' );
@@ -1514,7 +1568,7 @@ class Soliloquy_Shortcode {
                 $data  = get_post_meta( $data['id'], '_sol_slider_data', true );
                 $data['slider'][$item['id']]['src']   = $thumb;
                 update_post_meta( $data['id'], '_sol_slider_data', $data );
-                Soliloquy_Common::get_instance()->flush_slider_caches( $data['id'], $this->get_config( 'slug', $data ) );
+                $this->common->flush_slider_caches( $data['id'], $this->get_config( 'slug', $data ) );
             }
         }
 
@@ -1631,20 +1685,18 @@ class Soliloquy_Shortcode {
      */
     public function get_config( $key, $data ) {
 
-        $instance = Soliloquy_Common::get_instance();
-
         // If we are on a mobile device, some config keys have mobile equivalents, which we need to check instead
         if ( wp_is_mobile() ) {
             $mobile_keys = array();
             $mobile_keys = apply_filters( 'soliloquy_get_config_mobile_keys', $mobile_keys );
-            
             if ( array_key_exists( $key, $mobile_keys ) ) {
                 // Use the mobile array key to get the config value
                 $key = $mobile_keys[ $key ];
             }
+
         }
 
-        return isset( $data['config'][$key] ) ? $data['config'][$key] : $instance->get_config_default( $key );
+        return isset( $data['config'][$key] ) ? $data['config'][$key] : $this->common->get_config_default( $key );
 
     }
 
@@ -1660,8 +1712,7 @@ class Soliloquy_Shortcode {
      */
     public function get_meta( $key, $attach_id, $data ) {
 
-        $instance = Soliloquy_Common::get_instance();
-        return isset( $data['slider'][$attach_id][$key] ) ? $data['slider'][$attach_id][$key] : $instance->get_meta_default( $key, $attach_id );
+        return isset( $data['slider'][$attach_id][$key] ) ? $data['slider'][$attach_id][$key] : $this->common->get_meta_default( $key, $attach_id );
 
     }
 
@@ -1674,13 +1725,13 @@ class Soliloquy_Shortcode {
      * @return string $string Minified string of data.
      */
     public function minify( $string, $stripDoubleForwardslashes = true ) {
-        
+
         // Added a switch for stripping double forwardslashes
         // This can be disabled when using URLs in JS, to ensure http:// doesn't get removed
         // All other comment removal and minification will take place
 
         $stripDoubleForwardslashes = apply_filters( 'soliloquy_minify_strip_double_forward_slashes', $stripDoubleForwardslashes );
-        
+
         if ( $stripDoubleForwardslashes ) {
             $clean = preg_replace( '/((?:\/\*(?:[^*]|(?:\*+[^*\/]))*\*+\/)|(?:\/\/.*))/', '', $string );
         } else {
@@ -1688,7 +1739,7 @@ class Soliloquy_Shortcode {
             $clean = preg_replace( '!/\*.*?\*/!s', '', $string );
             $clean = preg_replace( '/\n\s*\n/', "\n", $clean );
         }
-        
+
         $clean = str_replace( array( "\r\n", "\r", "\t", "\n", '  ', '    ', '     ' ), '', $clean );
 
         return apply_filters( 'soliloquy_minified_string', $clean, $string );
@@ -1720,97 +1771,6 @@ class Soliloquy_Shortcode {
         $slider .= '</div>';
 
         return apply_filters( 'soliloquy_feed_output', $slider, $data );
-
-    }
-
-    /**
-     * Returns the query args to be passed to YouTube videos.
-     *
-     * @since 1.0.0
-     *
-     * @param array $data Array of slider data.
-     */
-    public function get_youtube_args( $data ) {
-    
-        $args = array(
-            'enablejsapi'    => 1,
-            'version'        => 3,
-            'wmode'          => 'transparent',
-            'rel'            => 0,
-            'showinfo'       => 0,
-            'modestbranding' => 1,
-            'autoplay'       => 1,
-            'origin'         => get_home_url()
-        );
-
-        return apply_filters( 'soliloquy_youtube_args', $args, $data );
-
-    }
-
-    /**
-     * Returns the query args to be passed to Vimeo videos.
-     *
-     * @since 1.0.0
-     *
-     * @param array $data Array of slider data.
-     */
-    public function get_vimeo_args( $data ) {
-
-        $args = array(
-            'api'        => 1,
-            'wmode'      => 'transparent',
-            'byline'     => 0,
-            'title'      => 0,
-            'portrait'   => 0,
-            'autoplay'   => 1,
-            'badge'      => 0,
-            'fullscreen' => 1
-        );
-
-        return apply_filters( 'soliloquy_vimeo_args', $args, $data );
-
-    }
-
-    /**
-     * Returns the query args to be passed to Wistia videos.
-     *
-     * @since 1.0.0
-     *
-     * @param array $data Array of slider data.
-     */
-    public function get_wistia_args( $data ) {
-
-        $args = array(
-            'version'               => 'v1',
-            'wmode'                 => 'opaque',
-            'volumeControl'         => 1,
-            'controlsVisibleOnLoad' => 1,
-            'videoFoam'             => 1
-        );
-
-        return apply_filters( 'soliloquy_wistia_args', $args, $data );
-
-    }
-
-    /**
-     * Returns the query args to be passed to Local videos.
-     *
-     * @since 2.4.1.4
-     *
-     * @param array $data Array of slider data.
-     */
-    public function get_local_video_args( $data ) {
-
-        $args = array(
-            'autoplay'  => 1,
-            'playpause' => 1,
-            'progress'  => 1,
-            'current'   => 1,
-            'duration'  => 1,
-            'volume'    => 1,
-        );
-
-        return apply_filters( 'soliloquy_local_video_args', $args, $data );
 
     }
 
