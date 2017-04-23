@@ -162,6 +162,27 @@ function maisha_customize_register( $wp_customize ) {
 			'no-header-two'  => esc_html__( 'Without Top Content Block', 'maisha' ),
 		)
 	) );
+	
+/**
+* Adds the individual sections for projects page
+*/
+	$wp_customize->add_section( 'maisha_theme_options_title', array(
+		'title'    => esc_html__( 'Inner Pages Title Block Height', 'maisha' ),
+		'priority' => 38,
+	) );
+
+	/* Blog Layout */
+	$wp_customize->add_setting( 'maisha_title_padding', array(
+		'default'           => '',
+		'sanitize_callback' => 'wp_kses_post',
+	) );
+	$wp_customize->add_control( 'maisha_title_padding', array(
+		'label'             => esc_html__( 'Here you can change the height of the page title block. This gives you the option to show more or less of the background image. You simply need to add a number (eg. 50).', 'maisha' ),
+		'section'           => 'maisha_theme_options_title',
+		'settings'          => 'maisha_title_padding',
+		'priority'          => 1,
+		'type'              => 'text',
+	) );
 
 /**
 * Adds the individual sections for blog
@@ -413,6 +434,24 @@ function maisha_customize_register( $wp_customize ) {
 		'type'		        => 'textarea',
 		'priority'          => 1,
 	) );
+	
+/**
+* Migrating Custom CSS to the core Additional CSS if user uses WordPress 4.7.
+*
+* @since Maisha 1.4
+*/
+	if ( function_exists( 'wp_update_custom_css_post' ) ) {
+		$custom_css = get_theme_mod( 'maisha_custom_css' );
+		if ( $custom_css ) {
+			$core_css = wp_get_custom_css(); // Preserve any CSS already added to the core option.
+			$return = wp_update_custom_css_post( $core_css . $custom_css );
+			if ( ! is_wp_error( $return ) ) {
+				// Remove the old theme_mod, so that the CSS is stored in only one place moving forward.
+				remove_theme_mod( 'maisha_custom_css');
+			}
+		}
+		$wp_customize->remove_control( 'maisha_custom_css' );
+	}
 
 /**
 * Custom Colors
@@ -553,6 +592,17 @@ function maisha_customize_register( $wp_customize ) {
 		'label'             => esc_html__( 'Copyright Top Border Color', 'maisha' ),
 		'section'           => 'maisha_new_section_color_general',
 		'settings'          => 'maisha_copyright_border_colors',
+		'priority'          => 12,
+	) ) );
+	
+	$wp_customize->add_setting( 'maisha_link_color', array(
+		'default'           => '#828282',
+		'sanitize_callback' => 'sanitize_hex_color'
+	) );
+	$wp_customize->add_control( new WP_Customize_Color_Control($wp_customize, 'maisha_link_color', array(
+		'label'             => esc_html__( 'Content Link Color', 'maisha' ),
+		'section'           => 'maisha_new_section_color_general',
+		'settings'          => 'maisha_link_color',
 		'priority'          => 12,
 	) ) );
 

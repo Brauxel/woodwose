@@ -4,7 +4,7 @@ Theme URI: http://www.anarieldesign.com/themes/
 Author: Anariel Design
 Author URI: http://www.anarieldesign.com/
 Description: Maisha is a beautiful charity WordPress theme inspired by "Virunga" documentary. It is modern, responsive and mobile friendly theme. So, no worries there, Google will love it. Theme offers whole variety of cool features like different blog layouts, different header options, extensive color options and more. It is all very easily customizable directly from the WordPress Customizer. Maisha also comes with number of page templates and includes a couple specially styled to support hugely popular plugins like bbPress, BuddyPress, WooCommerce and The Events Calendar. Above all it is very easy to use, coded according to the latest standards and SEO friendly.
-Version: 1.2.8
+Version: 1.5.1
 License: GNU General Public License v2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Tags:two-columns, left-sidebar, right-sidebar, grid-layout, custom-background, accessibility-ready, custom-colors, custom-header, custom-menu, editor-style, featured-images, microformats, post-formats, rtl-language-support, sticky-post, threaded-comments, footer-widgets
@@ -2171,6 +2171,23 @@ img.aligncenter {
 	position: relative;
 }
 
+.page-template-blank-page .hentry {
+	padding-top: 0;
+}
+
+.page-template-blank-page .entry-content {
+	padding: 0;
+}
+
+.page-template-blank-page .entry-content h1,
+.page-template-blank-page .entry-content h2,
+.page-template-blank-page .entry-content h3,
+.page-template-blank-page .entry-content h4,
+.page-template-blank-page .entry-content h5,
+.page-template-blank-page .entry-content h6 {
+	margin: .5em 0 1em 0;
+}
+
 .hentry.has-post-thumbnail,
 .second-block .hentry {
 	padding-top: 0;
@@ -2388,7 +2405,8 @@ a.post-thumbnail:focus {
 	color: #828282;
 }
 
-.news .entry-content a.button.pro {
+.news .entry-content a.button.pro,
+.page-template-about-page .info .entry-content a.button {
 	color: #fff;
 }
 
@@ -4133,11 +4151,8 @@ body.page-template-full-width-page,
 }
 
 .single-tribe_events .tribe-events-schedule {
-	background: #fafafa;
-	border: 1px solid #f5f4f4;
 	font-size: 14px;
 	font-size: 1.4rem;
-	padding: 5px 10px;
 }
 
 .single-tribe_events h2.tribe-events-single-event-title {
@@ -4148,6 +4163,51 @@ body.page-template-full-width-page,
 .tribe-events-day .tribe-events-day-time-slot h5 {
 	background: #f5f4f4;
 	color: #333;
+}
+
+.datepicker.dropdown-menu {
+	width: 13%;
+}
+
+.events-list table {
+	margin: 0;
+	border: none;
+}
+
+body .events-list .tribe-events-loop .type-tribe_events.tribe-events-last {
+	background: none!important;
+}
+
+.tribe-events-gmap {
+	border: none;
+}
+
+.tribe-events-list-event-description.tribe-events-content .tribe-events-read-more {
+	color: #fff;
+	padding: 4px 10px;
+}
+
+.tribe-events-list .type-tribe_events h2 {
+	display: inline-block;
+	margin: 10px 0;
+}
+
+.tribe-events-list .tribe-events-event-image+div.tribe-events-content {
+	margin-bottom: 60px;
+}
+
+.tribe-events-list .tribe-events-event-image+div.tribe-events-content {
+	width: 100%;
+}
+
+.tribe-events-single .tribe-events-schedule h2 {
+	font-size: 16px;
+	margin: 20px 0;
+}
+
+.single-tribe_events .tribe-events-schedule .tribe-events-cost {
+	padding: 5px;
+	border: 1px solid;
 }
 
 /* Give */
@@ -5323,9 +5383,12 @@ div#respond {
  */
  
  .footer {
-	 background: #333;
-	 color: #71716c;
+	background: #333;
+	color: #71716c;
  }
+ .footer .site {
+	margin: 0 auto;
+}
  
  .footer .widget-title {
 	 color: #fff;
@@ -9027,5 +9090,11 @@ p > video {
 	.headerblock.standard .site-logo img,
 	.fixed .site-logo img {
 		max-width: 80%;
+	}
+}
+
+@media screen and (max-width: 955px){
+	body .main-small-navigation ul li.menu-item-has-children > a {
+		padding: 10px 0 10px 0px;
 	}
 }

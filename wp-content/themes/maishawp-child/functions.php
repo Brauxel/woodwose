@@ -8,3 +8,12 @@ function theme_enqueue_styles() {
 	wp_enqueue_script( 'fancybox', get_template_directory_uri() . '/js/fancybox.js', array( 'jquery' ), '1.0' );
 	wp_enqueue_script( 'core', get_template_directory_uri() . '/js/core.js', array( 'jquery' ), '1.0', true );
 }
+
+add_action( 'after_setup_theme', 'activello_theme_setup' );
+function activello_theme_setup() {
+  add_theme_support( 'wc-product-gallery-zoom' );
+  add_theme_support( 'wc-product-gallery-lightbox' );
+  add_theme_support( 'wc-product-gallery-slider' );
+}
+
+?>

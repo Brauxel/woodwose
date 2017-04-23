@@ -5,12 +5,44 @@
 function maisha_customizer_css() {
 	?>
 	<style type="text/css">
+		.aboutpage .cd-fixed-bg-one { padding: <?php echo get_theme_mod( 'maisha_title_padding' ); ?>px 0;}
+		.entry-content a {color: <?php echo get_theme_mod( 'maisha_link_color' ); ?>;}
 
 		button,input[type="button"], input[type="reset"], input[type="submit"], .widget_calendar tbody a, .page-template-projects-page .columns hr, .page-template-causes-page .columns hr, .page-template-stories-page .columns hr, .woocommerce .widget_price_filter .ui-slider .ui-slider-handle, .woocommerce .widget_price_filter .ui-slider .ui-slider-range { background-color:<?php echo get_theme_mod( 'maisha_button_colors' ); ?>; }
 		
-		.social-navigation, .sidebar .widget .give-submit-button-wrap input[type="submit"], .button, .tribe-events-loop .type-tribe_events.tribe-events-last, #tribe-events .tribe-events-button, #tribe-events .tribe-events-button:hover, #tribe_events_filters_wrapper input[type=submit], .tribe-events-button, .tribe-events-button.tribe-active:hover, .tribe-events-button.tribe-inactive, .tribe-events-button:hover, .tribe-events-calendar td.tribe-events-present div[id*=tribe-events-daynum-], .tribe-events-calendar td.tribe-events-present div[id*=tribe-events-daynum-]>a, #tribe-events-content .tribe-events-calendar td.tribe-events-present.mobile-active:hover, .tribe-events-calendar td.tribe-events-present.mobile-active, .tribe-events-calendar td.tribe-events-present.mobile-active div[id*=tribe-events-daynum-], .tribe-events-calendar td.tribe-events-present.mobile-active div[id*=tribe-events-daynum-] a, .widget.buddypress #bp-login-widget-form #bp-login-widget-submit, .woocommerce span.onsale, .search-toggle { background:<?php echo get_theme_mod( 'maisha_button_colors' ); ?>; }
+		.social-navigation, .sidebar .widget .give-submit-button-wrap input[type="submit"], .button, .tribe-events-loop .type-tribe_events.tribe-events-last, #tribe-events .tribe-events-button, #tribe-events .tribe-events-button:hover, #tribe_events_filters_wrapper input[type=submit], .tribe-events-button, .tribe-events-button.tribe-active:hover, .tribe-events-button.tribe-inactive, .tribe-events-button:hover, .tribe-events-calendar td.tribe-events-present div[id*=tribe-events-daynum-], .tribe-events-calendar td.tribe-events-present div[id*=tribe-events-daynum-]>a, #tribe-events-content .tribe-events-calendar td.tribe-events-present.mobile-active:hover, .tribe-events-calendar td.tribe-events-present.mobile-active, .tribe-events-calendar td.tribe-events-present.mobile-active div[id*=tribe-events-daynum-], .tribe-events-calendar td.tribe-events-present.mobile-active div[id*=tribe-events-daynum-] a, .widget.buddypress #bp-login-widget-form #bp-login-widget-submit, .woocommerce span.onsale, .search-toggle,
+		input#give-purchase-button, [id*=give-form].give-display-modal .give-btn, [id*=give-form].give-display-reveal .give-btn { background:<?php echo get_theme_mod( 'maisha_button_colors' ); ?>; }
 		
-		.social-navigation, .sidebar .widget .give-submit-button-wrap input[type="submit"], .button, .tribe-events-loop .type-tribe_events.tribe-events-last, #tribe-events .tribe-events-button, #tribe-events .tribe-events-button:hover, #tribe_events_filters_wrapper input[type=submit], .tribe-events-button, .tribe-events-button.tribe-active:hover, .tribe-events-button.tribe-inactive, .tribe-events-button:hover, .tribe-events-calendar td.tribe-events-present div[id*=tribe-events-daynum-], .tribe-events-calendar td.tribe-events-present div[id*=tribe-events-daynum-]>a,#tribe-events-content .tribe-events-calendar td.tribe-events-present.mobile-active:hover, .tribe-events-calendar td.tribe-events-present.mobile-active, .tribe-events-calendar td.tribe-events-present.mobile-active div[id*=tribe-events-daynum-], .tribe-events-calendar td.tribe-events-present.mobile-active div[id*=tribe-events-daynum-] a, .widget.buddypress #bp-login-widget-form #bp-login-widget-submit, .woocommerce span.onsale, .content-caption .button, button, input[type="button"], input[type="reset"], input[type="submit"], .widget_calendar tbody a, .page-template-projects-page .columns hr, .page-template-causes-page .columns hr, .page-template-stories-page .columns hr, .block-two-content .button, button,input[type="button"], input[type="reset"], input[type="submit"], .widget_calendar tbody a, .page-template-projects-page .columns hr, .page-template-causes-page .columns hr, .page-template-stories-page .columns hr { color:<?php echo get_theme_mod( 'maisha_button_font_colors' ); ?>; }
+		.sidebar .widget .give-submit-button-wrap input[type="submit"], 
+		.button,
+		.entry-content a.button, 
+		.tribe-events-loop .type-tribe_events.tribe-events-last, 
+		#tribe-events .tribe-events-button, 
+		#tribe-events .tribe-events-button:hover, 
+		#tribe_events_filters_wrapper input[type=submit], 
+		.tribe-events-button, .tribe-events-button.tribe-active:hover, 
+		.tribe-events-button.tribe-inactive, 
+		.tribe-events-button:hover, 
+		.tribe-events-calendar td.tribe-events-present div[id*=tribe-events-daynum-], 
+		.tribe-events-calendar td.tribe-events-present div[id*=tribe-events-daynum-]>a,
+		#tribe-events-content .tribe-events-calendar td.tribe-events-present.mobile-active:hover, 
+		.tribe-events-calendar td.tribe-events-present.mobile-active, 
+		.tribe-events-calendar td.tribe-events-present.mobile-active div[id*=tribe-events-daynum-], 
+		.tribe-events-calendar td.tribe-events-present.mobile-active div[id*=tribe-events-daynum-] a, 
+		.widget.buddypress #bp-login-widget-form #bp-login-widget-submit, 
+		.woocommerce span.onsale, 
+		.content-caption .button, 
+		button, 
+		input[type="button"], 
+		input[type="reset"], 
+		input[type="submit"], 
+		.block-two-content .button, 
+		button,
+		input[type="button"], 
+		input[type="reset"],
+		input[type="submit"],
+		[id*=give-form].give-display-modal .give-btn, 
+		[id*=give-form].give-display-reveal .give-btn { color:<?php echo get_theme_mod( 'maisha_button_font_colors' ); ?>; }
 		
 		.tribe-events-button, .tribe-events-button:hover { background:<?php echo get_theme_mod( 'maisha_button_colors' ); ?>!important; }
 		

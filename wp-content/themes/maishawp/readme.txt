@@ -8,6 +8,23 @@ Copyright: Automattic, automattic.com
 
 Maisha is distributed under the terms of the GNU GPL
 
+1.5.1 - April 03, 2017
+- small fixes for the Events Calendar inside the style.css file 
+
+1.5 - March 29, 2017
+- added new option inside the Customizer for the Inner Pages Title Block Height & for the content link color inside the Custom Colors
+- added new blank-page.php template - support for the Beaver Builder and Elementor
+- small fixes inside the style.css file 
+
+1.4 - December 8, 2016
+- from WordPress 4.7 Customizer “Custom CSS” section migrated to the core Customizer section called “Additional CSS” - changes inside the inc folder “customizer.php” file
+
+1.3 - September 29, 2016
+- small fix inside the style.css - fix for the mobile menu when menu item has children and footer spacing on the front page  
+
+1.2.9 - September 1, 2016
+- small fix inside the style.css for the button on the about page
+
 1.2.8 - July 28, 2016
 - small clearings inside the style.css
 - custom Google Fonts plugin is added to the “plugins” folder inside the main download folder
